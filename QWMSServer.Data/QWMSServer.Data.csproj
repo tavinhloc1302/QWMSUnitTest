@@ -1,0 +1,331 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9CC9B294-339B-4AAE-8E62-7DE8F3BEA4EA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>QWMSServer.Data</RootNamespace>
+    <AssemblyName>QWMSServer.Data</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac, Version=4.6.2.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.6.2\lib\net45\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper, Version=6.2.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.6.2.2\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper.EF6, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.EF6.1.1.1\lib\net45\AutoMapper.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PagedList.Mvc, Version=4.5.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\Constant.cs" />
+    <Compile Include="Infrastructures\AsyncRepository.cs">
+      <DependentUpon>IAsyncRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructures\AutoMapperConfig.cs" />
+    <Compile Include="Infrastructures\DbSetExtension.cs" />
+    <Compile Include="Infrastructures\DependencyConfig.cs" />
+    <Compile Include="Infrastructures\Disposable.cs" />
+    <Compile Include="Infrastructures\IAsyncRepository.cs" />
+    <Compile Include="Infrastructures\IDBContext.cs" />
+    <Compile Include="Infrastructures\IUnitOfWork.cs" />
+    <Compile Include="Infrastructures\QWMSDBContext.cs">
+      <DependentUpon>IDBContext.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructures\ISyncRepository.cs" />
+    <Compile Include="Infrastructures\UnitOfWork.cs">
+      <DependentUpon>IUnitOfWork.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Infrastructures\BaseRepository.cs">
+      <DependentUpon>IBaseRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructures\IBaseRepository.cs" />
+    <Compile Include="Repository\AccessLogRepository.cs">
+      <DependentUpon>IAccessLogRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\BarrierRepository.cs">
+      <DependentUpon>IBarrierRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\CameraRepository.cs">
+      <DependentUpon>ICameraRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\CarrierVendorRepository.cs">
+      <DependentUpon>ICarrierVendorRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\CompanyRepository.cs">
+      <DependentUpon>ICompanyRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\COMPortRepository.cs">
+      <DependentUpon>ICOMPortRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\CustomerRepository.cs">
+      <DependentUpon>ICustomerRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\CustomerWarehouseRepository.cs">
+      <DependentUpon>ICustomerWarehouseRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\DeliveryOrderRepository.cs">
+      <DependentUpon>IDeliveryOrderRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\DeliveryOrderTypeRepository.cs">
+      <DependentUpon>IDeliveryOrderTypeRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\DriverRepository.cs">
+      <DependentUpon>IDriverRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\EmployeeGroupRepository.cs">
+      <DependentUpon>IEmployeeGroupRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\EmployeeGroup_SystemFunctionRepository.cs">
+      <DependentUpon>IEmployeeGroup_SystemFunctionRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\EmployeeRepository.cs">
+      <DependentUpon>IEmployeeRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\EmployeeRoleRepository.cs">
+      <DependentUpon>IEmployeeRoleRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\Employee_EmployeeGroupRepository.cs">
+      <DependentUpon>IEmployee_EmployeeGroupRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\GatePassRepository.cs">
+      <DependentUpon>IGatePassRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\IAccessLogRepository.cs" />
+    <Compile Include="Repository\IBarrierRepository.cs" />
+    <Compile Include="Repository\ICameraRepository.cs" />
+    <Compile Include="Repository\ICarrierVendorRepository.cs" />
+    <Compile Include="Repository\ICompanyRepository.cs" />
+    <Compile Include="Repository\ICOMPortRepository.cs" />
+    <Compile Include="Repository\ICustomerRepository.cs" />
+    <Compile Include="Repository\ICustomerWarehouseRepository.cs" />
+    <Compile Include="Repository\IDeliveryOrderRepository.cs" />
+    <Compile Include="Repository\IDeliveryOrderTypeRepository.cs" />
+    <Compile Include="Repository\IDriverRepository.cs" />
+    <Compile Include="Repository\IEmployeeGroupRepository.cs" />
+    <Compile Include="Repository\IEmployeeGroup_SystemFunctionRepository.cs" />
+    <Compile Include="Repository\IEmployeeRepository.cs" />
+    <Compile Include="Repository\IEmployeeRoleRepository.cs" />
+    <Compile Include="Repository\IEmployee_EmployeeGroupRepository.cs" />
+    <Compile Include="Repository\IGatePassRepository.cs" />
+    <Compile Include="Repository\ILaneRepository.cs" />
+    <Compile Include="Repository\ILaneTypeRepository.cs" />
+    <Compile Include="Repository\ILoadingBayRepository.cs" />
+    <Compile Include="Repository\ILoadingBayTypeRepository.cs" />
+    <Compile Include="Repository\ILoadingTypeRepository.cs" />
+    <Compile Include="Repository\IMaterialRepository.cs" />
+    <Compile Include="Repository\IOrderItemRepository.cs" />
+    <Compile Include="Repository\IOrderMaterialRepository.cs" />
+    <Compile Include="Repository\IOrderRepository.cs" />
+    <Compile Include="Repository\IOrderTypeRepository.cs" />
+    <Compile Include="Repository\IPlantRepository.cs" />
+    <Compile Include="Repository\IProductsRepository.cs" />
+    <Compile Include="Repository\IPurchaseOrderRepository.cs" />
+    <Compile Include="Repository\IPurchaseOrderTypeRepository.cs" />
+    <Compile Include="Repository\IQueueListRepository.cs" />
+    <Compile Include="Repository\IReWeightRecordRepository.cs" />
+    <Compile Include="Repository\IRFIDCardRepository.cs" />
+    <Compile Include="Repository\ISaleOrderRepository.cs" />
+    <Compile Include="Repository\ISensorRepository.cs" />
+    <Compile Include="Repository\IStateRecordRepository.cs" />
+    <Compile Include="Repository\IStateRepository.cs" />
+    <Compile Include="Repository\ISystemFunctionRepository.cs" />
+    <Compile Include="Repository\ITruckActionRepository.cs" />
+    <Compile Include="Repository\ITruckRepository.cs" />
+    <Compile Include="Repository\ITruckTypeRepository.cs" />
+    <Compile Include="Repository\IUnitTypeRepository.cs" />
+    <Compile Include="Repository\IUserRepository.cs" />
+    <Compile Include="Repository\IVoiceRecordRepository.cs" />
+    <Compile Include="Repository\IWarehouseTypeRepository.cs" />
+    <Compile Include="Repository\IWareshouseRepository.cs" />
+    <Compile Include="Repository\IWeightBridgeRepository.cs" />
+    <Compile Include="Repository\IWeightRecordRepository.cs" />
+    <Compile Include="Repository\LaneRepository.cs">
+      <DependentUpon>ILaneRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\LaneTypeRepository.cs">
+      <DependentUpon>ILaneTypeRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\LoadingBayRepository.cs">
+      <DependentUpon>ILoadingBayRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\LoadingBayTypeRepository.cs">
+      <DependentUpon>ILoadingBayTypeRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\LoadingTypeRepository.cs">
+      <DependentUpon>ILoadingTypeRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\MaterialRepository.cs">
+      <DependentUpon>IMaterialRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\OrderItemRepository.cs">
+      <DependentUpon>IOrderItemRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\OrderMaterialRepository.cs">
+      <DependentUpon>IOrderMaterialRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\OrderRepository.cs">
+      <DependentUpon>IOrderRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\OrderTypeRepository.cs">
+      <DependentUpon>IOrderTypeRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\PlantRepository.cs">
+      <DependentUpon>IPlantRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\ProductsRepository.cs">
+      <DependentUpon>IProductsRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructures\SyncRepository.cs">
+      <DependentUpon>ISyncRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\PurchaseOrderRepository.cs">
+      <DependentUpon>IPurchaseOrderRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\PurchaseOrderTypeRepository.cs">
+      <DependentUpon>IPurchaseOrderTypeRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\QueueListRepository.cs">
+      <DependentUpon>IQueueListRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\ReWeightRecordRepository.cs">
+      <DependentUpon>IReWeightRecordRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\RFIDCardRepository.cs">
+      <DependentUpon>IRFIDCardRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\SaleOrderRepository.cs">
+      <DependentUpon>ISaleOrderRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\SensorRepository.cs">
+      <DependentUpon>ISensorRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\StateRecordRepository.cs">
+      <DependentUpon>IStateRecordRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\StateRepository.cs">
+      <DependentUpon>IStateRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\SystemFunctionRepository.cs">
+      <DependentUpon>ISystemFunctionRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\TruckActionRepository.cs">
+      <DependentUpon>ITruckActionRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\TruckRepository.cs">
+      <DependentUpon>ITruckRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\TruckTypeRepository.cs">
+      <DependentUpon>ITruckTypeRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\UnitTypeRepository.cs">
+      <DependentUpon>IUnitTypeRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\UserRepository.cs">
+      <DependentUpon>IUserRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\VoiceRecordRepository.cs">
+      <DependentUpon>IVoiceRecordRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\WarehouseTypeRepository.cs">
+      <DependentUpon>IWarehouseTypeRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\WareshouseRepository.cs">
+      <DependentUpon>IWareshouseRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\WeightBridgeRepository.cs">
+      <DependentUpon>IWeightBridgeRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\WeightRecordRepository.cs">
+      <DependentUpon>IWeightRecordRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Services\AdminService.cs">
+      <DependentUpon>IAdminService.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Services\ResponseConstructor.cs" />
+    <Compile Include="Services\IAdminService.cs" />
+    <Compile Include="Services\ICommonService.cs" />
+    <Compile Include="Services\IProductService.cs" />
+    <Compile Include="Services\IQueueService.cs" />
+    <Compile Include="Services\ISecurityServicecs.cs" />
+    <Compile Include="Services\ProductService.cs">
+      <DependentUpon>IProductService.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Services\SecurityServices.cs">
+      <DependentUpon>ISecurityServicecs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Services\QueueService.cs">
+      <DependentUpon>IQueueService.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Services\WarehouseService.cs" />
+    <Compile Include="Services\WeightService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QWMSServer.Model\QWMSServer.Model.csproj">
+      <Project>{18bb8d00-a33f-4c03-8105-8c04d7642ccb}</Project>
+      <Name>QWMSServer.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\PagedList.css" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
