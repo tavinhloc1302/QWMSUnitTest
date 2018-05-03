@@ -12,5 +12,6 @@ namespace QWMSServer.Model.ViewModels
         public string errorText { get; set; }
         public IEnumerable<T> responseDatas { get; set; }
         public T responseData { get; set; }
+        public bool booleanResponse { get; set; }
     }
 }

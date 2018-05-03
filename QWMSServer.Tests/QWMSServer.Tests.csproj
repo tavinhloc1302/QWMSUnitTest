@@ -35,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.1.2.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
@@ -92,9 +93,15 @@
     <Reference Include="System.Net.Http.WebRequest" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dummy\CarrierVendorRepositoryTest.cs" />
+    <Compile Include="Dummy\CustomerRepositoryTest.cs" />
+    <Compile Include="Dummy\DriverRepositoryTest.cs" />
+    <Compile Include="Dummy\UnitOfWorkTest.cs" />
+    <Compile Include="Dummy\UserRepositoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\HomeControllerTest.cs" />
     <Compile Include="Controllers\ValuesControllerTest.cs" />
+    <Compile Include="ServiceTest\AdminServiceTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
@@ -103,11 +110,20 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\QWMSServer.Data\QWMSServer.Data.csproj">
+      <Project>{9CC9B294-339B-4AAE-8E62-7DE8F3BEA4EA}</Project>
+      <Name>QWMSServer.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QWMSServer.Model\QWMSServer.Model.csproj">
+      <Project>{18BB8D00-A33F-4C03-8105-8C04D7642CCB}</Project>
+      <Name>QWMSServer.Model</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QWMSServer\QWMSServer.API.csproj">
       <Project>{8E22B687-E45C-42CD-9376-9266E239BBA1}</Project>
       <Name>QWMSServer.API</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

@@ -312,7 +312,10 @@
       <DependentUpon>IQueueService.cs</DependentUpon>
     </Compile>
     <Compile Include="Services\WarehouseService.cs" />
-    <Compile Include="Services\WeightService.cs" />
+    <Compile Include="Services\IWeightService.cs" />
+    <Compile Include="Services\WeightService.cs">
+      <DependentUpon>IWeightService.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

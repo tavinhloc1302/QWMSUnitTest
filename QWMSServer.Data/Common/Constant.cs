@@ -9,6 +9,7 @@ namespace QWMSServer.Data.Common
     public static class Constant
     {
         public static string DriverCapturePath = "D:/";
+        public static string TruckCapturePath = "D:/";
         public static int DELIVERYORDER = 1;
         public static int PURCHASEORDER = 2;
 
@@ -56,6 +57,10 @@ namespace QWMSServer.Data.Common
         public const int ERR_SEC_UNKNOW = 1011;
         public const int ERR_SEC_GATEPASS_LACK_STATEID = 1012;
         public const int ERR_SEC_NOT_PERMIT_PASS_SECURITY_GATE = 1013;
+        public const int ERR_QUE_NO_QUEUE_FOUND = 3001;
+        public const int ERR_QUE_NO_GATEPASS_FOUND = 3002;
+        public const int ERR_QUE_GATEPASS_WRONG_STATE = 3003;
+        public const int ERR_QUE_WEIGH_NO_FOUND = 3004;
     }
 
     public static class ResponseText
@@ -84,23 +89,33 @@ namespace QWMSServer.Data.Common
         public const string ERR_SEC_GATEPASS_LACK_STATEID = "Error: Lack of stateID on GatePass";
         public const string ERR_SEC_NOT_PERMIT_PASS_SECURITY_GATE_VI = "Lỗi: Xe chưa đước phép đi qua cổng bảo vệ";
         public const string ERR_SEC_NOT_PERMIT_PASS_SECURITY_GATE_ENG = "Error: Truck inn't yet permit to pass through security gate";
+        public const string ERR_QUE_NO_QUEUE_FOUND_VI = "Lỗi: Không tìm thấy danh sách hàng đợi";
+        public const string ERR_QUE_NO_GATEPASS_FOUND_VI = "Lỗi: Không tìm thấy GatePass với ID hiện tại";
+        public const string ERR_QUE_GATEPASS_WRONG_STATE_VI = "Lỗi: GatePass không thực hiện đúng trạng thái";
+        public const string ERR_QUE_WEIGH_NO_FOUND = "Lỗi: Không tìm thấy thông tin cân hoặc xe chưa cân";
     }
 
     public static class GatepassState
     {
-        public const string STATE_CREATE_INCOMPLETED = "S001";
-        public const string STATE_CREATE_COMPLETED = "S002";
-        public const String STATE_REGISTERED = "S003";
-        public const string STATE_CALLING_1 = "S004";
-        public const string STATE_CALLING_2 = "S005";
-        public const string STATE_CALLING_3 = "S006";
-        public const string STATE_SECURITY_CHECK_IN = "S007";
-        public const string STATE_WEIGHT_IN = "S008";
-        public const string STATE_INTERNAL_WAREHOUSE_CHECK_IN = "S009";
-        public const string STATE_QC_CHECKED = "S010";
-        public const string STATE_INTERNAL_WAREHOUSE_CHECK_OUT = "S011";
-        public const string STATE_WEIGHT_OUT = "S012";
-        public const string STATE_SECURITY_CHECK_OUT = "S013";
+        public const int STATE_CREATE_INCOMPLETED = 1;
+        public const int STATE_CREATE_COMPLETED = 2;
+        public const int STATE_REGISTERED = 3;
+        public const int STATE_CALLING_1 = 4;
+        public const int STATE_CALLING_2 = 5;
+        public const int STATE_CALLING_3 = 6;
+        public const int STATE_IN_SECURITY_CHECK_IN = 7;
+        public const int STATE_FINISH_SECURITY_CHECK_IN = 8;
+        public const int STATE_PRE_WEIGHT_IN = 9;
+        public const int STATE_IN_WEIGHT_IN = 10;
+        public const int STATE_FINISH_WEIGHT_IN = 11;
+        public const int STATE_IN_WAREHOUSE_CHECK_IN = 12;
+        public const int STATE_FINISH_WAREHOUSE_CHECK_IN = 13;
+        public const int STATE_IN_WAREHOUSE_CHECK_OUT = 14;
+        public const int STATE_FINISH_WAREHOUSE_CHECK_OUT = 15;
+        public const int STATE_IN_WEIGHT_OUT = 16;
+        public const int STATE_FINISH_WEIGHT_OUT = 17;
+        public const int STATE_IN_SECURITY_CHECK_OUT = 18;
+        public const int STATE_FINISH_SECURITY_CHECK_OUT = 19;
     }
 
     public static class TruckGroups
@@ -108,7 +123,6 @@ namespace QWMSServer.Data.Common
         public const string GROUP_1XXX = "1xxx";
         public const string GROUP_2XXX = "2xxx";
         public const string GROUP_3XXX = "3xxx";
-
     }
 
     public static class APIList

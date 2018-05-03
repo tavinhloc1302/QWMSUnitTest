@@ -8,9 +8,9 @@ using QWMSServer.Data.Common;
 
 namespace QWMSServer.Data.Services
 {
-    public class ResponseConstructor<T> where T : class
+    public static class ResponseConstructor<T> where T : class
     {
-        public ResponseViewModel<T> ConstructEnumerableData(int errorCode, IEnumerable<T> datas)
+        public static ResponseViewModel<T> ConstructEnumerableData(int errorCode, IEnumerable<T> datas)
         {
             ResponseViewModel<T> ret = new ResponseViewModel<T>();
             ret.errorCode = errorCode;
@@ -20,7 +20,7 @@ namespace QWMSServer.Data.Services
             return ret;
         }
 
-        public ResponseViewModel<T> ConstructEnumerableData(int errorCode, string errorText, IEnumerable<T> datas)
+        public static ResponseViewModel<T> ConstructEnumerableData(int errorCode, string errorText, IEnumerable<T> datas)
         {
             ResponseViewModel<T> ret = new ResponseViewModel<T>();
             ret.errorCode = errorCode;
@@ -30,7 +30,7 @@ namespace QWMSServer.Data.Services
             return ret;
         }
 
-        public ResponseViewModel<T> ConstructData(int errorCode, T data)
+        public static ResponseViewModel<T> ConstructData(int errorCode, T data)
         {
             ResponseViewModel<T> ret = new ResponseViewModel<T>();
             ret.errorCode = errorCode;
@@ -39,7 +39,8 @@ namespace QWMSServer.Data.Services
             ret.responseDatas = null;
             return ret;
         }
-        public ResponseViewModel<T> ConstructData(int errorCode, string errorText, T data)
+
+        public static ResponseViewModel<T> ConstructData(int errorCode, string errorText, T data)
         {
             ResponseViewModel<T> ret = new ResponseViewModel<T>();
             ret.errorCode = errorCode;
@@ -49,7 +50,18 @@ namespace QWMSServer.Data.Services
             return ret;
         }
 
-        private String GetErrorText(int errorCode)
+        public static ResponseViewModel<T> ConstructBoolRes(int errorCode, bool res)
+        {
+            ResponseViewModel<T> ret = new ResponseViewModel<T>();
+            ret.errorCode = errorCode;
+            ret.errorText = GetErrorText(errorCode);
+            ret.responseData = null;
+            ret.responseDatas = null;
+            ret.booleanResponse = res;
+            return ret;
+        }
+
+        private static String GetErrorText(int errorCode)
         {
             string errorText;
             switch (errorCode)
@@ -92,6 +104,12 @@ namespace QWMSServer.Data.Services
                     break;
                 case ResponseCode.ERR_SEC_UNKNOW:
                     errorText = ResponseText.ERR_SEC_UNKNOW;
+                    break;
+                case ResponseCode.ERR_QUE_NO_QUEUE_FOUND:
+                    errorText = ResponseText.ERR_QUE_NO_QUEUE_FOUND_VI;
+                    break;
+                case ResponseCode.ERR_QUE_NO_GATEPASS_FOUND:
+                    errorText = ResponseText.ERR_QUE_NO_GATEPASS_FOUND_VI;
                     break;
                 default:
                     errorText = ResponseText.ERR_SEC_UNKNOW;

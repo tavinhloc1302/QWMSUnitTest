@@ -50,10 +50,10 @@ namespace QWMSServer.Model.DatabaseModels
         public int? stateID { get; set; }
 
         [Column("enterTime")]
-        public DateTime enterTime { get; set; }
+        public DateTime? enterTime { get; set; }
 
         [Column("leaveTime")]
-        public DateTime leaveTime { get; set; }
+        public DateTime? leaveTime { get; set; }
 
         [Column("RFIDCardID")]
         public int? RFIDCardID { get; set; }

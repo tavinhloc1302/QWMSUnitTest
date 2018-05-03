@@ -164,6 +164,8 @@
     <Compile Include="ViewModels\UnitTypeViewModel.cs" />
     <Compile Include="ViewModels\UserViewModel.cs" />
     <Compile Include="ViewModels\WarehouseViewModel.cs" />
+    <Compile Include="ViewModels\WeightDataViewModel.cs" />
+    <Compile Include="ViewModels\WeightRecordViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

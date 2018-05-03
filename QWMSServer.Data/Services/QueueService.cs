@@ -269,8 +269,10 @@ namespace QWMSServer.Data.Services
             {
                 return Constant.TRUCKGROUP3X;
             }
-
-            return 1;
+            else
+            {
+                return Constant.TRUCKGROUP3X;
+            }
         }
 
         public async Task<int> assignLane(int loadingBayID, int truckID)
