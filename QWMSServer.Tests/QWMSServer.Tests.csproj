@@ -96,12 +96,16 @@
     <Compile Include="Dummy\CarrierVendorRepositoryTest.cs" />
     <Compile Include="Dummy\CustomerRepositoryTest.cs" />
     <Compile Include="Dummy\DriverRepositoryTest.cs" />
+    <Compile Include="Dummy\GatePassRepositoryTest.cs" />
+    <Compile Include="Dummy\QueueListRepositoryTest.cs" />
+    <Compile Include="Dummy\RFIDCardRepositoryTest.cs" />
+    <Compile Include="Dummy\StateRecordRepositoryTest.cs" />
+    <Compile Include="Dummy\StateRepositoryTest.cs" />
     <Compile Include="Dummy\UnitOfWorkTest.cs" />
     <Compile Include="Dummy\UserRepositoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Controllers\HomeControllerTest.cs" />
-    <Compile Include="Controllers\ValuesControllerTest.cs" />
     <Compile Include="ServiceTest\AdminServiceTest.cs" />
+    <Compile Include="ServiceTest\SecurityServiceTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
