@@ -35,44 +35,33 @@ namespace QWMSServer.Tests.ServiceTest
         }
 
         [TestMethod]
-        public async Task TestMethod_GetTrucks(string truckCondition)
+        public async Task TestMethod_GetTrucks()
         {
-            var actualResult = await _securityServices.GetTrucks(truckCondition);
-            var expectedResult = new ResponseViewModel<QueueListViewModel>() {
-
-            };
-            Assert.AreEqual(expectedResult, actualResult);
+            var actualResult = await _securityServices.GetTrucks("");
+            Assert.IsNotNull(actualResult);
         }
 
         [TestMethod]
-        public async Task TestMethod_GetGatePassByRFID(string rfidCode)
+        public async Task TestMethod_GetGatePassByRFID()
         {
-            var actualResult = await _securityServices.GetGatePassByRFID(rfidCode);
-            var expectedResult = new ResponseViewModel<GatePassViewModel>() {
-
-            };
-            Assert.AreEqual(expectedResult, actualResult);
+            var actualResult = await _securityServices.GetGatePassByRFID("0123456789");
+            Assert.IsNotNull(actualResult);
         }
 
 
         [TestMethod]
-        public async Task TestMethod_RegisterSecurityCheck(string rfidCode)
+        public async Task TestMethod_RegisterSecurityCheck()
         {
-            var actualResult = await _securityServices.RegisterSecurityCheck(rfidCode);
-            var expectedResult = new ResponseViewModel<GatePassViewModel>() {
-
-            };
-            Assert.AreEqual(expectedResult, actualResult);
+            var actualResult = await _securityServices.RegisterSecurityCheck("01234567890");
+            Assert.IsNotNull(actualResult);
         }
 
         [TestMethod]
-        public async Task TestMethod_ConfirmSecurityCheck(GatePassViewModel gatePassView)
+        public async Task TestMethod_ConfirmSecurityCheck()
         {
+            GatePassViewModel gatePassView = new GatePassViewModel() { code = "0123" };
             var actualResult = await _securityServices.ConfirmSecurityCheck(gatePassView);
-            var expectedResult = new ResponseViewModel<GatePassViewModel>() {
-
-            };
-            Assert.AreEqual(expectedResult, actualResult);
+            Assert.IsNotNull(actualResult);
         }
     }
 }

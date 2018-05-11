@@ -13,7 +13,10 @@ namespace QWMSServer.Tests.Dummy
         public IQueryable<User> Objects => new List<User>() {
                 new User() {
                     Code = "0123",
-                    employees = new List<Employee>(),
+                    employees = new List<Employee>() {
+                        new Employee(),
+                        new Employee()
+                    },
                     password = "password",
                     username ="skyrider1",
                     ID = 1,

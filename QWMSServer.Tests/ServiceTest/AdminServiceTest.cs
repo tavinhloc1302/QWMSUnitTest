@@ -19,6 +19,18 @@ namespace QWMSServer.Tests.ServiceTest
         private readonly IUserRepository _userRepository;
         private readonly AdminService _adminService;
 
+        private static object isInitialized=false;
+
+        static AdminServiceTest()
+        {
+            lock (isInitialized)
+            {
+                if ((bool) isInitialized) return;
+                AutoMapperConfig.Configure();
+                isInitialized = true;
+            }
+        }
+
         public AdminServiceTest()
         {
             _unitOfWork = new UnitOfWorkTest();
@@ -27,6 +39,8 @@ namespace QWMSServer.Tests.ServiceTest
             _carrierRepository = new CarrierVendorRepositoryTest();
             _userRepository = new UserRepositoryTest();
             _adminService = new AdminService(_unitOfWork, _customerRepository, _driverRepository, _carrierRepository, _userRepository);
+
+            
         }
 
         [TestMethod]
@@ -37,135 +51,144 @@ namespace QWMSServer.Tests.ServiceTest
         }
 
         [TestMethod]
-        public async Task TestMethod_CreateNewCarrier(CarrierVendorViewModel carrierView)
+        public async Task TestMethod_CreateNewCarrier()
         {
+            CarrierVendorViewModel carrierView = new CarrierVendorViewModel() { code = "0123" };
             var actualResult = await _adminService.CreateNewCarrier(carrierView);
             Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
-        public async Task TestMethod_CreateNewCustomer(CustomerViewModel customerView)
+        public async Task TestMethod_CreateNewCustomer()
         {
+            CustomerViewModel customerView = new CustomerViewModel() { code = "0123" };
             var actualResult = await _adminService.CreateNewCustomer(customerView);
             Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
-        public async Task TestMethod_CreateNewDriver(DriverViewModel driverView)
+        public async Task TestMethod_CreateNewDriver()
         {
+            DriverViewModel driverView = new DriverViewModel() { code = "0123" };
             var actualResult = await _adminService.CreateNewDriver(driverView);
             Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
-        public async Task TestMethod_DeleteCarrier(CarrierVendorViewModel carrierView)
+        public async Task TestMethod_DeleteCarrier()
         {
-            var actualResult = await _adminService.DeleteCarrier(carrierView);  
-            Assert.IsNotNull(actualResult.responseData);
+            CarrierVendorViewModel carrierView = new CarrierVendorViewModel();
+            var actualResult = await _adminService.DeleteCarrier(carrierView);
+            Assert.IsNotNull(actualResult.responseDatas);
         }
 
         [TestMethod]
-        public async Task TestMethod_DeleteCustomer(CustomerViewModel customerView)
+        public async Task TestMethod_DeleteCustomer()
         {
+            CustomerViewModel customerView = new CustomerViewModel();
             var actualResult = await _adminService.DeleteCustomer(customerView);
-            Assert.IsNotNull(actualResult.responseData);
+            Assert.IsNotNull(actualResult.responseDatas);
         }
 
         [TestMethod]
-        public async Task TestMethod_DeleteDriver(DriverViewModel driverView)
+        public async Task TestMethod_DeleteDriver()
         {
+            DriverViewModel driverView = new DriverViewModel() { code = "0123" };
             var actualResult = await _adminService.DeleteDriver(driverView);
-            Assert.IsNotNull(actualResult.responseData);
+            Assert.IsNotNull(actualResult.responseDatas);
         }
 
         [TestMethod]
         public async Task TestMethod_GetAllCarrier()
         {
             var actualResult = await _adminService.GetAllCarrier();
-            Assert.IsNotNull(actualResult.responseData);
+            Assert.IsNotNull(actualResult.responseDatas);
         }
 
         [TestMethod]
         public async Task TestMethod_GetAllCustomer()
         {
             var actualResult = await _adminService.GetAllCustomer();
-            Assert.IsNotNull(actualResult.responseData);
+            Assert.IsNotNull(actualResult.responseDatas);
         }
 
         [TestMethod]
         public async Task TestMethod_GetAllDriver()
         {
             var actualResult = await _adminService.GetAllDriver();
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetCarrierByCode()
+        {
+            var actualResult = await _adminService.GetCarrierByCode("0123");
             Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
-        public async Task TestMethod_GetCarrierByCode(string code)
+        public async Task TestMethod_GetCustomerByCode()
         {
-            var actualResult = await _adminService.GetCarrierByCode(code);
+            var actualResult = await _adminService.GetCustomerByCode("0123");
             Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
-        public async Task TestMethod_GetCustomerByCode(string code)
+        public async Task TestMethod_GetDriverByCode()
         {
-            var actualResult = await _adminService.GetCustomerByCode(code);
+            var actualResult = await _adminService.GetDriverByCode("0123");
             Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
-        public async Task TestMethod_GetDriverByCode(string code)
+        public async Task TestMethod_GetUserPermission()
         {
-            var actualResult = await _adminService.GetDriverByCode(code);
-            Assert.IsNotNull(actualResult.responseData);
+            var actualResult = await _adminService.GetUserPermission(1);
+            Assert.IsNull(actualResult);
         }
 
         [TestMethod]
-        public async Task TestMethod_GetUserPermission(int userID)
+        public async Task TestMethod_SearchCarrier()
         {
-            var actualResult = await _adminService.GetUserPermission(userID);
-            Assert.IsNotNull(actualResult);
+            var actualResult = await _adminService.SearchCarrier("0123");
+            Assert.IsNotNull(actualResult.responseDatas);
         }
 
         [TestMethod]
-        public async Task TestMethod_SearchCarrier(string code)
+        public async Task TestMethod_SearchCustomer()
         {
-            var actualResult = await _adminService.SearchCarrier(code);
-            Assert.IsNotNull(actualResult.responseData);
-        }
-
-        [TestMethod]
-        public async Task TestMethod_SearchCustomer(string code)
-        {
-            var actualResult = await _adminService.SearchCustomer(code);
+            var actualResult = await _adminService.SearchCustomer("0123");
             var expectedResult = new ResponseViewModel<CustomerViewModel>();
-            Assert.IsNotNull(actualResult.responseData);
+            Assert.IsNotNull(actualResult.responseDatas);
         }
 
         [TestMethod]
-        public async Task TestMethod_SearchDriver(string code)
+        public async Task TestMethod_SearchDriver()
         {
-            var actualResult = await _adminService.SearchDriver(code);
-            Assert.IsNotNull(actualResult.responseData);
+            var actualResult = await _adminService.SearchDriver("0123");
+            Assert.IsNotNull(actualResult.responseDatas);
         }
 
         [TestMethod]
-        public async Task TestMethod_UpdateCarrier(CarrierVendorViewModel carrierView)
+        public async Task TestMethod_UpdateCarrier()
         {
+            CarrierVendorViewModel carrierView = new CarrierVendorViewModel() { code = "0123" };
             var actualResult = await _adminService.UpdateCarrier(carrierView);
             Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
-        public async Task TestMethod_UpdateCustomer(CustomerViewModel customerView)
+        public async Task TestMethod_UpdateCustomer()
         {
+            CustomerViewModel customerView = new CustomerViewModel() { code = "0123" };
             var actualResult = await _adminService.UpdateCustomer(customerView);
             Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
-        public async Task TestMethod_UpdateDriver(DriverViewModel driverView)
+        public async Task TestMethod_UpdateDriver()
         {
+            DriverViewModel driverView = new DriverViewModel() { code = "0123" };
             var actualResult = await _adminService.UpdateDriver(driverView);
             Assert.IsNotNull(actualResult.responseData);
         }
