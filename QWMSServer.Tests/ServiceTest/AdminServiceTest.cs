@@ -144,7 +144,7 @@ namespace QWMSServer.Tests.ServiceTest
         public async Task TestMethod_GetUserPermission()
         {
             var actualResult = await _adminService.GetUserPermission(1);
-            Assert.IsNull(actualResult);
+            Assert.IsTrue(actualResult.Count == 0);
         }
 
         [TestMethod]

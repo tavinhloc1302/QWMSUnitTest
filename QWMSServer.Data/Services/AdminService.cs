@@ -40,7 +40,7 @@ namespace QWMSServer.Data.Services
         #region
         public async Task<ResponseViewModel<CustomerViewModel>> GetAllCustomer()
         {
-            var result = await _customerRepository.GetManyAsync( c => c.isDelete == false);
+            var result = await _customerRepository.GetManyAsync(c => c.isDelete == false);
             var customerView = Mapper.Map<IEnumerable<Customer>, IEnumerable<CustomerViewModel>>(result);
             ResponseViewModel<CustomerViewModel> responseViewModel = new ResponseViewModel<CustomerViewModel>();
             responseViewModel.responseDatas = Mapper.Map<IEnumerable<Customer>, IEnumerable<CustomerViewModel>>(result);
@@ -196,7 +196,7 @@ namespace QWMSServer.Data.Services
             responseViewModel.responseDatas = Mapper.Map<IEnumerable<Driver>, IEnumerable<DriverViewModel>>(result);
             return responseViewModel;
         }
-        
+
         public async Task<ResponseViewModel<DriverViewModel>> GetDriverByCode(string code)
         {
             ResponseViewModel<DriverViewModel> responseViewModel = new ResponseViewModel<DriverViewModel>();
@@ -243,7 +243,7 @@ namespace QWMSServer.Data.Services
                 if (driver != null)
                 {
                     driver.isDelete = false;
-                    driver.carrierVendor = await _carrierRepository.GetAsync( ca => ca.code == driverView.carrierVendor.code);
+                    driver.carrierVendor = await _carrierRepository.GetAsync(ca => ca.code == driverView.carrierVendor.code);
                     _driverRepository.Add(driver);
                     if (await this.SaveChangesAsync())
                     {
@@ -487,24 +487,27 @@ namespace QWMSServer.Data.Services
         {
             Dictionary<string, SystemFunctionViewModel> systemFunctionViewModels = new Dictionary<string, SystemFunctionViewModel>();
             var user = await _userRepository.GetAsync(us => us.ID == userID, QueryIncludes.USERFULLINCLUDES);
-            if (user==null)
+            if (user == null)
             {
                 return null;
             }
             else
             {
                 var employee = user.employees.FirstOrDefault();
-                foreach (var group in employee.groupMaps)
+                if (employee.groupMaps != null)
                 {
-                    foreach (var function in group.employeeGroup.functionMaps)
+                    foreach (var group in employee.groupMaps)
                     {
-                        try
+                        foreach (var function in group.employeeGroup.functionMaps)
                         {
-                            systemFunctionViewModels.Add(function.systemFunction.Code, Mapper.Map<SystemFunction, SystemFunctionViewModel>(function.systemFunction));
-                        }
-                        catch (Exception)
-                        {
-                            continue;
+                            try
+                            {
+                                systemFunctionViewModels.Add(function.systemFunction.Code, Mapper.Map<SystemFunction, SystemFunctionViewModel>(function.systemFunction));
+                            }
+                            catch (Exception)
+                            {
+                                continue;
+                            }
                         }
                     }
                 }
