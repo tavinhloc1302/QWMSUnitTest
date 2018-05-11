@@ -4,73 +4,86 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace QWMSServer.Tests.Dummy
 {
     public class UserRepositoryTest : IUserRepository
     {
-        public IQueryable<User> Objects => throw new NotImplementedException();
+        public IQueryable<User> Objects => new List<User>() {
+                new User() {
+                    Code = "0123",
+                    employees = new List<Employee>(),
+                    password = "password",
+                    username ="skyrider1",
+                    ID = 1,
+                    isDelete = false
+                },
+                new User() {
+                    Code = "3210",
+                    employees = new List<Employee>(),
+                    password = "password",
+                    username ="skyrider2",
+                    ID = 2,
+                    isDelete = false
+                }
+            }.AsQueryable();
 
         public void Add(User entity)
         {
-            throw new NotImplementedException();
+
         }
 
-        public Task<int> CountAsync(Expression<Func<User, bool>> where)
+        public async Task<int> CountAsync(Expression<Func<User, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Objects.Count();
         }
 
         public void Delete(User entity)
         {
-            throw new NotImplementedException();
         }
 
         public void Delete(Expression<Func<User, bool>> where)
         {
-            throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<User>> GetAllAsync()
+        public async Task<IEnumerable<User>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return this.Objects;
         }
 
-        public Task<User> GetAsync(Expression<Func<User, bool>> where)
+        public async Task<User> GetAsync(Expression<Func<User, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Objects.ElementAt(0);
         }
 
-        public Task<User> GetAsync(Expression<Func<User, bool>> where, IEnumerable<string> includes = null)
+        public async Task<User> GetAsync(Expression<Func<User, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return this.Objects.ElementAt(0);
         }
 
-        public Task<User> GetByIdAsync(int id)
+        public async Task<User> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return this.Objects.ElementAt(0);
         }
 
-        public Task<IEnumerable<User>> GetManyAsync(Expression<Func<User, bool>> where)
+        public async Task<IEnumerable<User>> GetManyAsync(Expression<Func<User, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Objects;
         }
 
-        public Task<IEnumerable<User>> GetManyAsync(Expression<Func<User, bool>> where, IEnumerable<string> includes = null)
+        public async Task<IEnumerable<User>> GetManyAsync(Expression<Func<User, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return this.Objects;
         }
 
         public IQueryable<User> Query(Expression<Func<User, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return this.Objects.AsQueryable();
         }
 
         public void Update(User entity)
         {
-            throw new NotImplementedException();
         }
     }
 }

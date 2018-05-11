@@ -1,76 +1,87 @@
-﻿using System;
+﻿using QWMSServer.Data.Repository;
+using QWMSServer.Model.DatabaseModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
-using QWMSServer.Data.Repository;
-using QWMSServer.Model.DatabaseModels;
 
 namespace QWMSServer.Tests.Dummy
 {
     public class StateRepositoryTest : IStateRepository
     {
-        public IQueryable<State> Objects => throw new NotImplementedException();
+        public IQueryable<State> Objects => new List<State>() {
+                new State() {
+                    code = "0123",
+                    ID = 1,
+                    isDelete = false,
+                    desciption = "Sky Rider 1",
+                    order = 1
+                },
+                new State() {
+                    code = "3210",
+                    ID = 2,
+                    isDelete = false,
+                    desciption = "Sky Rider 2",
+                    order = 2
+                }
+            }.AsQueryable();
 
         public void Add(State entity)
         {
-            throw new NotImplementedException();
+
         }
 
-        public Task<int> CountAsync(Expression<Func<State, bool>> where)
+        public async Task<int> CountAsync(Expression<Func<State, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Objects.Count();
         }
 
         public void Delete(State entity)
         {
-            throw new NotImplementedException();
         }
 
         public void Delete(Expression<Func<State, bool>> where)
         {
-            throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<State>> GetAllAsync()
+        public async Task<IEnumerable<State>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return this.Objects;
         }
 
-        public Task<State> GetAsync(Expression<Func<State, bool>> where)
+        public async Task<State> GetAsync(Expression<Func<State, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Objects.ElementAt(0);
         }
 
-        public Task<State> GetAsync(Expression<Func<State, bool>> where, IEnumerable<string> includes = null)
+        public async Task<State> GetAsync(Expression<Func<State, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return this.Objects.ElementAt(0);
         }
 
-        public Task<State> GetByIdAsync(int id)
+        public async Task<State> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return this.Objects.ElementAt(0);
         }
 
-        public Task<IEnumerable<State>> GetManyAsync(Expression<Func<State, bool>> where)
+        public async Task<IEnumerable<State>> GetManyAsync(Expression<Func<State, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Objects;
         }
 
-        public Task<IEnumerable<State>> GetManyAsync(Expression<Func<State, bool>> where, IEnumerable<string> includes = null)
+        public async Task<IEnumerable<State>> GetManyAsync(Expression<Func<State, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return this.Objects;
         }
 
         public IQueryable<State> Query(Expression<Func<State, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return this.Objects.AsQueryable();
         }
 
         public void Update(State entity)
         {
-            throw new NotImplementedException();
         }
     }
 }

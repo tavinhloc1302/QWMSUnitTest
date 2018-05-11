@@ -1,76 +1,89 @@
-﻿using System;
+﻿using QWMSServer.Data.Repository;
+using QWMSServer.Model.DatabaseModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
-using QWMSServer.Data.Repository;
-using QWMSServer.Model.DatabaseModels;
 
 namespace QWMSServer.Tests.Dummy
 {
     public class StateRecordRepositoryTest : IStateRecordRepository
     {
-        public IQueryable<StateRecord> Objects => throw new NotImplementedException();
+        public IQueryable<StateRecord> Objects => new List<StateRecord>() {
+                new StateRecord() {
+                    code = "0123",
+                    ID = 1,
+                    isDelete = false,
+                    gatePassID = 1,
+                    stateID = 1,
+                    stateStatus = 1                    
+                },
+                new StateRecord() {
+                    code = "0123",
+                    ID = 1,
+                    isDelete = false,
+                    gatePassID = 1,
+                    stateID = 1,
+                    stateStatus = 1
+                }
+            }.AsQueryable();
 
         public void Add(StateRecord entity)
         {
-            throw new NotImplementedException();
+
         }
 
-        public Task<int> CountAsync(Expression<Func<StateRecord, bool>> where)
+        public async Task<int> CountAsync(Expression<Func<StateRecord, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Objects.Count();
         }
 
         public void Delete(StateRecord entity)
         {
-            throw new NotImplementedException();
         }
 
         public void Delete(Expression<Func<StateRecord, bool>> where)
         {
-            throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<StateRecord>> GetAllAsync()
+        public async Task<IEnumerable<StateRecord>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return this.Objects;
         }
 
-        public Task<StateRecord> GetAsync(Expression<Func<StateRecord, bool>> where)
+        public async Task<StateRecord> GetAsync(Expression<Func<StateRecord, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Objects.ElementAt(0);
         }
 
-        public Task<StateRecord> GetAsync(Expression<Func<StateRecord, bool>> where, IEnumerable<string> includes = null)
+        public async Task<StateRecord> GetAsync(Expression<Func<StateRecord, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return this.Objects.ElementAt(0);
         }
 
-        public Task<StateRecord> GetByIdAsync(int id)
+        public async Task<StateRecord> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return this.Objects.ElementAt(0);
         }
 
-        public Task<IEnumerable<StateRecord>> GetManyAsync(Expression<Func<StateRecord, bool>> where)
+        public async Task<IEnumerable<StateRecord>> GetManyAsync(Expression<Func<StateRecord, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Objects;
         }
 
-        public Task<IEnumerable<StateRecord>> GetManyAsync(Expression<Func<StateRecord, bool>> where, IEnumerable<string> includes = null)
+        public async Task<IEnumerable<StateRecord>> GetManyAsync(Expression<Func<StateRecord, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return this.Objects;
         }
 
         public IQueryable<StateRecord> Query(Expression<Func<StateRecord, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return this.Objects.AsQueryable();
         }
 
         public void Update(StateRecord entity)
         {
-            throw new NotImplementedException();
         }
     }
 }

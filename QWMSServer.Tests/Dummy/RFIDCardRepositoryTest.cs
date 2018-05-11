@@ -1,76 +1,85 @@
-﻿using System;
+﻿using QWMSServer.Data.Repository;
+using QWMSServer.Model.DatabaseModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
-using QWMSServer.Data.Repository;
-using QWMSServer.Model.DatabaseModels;
 
 namespace QWMSServer.Tests.Dummy
 {
     public class RFIDCardRepositoryTest : IRFIDCardRepository
     {
-        public IQueryable<RFIDCard> Objects => throw new NotImplementedException();
+        public IQueryable<RFIDCard> Objects => new List<RFIDCard>() {
+                new RFIDCard() {
+                    code = "0123",
+                    ID = 1,
+                    isDelete = false,
+                    status = 1
+                },
+                new RFIDCard() {
+                    code = "3210",
+                    ID = 2,
+                    isDelete = false,
+                    status = 1
+                }
+            }.AsQueryable();
 
         public void Add(RFIDCard entity)
         {
-            throw new NotImplementedException();
+
         }
 
-        public Task<int> CountAsync(Expression<Func<RFIDCard, bool>> where)
+        public async Task<int> CountAsync(Expression<Func<RFIDCard, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Objects.Count();
         }
 
         public void Delete(RFIDCard entity)
         {
-            throw new NotImplementedException();
         }
 
         public void Delete(Expression<Func<RFIDCard, bool>> where)
         {
-            throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<RFIDCard>> GetAllAsync()
+        public async Task<IEnumerable<RFIDCard>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return this.Objects;
         }
 
-        public Task<RFIDCard> GetAsync(Expression<Func<RFIDCard, bool>> where)
+        public async Task<RFIDCard> GetAsync(Expression<Func<RFIDCard, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Objects.ElementAt(0);
         }
 
-        public Task<RFIDCard> GetAsync(Expression<Func<RFIDCard, bool>> where, IEnumerable<string> includes = null)
+        public async Task<RFIDCard> GetAsync(Expression<Func<RFIDCard, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return this.Objects.ElementAt(0);
         }
 
-        public Task<RFIDCard> GetByIdAsync(int id)
+        public async Task<RFIDCard> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return this.Objects.ElementAt(0);
         }
 
-        public Task<IEnumerable<RFIDCard>> GetManyAsync(Expression<Func<RFIDCard, bool>> where)
+        public async Task<IEnumerable<RFIDCard>> GetManyAsync(Expression<Func<RFIDCard, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Objects;
         }
 
-        public Task<IEnumerable<RFIDCard>> GetManyAsync(Expression<Func<RFIDCard, bool>> where, IEnumerable<string> includes = null)
+        public async Task<IEnumerable<RFIDCard>> GetManyAsync(Expression<Func<RFIDCard, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return this.Objects;
         }
 
         public IQueryable<RFIDCard> Query(Expression<Func<RFIDCard, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return this.Objects.AsQueryable();
         }
 
         public void Update(RFIDCard entity)
         {
-            throw new NotImplementedException();
         }
     }
 }

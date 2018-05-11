@@ -4,73 +4,102 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace QWMSServer.Tests.Dummy
 {
     public class CustomerRepositoryTest : ICustomerRepository
     {
-        public IQueryable<Customer> Objects => throw new NotImplementedException();
+        public IQueryable<Customer> Objects => new List<Customer>() {
+            new Customer() {
+                code = "0123",
+                contactPerson = "Galvin Nguyen",
+                ID = 1,
+                isDelete = false,
+                nameEn = "Sky Rider 1",
+                nameVi = "Sky Rider 1",
+                shortName = "SR1",
+                taxCode = "0123",
+                telNo ="0123456789",
+                customerWarehouses = new List<CustomerWarehouse>(),
+                email = "SkyRider1@qwms.com",
+                faxNo = "0123456789",
+                invoiceAddressEn = "Address in English",
+                invoiceAddressVi = "Address in Vietnamese",
+            },
+            new Customer() {
+                code = "3210",
+                contactPerson = "Galvin Nguyen",
+                ID = 2,
+                isDelete = false,
+                nameEn = "Sky Rider 2",
+                nameVi = "Sky Rider 2",
+                shortName = "SR2",
+                taxCode = "0123",
+                telNo ="9876543210",
+                customerWarehouses = new List<CustomerWarehouse>(),
+                email = "SkyRider2@qwms.com",
+                faxNo = "9876543210",
+                invoiceAddressEn = "Address in English",
+                invoiceAddressVi = "Address in Vietnamese",
+            }
+        }.AsQueryable();
 
         public void Add(Customer entity)
         {
-            throw new NotImplementedException();
+
         }
 
-        public Task<int> CountAsync(Expression<Func<Customer, bool>> where)
+        public async Task<int> CountAsync(Expression<Func<Customer, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Objects.Count();
         }
 
         public void Delete(Customer entity)
         {
-            throw new NotImplementedException();
         }
 
         public void Delete(Expression<Func<Customer, bool>> where)
         {
-            throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Customer>> GetAllAsync()
+        public async Task<IEnumerable<Customer>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return this.Objects;
         }
 
-        public Task<Customer> GetAsync(Expression<Func<Customer, bool>> where)
+        public async Task<Customer> GetAsync(Expression<Func<Customer, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Objects.ElementAt(0);
         }
 
-        public Task<Customer> GetAsync(Expression<Func<Customer, bool>> where, IEnumerable<string> includes = null)
+        public async Task<Customer> GetAsync(Expression<Func<Customer, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return this.Objects.ElementAt(0);
         }
 
-        public Task<Customer> GetByIdAsync(int id)
+        public async Task<Customer> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return this.Objects.ElementAt(0);
         }
 
-        public Task<IEnumerable<Customer>> GetManyAsync(Expression<Func<Customer, bool>> where)
+        public async Task<IEnumerable<Customer>> GetManyAsync(Expression<Func<Customer, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Objects;
         }
 
-        public Task<IEnumerable<Customer>> GetManyAsync(Expression<Func<Customer, bool>> where, IEnumerable<string> includes = null)
+        public async Task<IEnumerable<Customer>> GetManyAsync(Expression<Func<Customer, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return this.Objects;
         }
 
         public IQueryable<Customer> Query(Expression<Func<Customer, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return this.Objects.AsQueryable();
         }
 
         public void Update(Customer entity)
         {
-            throw new NotImplementedException();
         }
     }
 }
