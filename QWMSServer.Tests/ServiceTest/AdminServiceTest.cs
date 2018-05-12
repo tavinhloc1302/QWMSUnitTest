@@ -19,20 +19,10 @@ namespace QWMSServer.Tests.ServiceTest
         private readonly IUserRepository _userRepository;
         private readonly AdminService _adminService;
 
-        private static object isInitialized=false;
-
-        static AdminServiceTest()
-        {
-            lock (isInitialized)
-            {
-                if ((bool) isInitialized) return;
-                AutoMapperConfig.Configure();
-                isInitialized = true;
-            }
-        }
-
         public AdminServiceTest()
         {
+            AutoMapper.Mapper.Reset();
+            AutoMapperConfig.Configure();
             _unitOfWork = new UnitOfWorkTest();
             _customerRepository = new CustomerRepositoryTest();
             _driverRepository = new DriverRepositoryTest();
@@ -40,7 +30,7 @@ namespace QWMSServer.Tests.ServiceTest
             _userRepository = new UserRepositoryTest();
             _adminService = new AdminService(_unitOfWork, _customerRepository, _driverRepository, _carrierRepository, _userRepository);
 
-            
+
         }
 
         [TestMethod]

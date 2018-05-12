@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QWMSServer.Data.Infrastructures;
 using QWMSServer.Data.Repository;
 using QWMSServer.Data.Services;
 using QWMSServer.Model.ViewModels;
 using QWMSServer.Tests.Dummy;
+using System.Threading.Tasks;
+using AutoMapper;
 
 namespace QWMSServer.Tests.ServiceTest
 {
@@ -25,6 +22,8 @@ namespace QWMSServer.Tests.ServiceTest
 
         public SecurityServiceTest()
         {
+            AutoMapper.Mapper.Reset();
+            AutoMapperConfig.Configure();
             _unitOfWork = new UnitOfWorkTest();
             _queueListRepository = new QueueListRepositoryTest();
             _gatePassRepository = new GatePassRepositoryTest();
