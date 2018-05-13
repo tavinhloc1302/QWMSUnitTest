@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace QWMSServer.Tests.Dummy
 {
-    public class GatePassRepositoryTest : IGatePassRepository
+    public class GatePassRepositoryTest : RepositoryBaseTest<GatePass>, IGatePassRepository
     {
-        public IQueryable<GatePass> Objects => new List<GatePass>() {
+        public override IQueryable<GatePass> Objects => new List<GatePass>() {
                 new GatePass() {
                     createDate = DateTime.Now,
                     driver = new Driver(),
@@ -55,61 +55,61 @@ namespace QWMSServer.Tests.Dummy
                 }
             }.AsQueryable();
 
-        public void Add(GatePass entity)
-        {
+        //public void Add(GatePass entity)
+        //{
 
-        }
+        //}
 
-        public async Task<int> CountAsync(Expression<Func<GatePass, bool>> where)
-        {
-            return this.Objects.Count();
-        }
+        //public async Task<int> CountAsync(Expression<Func<GatePass, bool>> where)
+        //{
+        //    return this.Objects.Count();
+        //}
 
-        public void Delete(GatePass entity)
-        {
-        }
+        //public void Delete(GatePass entity)
+        //{
+        //}
 
-        public void Delete(Expression<Func<GatePass, bool>> where)
-        {
-        }
+        //public void Delete(Expression<Func<GatePass, bool>> where)
+        //{
+        //}
 
-        public async Task<IEnumerable<GatePass>> GetAllAsync()
-        {
-            return this.Objects;
-        }
+        //public async Task<IEnumerable<GatePass>> GetAllAsync()
+        //{
+        //    return this.Objects;
+        //}
 
-        public async Task<GatePass> GetAsync(Expression<Func<GatePass, bool>> where)
-        {
-            return this.Objects.ElementAt(0);
-        }
+        //public async Task<GatePass> GetAsync(Expression<Func<GatePass, bool>> where)
+        //{
+        //    return this.Objects.ElementAt(0);
+        //}
 
-        public async Task<GatePass> GetAsync(Expression<Func<GatePass, bool>> where, IEnumerable<string> includes = null)
-        {
-            return this.Objects.ElementAt(0);
-        }
+        //public async Task<GatePass> GetAsync(Expression<Func<GatePass, bool>> where, IEnumerable<string> includes = null)
+        //{
+        //    return this.Objects.ElementAt(0);
+        //}
 
-        public async Task<GatePass> GetByIdAsync(int id)
-        {
-            return this.Objects.ElementAt(0);
-        }
+        //public async Task<GatePass> GetByIdAsync(int id)
+        //{
+        //    return this.Objects.ElementAt(0);
+        //}
 
-        public async Task<IEnumerable<GatePass>> GetManyAsync(Expression<Func<GatePass, bool>> where)
-        {
-            return this.Objects;
-        }
+        //public async Task<IEnumerable<GatePass>> GetManyAsync(Expression<Func<GatePass, bool>> where)
+        //{
+        //    return this.Objects;
+        //}
 
-        public async Task<IEnumerable<GatePass>> GetManyAsync(Expression<Func<GatePass, bool>> where, IEnumerable<string> includes = null)
-        {
-            return this.Objects;
-        }
+        //public async Task<IEnumerable<GatePass>> GetManyAsync(Expression<Func<GatePass, bool>> where, IEnumerable<string> includes = null)
+        //{
+        //    return this.Objects;
+        //}
 
-        public IQueryable<GatePass> Query(Expression<Func<GatePass, bool>> where, IEnumerable<string> includes = null)
-        {
-            return this.Objects.AsQueryable();
-        }
+        //public IQueryable<GatePass> Query(Expression<Func<GatePass, bool>> where, IEnumerable<string> includes = null)
+        //{
+        //    return this.Objects.AsQueryable();
+        //}
 
-        public void Update(GatePass entity)
-        {
-        }
+        //public void Update(GatePass entity)
+        //{
+        //}
     }
 }
