@@ -17,6 +17,9 @@ namespace QWMSServer.Tests.ServiceTest
     [TestClass]
     public class QueueServiceTest
     {
+        public static int CANNOT_BE_MATCHED_ID = -1;
+        public static String CANNOT_BE_MATCHED_CODE = "__!@#__";
+
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGatePassRepository _gatePassRepository;
         private readonly IStateRepository _stateRepository;
@@ -91,21 +94,20 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNotNull(actualResult);
         }
 
-        protected async Task<GatePass> GetSampleGatePass(Func<GatePass, bool> filterFunc = null)
+        protected GatePass GetSampleGatePass(Func<GatePass, bool> filterFunc = null)
         {
-            var allGates = await _gatePassRepository.GetAllAsync();
-            if (filterFunc == null)
-            {
-                return allGates.First();
+            if (filterFunc == null) {
+
+                return _gatePassRepository.Objects.First();
             }
 
-            return allGates.First(filterFunc);
+            return _gatePassRepository.Objects.First(filterFunc);
         }
 
         [TestMethod]
         public async Task TestMethod_GetGatePassByID_Found()
         {
-            var sampleGate = await this.GetSampleGatePass(QueueServiceTest.IsAvailableGatePass);
+            var sampleGate = this.GetSampleGatePass(QueueServiceTest.IsAvailableGatePass);
             Assert.IsNotNull(sampleGate);
 
             var response = await _queueService.GetGatePassByID(sampleGate.ID);
@@ -116,7 +118,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_GetGatePassByID_NotFound()
         {
-            var index = -1;
+            var index = CANNOT_BE_MATCHED_ID;
             var response = await _queueService.GetGatePassByID(index);
 
             var gate = response.responseData;
@@ -126,7 +128,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_GetGatePassByDriverID_Found()
         {
-            var sampleGate = await this.GetSampleGatePass(
+            var sampleGate = this.GetSampleGatePass(
                 g => g.driver != null && QueueServiceTest.IsAvailableGatePass(g));
             Assert.IsNotNull(sampleGate);
 
@@ -139,7 +141,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_GetGatePassByDriverID_NotFound()
         {
-            var index = -1;
+            var index = CANNOT_BE_MATCHED_ID;
             var response = await _queueService.GetGatePassByDriverID(index);
 
             var gate = response.responseData;
@@ -149,7 +151,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_GetGatePassByCode_Found()
         {
-            var sampleGate = await this.GetSampleGatePass(
+            var sampleGate = this.GetSampleGatePass(
                 g => !String.IsNullOrEmpty(g.code) && QueueServiceTest.IsAvailableGatePass(g));
             Assert.IsNotNull(sampleGate);
 
@@ -162,7 +164,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_GetGatePassByCode_NotFound()
         {
-            var index = "__!@#__";
+            var index = CANNOT_BE_MATCHED_CODE;
             var response = await _queueService.GetGatePassByCode(index);
 
             var gate = response.responseData;
@@ -172,7 +174,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_GetGatePassByRFID_Found()
         {
-            var sampleGate = await this.GetSampleGatePass(
+            var sampleGate = this.GetSampleGatePass(
                 g => g.RFIDCardID != null && QueueServiceTest.IsAvailableGatePass(g));
             Assert.IsNotNull(sampleGate);
 
@@ -186,7 +188,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_GetGatePassByRFID_NotFound()
         {
-            var index = "__!@#__";
+            var index = CANNOT_BE_MATCHED_CODE;
             var response = await _queueService.GetGatePassByRFID(index);
 
             var gate = response.responseData;
@@ -196,7 +198,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_GetGatePassByPlateNumber_Found()
         {
-            var sampleGate = await this.GetSampleGatePass(
+            var sampleGate = this.GetSampleGatePass(
                 g => g.truckID != null && QueueServiceTest.IsAvailableGatePass(g));
             Assert.IsNotNull(sampleGate);
 
@@ -209,7 +211,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_GetGatePassByPlateNumber_NotFound()
         {
-            var index = "__!@#__";
+            var index = CANNOT_BE_MATCHED_CODE;
             var response = await _queueService.GetGatePassByPlateNumber(index);
 
             var gate = response.responseData;
@@ -221,13 +223,11 @@ namespace QWMSServer.Tests.ServiceTest
         {
             var sampleDriverCamCapturePath = "Path random, yolo!";
 
-            var sampleGate = await this.GetSampleGatePass();
-            var response = await _queueService.GetGatePassByID(sampleGate.ID);
+            var sampleGate = this.GetSampleGatePass();
+            sampleGate.driverCamCapturePath = sampleDriverCamCapturePath;
+            var sampleGateView = Mapper.Map<GatePass, GatePassViewModel>(sampleGate);
 
-            var gate = response.responseData;
-            gate.driverCamCapturePath = sampleDriverCamCapturePath;
-
-            var updateResponse = await _queueService.UpdateGatePass(gate);
+            var updateResponse = await _queueService.UpdateGatePass(sampleGateView);
             var updatedGate = updateResponse.responseData;
             Assert.AreEqual(sampleDriverCamCapturePath, updatedGate.driverCamCapturePath);
         }
@@ -263,6 +263,138 @@ namespace QWMSServer.Tests.ServiceTest
 
             var add_ok = _queueService.AddDriverPicture(fileName, null);
             Assert.IsFalse(add_ok);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateGatePassWithRFIDCode_Ok()
+        {
+            var sampleRFIDCode = 100;
+
+            var sampleGate = this.GetSampleGatePass();
+            var sampleGateView = Mapper.Map<GatePass, GatePassViewModel>(sampleGate);
+            sampleGateView.RFIDCardID = sampleRFIDCode;
+
+            var updateResponse = await _queueService.UpdateGatePassWithRFIDCode(sampleGateView);
+            var updatedGate = updateResponse.responseData;
+            Assert.AreEqual(sampleRFIDCode, updatedGate.RFIDCardID);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateGatePassWithRFIDCode_Null()
+        {
+            var updateResponse = await _queueService.UpdateGatePassWithRFIDCode(null);
+            var updatedGate = updateResponse.responseData;
+            Assert.IsNull(updatedGate);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateGatePassWithRFIDCode_NotFound()
+        {
+            var sampleRFIDCode = 100;
+
+            var sampleGate = this.GetSampleGatePass();
+            var sampleGateView = Mapper.Map<GatePass, GatePassViewModel>(sampleGate);
+            sampleGateView.ID = CANNOT_BE_MATCHED_ID;
+            sampleGateView.RFIDCardID = sampleRFIDCode;
+
+            var updateResponse = await _queueService.UpdateGatePassWithRFIDCode(sampleGateView);
+            var updatedGate = updateResponse.responseData;
+            Assert.IsNull(updatedGate);
+        }
+
+        protected GatePass GetFullRFIDCardSampleGate() {
+            return this.GetSampleGatePass(
+                gp => gp.employee.RFIDCardID != null && gp.RFIDCardID != null
+            );
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateRegisteredQueueItem_Ok()
+        {
+            var sampleGate = this.GetFullRFIDCardSampleGate();
+            var isUpdateOK = await _queueService.CreateRegisteredQueueItem(
+                sampleGate.ID, "avatar.png",
+                sampleGate.employee.RFIDCardID.Value.ToString(),
+                sampleGate.RFIDCardID.Value.ToString());
+            Assert.IsTrue(isUpdateOK);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateRegisteredQueueItem_NotFound_Gate()
+        {
+            var sampleGate = this.GetFullRFIDCardSampleGate();
+            var isUpdateOK = await _queueService.CreateRegisteredQueueItem(
+                CANNOT_BE_MATCHED_ID, "avatar.png",
+                sampleGate.employee.RFIDCardID.Value.ToString(),
+                sampleGate.RFIDCardID.Value.ToString());
+            Assert.IsFalse(isUpdateOK);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateRegisteredQueueItem_NotFound_EmployeeRFID()
+        {
+            var sampleGate = this.GetFullRFIDCardSampleGate();
+            var isUpdateOK = await _queueService.CreateRegisteredQueueItem(
+                sampleGate.ID, "avatar.png",
+                CANNOT_BE_MATCHED_CODE,
+                sampleGate.RFIDCardID.Value.ToString());
+            Assert.IsFalse(isUpdateOK);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateRegisteredQueueItem_NotFound_DriverRFID()
+        {
+            var sampleGate = this.GetFullRFIDCardSampleGate();
+            var isUpdateOK = await _queueService.CreateRegisteredQueueItem(
+                sampleGate.ID, "avatar.png",
+                sampleGate.employee.RFIDCardID.Value.ToString(),
+                CANNOT_BE_MATCHED_CODE);
+            Assert.IsFalse(isUpdateOK);
+        }
+
+        [TestMethod]
+        public void TestMethod_findTruckGroup_DeliPump()
+        {
+            var sampleGate = this.GetSampleGatePass(
+                gp => gp.orders.First().orderTypeID == Constant.DELIVERYORDER
+                && gp.truckTyeID == Constant.PUMP);
+            var truckGroup = _queueService.findTruckGroup(sampleGate);
+            Assert.AreEqual(Constant.TRUCKGROUP2X, truckGroup);
+        }
+
+        [TestMethod]
+        public void TestMethod_findTruckGroup_DeliNotPump()
+        {
+            var sampleGate = this.GetSampleGatePass(
+                gp => gp.orders.First().orderTypeID == Constant.DELIVERYORDER
+                && gp.truckTyeID != Constant.PUMP);
+            var truckGroup = _queueService.findTruckGroup(sampleGate);
+            Assert.AreEqual(Constant.TRUCKGROUP1X, truckGroup);
+        }
+
+        [TestMethod]
+        public void TestMethod_findTruckGroup_Purchase()
+        {
+            var sampleGate = this.GetSampleGatePass(
+                gp => gp.orders.First().orderTypeID == Constant.PURCHASEORDER);
+            var truckGroup = _queueService.findTruckGroup(sampleGate);
+            Assert.AreEqual(Constant.TRUCKGROUP3X, truckGroup);
+        }
+
+        [TestMethod]
+        public void TestMethod_findTruckGroup_NotDeliOrPurchase()
+        {
+            var sampleGate = this.GetSampleGatePass(
+                gp => gp.orders.First().orderTypeID != Constant.DELIVERYORDER
+                && gp.orders.First().orderTypeID != Constant.PURCHASEORDER);
+            var truckGroup = _queueService.findTruckGroup(sampleGate);
+            Assert.AreEqual(Constant.TRUCKGROUP3X, truckGroup);
+        }
+
+        [TestMethod]
+        public void TestMethod_assignLane()
+        {
+            // var truckGroup = _queueService.assignLane(sampleGate);
         }
     }
 }
