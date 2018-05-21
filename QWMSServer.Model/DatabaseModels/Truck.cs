@@ -90,5 +90,10 @@ namespace QWMSServer.Model.DatabaseModels
         [ForeignKey("carrierVendorID")]
         public CarrierVendor carrierVendor { get; set; }
 
+        [Column("suggestDriverID")]
+        public int? suggestDriverID { get; set; }
+
+        [ForeignKey("suggestDriverID")]
+        public Driver driver { get; set; }
     }
 }

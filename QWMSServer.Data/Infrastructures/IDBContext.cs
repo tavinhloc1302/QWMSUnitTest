@@ -58,10 +58,11 @@ namespace QWMSServer.Data.Infrastructures
         DbSet<User> User { get; set; }
         DbSet<VoiceRecord> VoiceRecord { get; set; }
         DbSet<WarehouseType> WarehouseType { get; set; }
-        DbSet<Wareshouse> Wareshouse { get; set; }
+        DbSet<Warehouse> Warehouse { get; set; }
         DbSet<WeighBridge> WeighBridge { get; set; }
         DbSet<WeightRecord> WeightRecord { get; set; }
         DbSet<CustomerWarehouse> CustomerWarehouse { get; set; }
+        DbSet<Token> Token { get; set; }
 
         Task<int> SaveChangesAsync();
 

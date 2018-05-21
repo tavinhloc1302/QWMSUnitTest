@@ -19,14 +19,28 @@ namespace QWMSServer.Data.Services
         private readonly IGatePassRepository _gatePassRepository;
         private readonly IQueueListRepository _queueListRepository;
         private readonly IWeightRecordRepository _weightRecordRepository;
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IWeighBridgeRepository _weighBridgeRepository;
+        private readonly ILaneRepository _laneRepository;
+        private readonly ICommonService _commonService;
+		private readonly IAuthService _authService;
+        private readonly IQueueService _queueService;
 
         public WeightService(IUnitOfWork unitOfWork, IGatePassRepository gatePassRepository, IQueueListRepository queueListRepository,
-                            IWeightRecordRepository weightRecordRepository)
+                            IWeightRecordRepository weightRecordRepository, IEmployeeRepository employeeRepository, IWeighBridgeRepository weighBridgeRepository,
+                            ILaneRepository laneRepository, ICommonService commonService,
+							IAuthService authService, IQueueService queueService)
         {
             _unitOfWork = unitOfWork;
             _gatePassRepository = gatePassRepository;
             _queueListRepository = queueListRepository;
             _weightRecordRepository = weightRecordRepository;
+            _employeeRepository = employeeRepository;
+            _weighBridgeRepository = weighBridgeRepository;
+            _laneRepository = laneRepository;
+            _commonService = commonService;
+			_authService = authService;
+            _queueService = queueService;
         }
 
         public async Task<bool> SaveChangesAsync()
@@ -51,10 +65,12 @@ namespace QWMSServer.Data.Services
             return response;
         }
 
-        public async Task<ResponseViewModel<QueueListViewModel>> CallNextTruck(int gatePassID)
+        public async Task<ResponseViewModel<QueueListViewModel>> CallNextTruck(int truckGroupID)
         {
             ResponseViewModel<QueueListViewModel> response = new ResponseViewModel<QueueListViewModel>();
-            var gatePass = await _gatePassRepository.GetAsync(gt => gt.ID == gatePassID && gt.isDelete == false);
+            var queues = await _queueListRepository.GetManyAsync( qu => qu.gatePass.truckGroupID == truckGroupID && qu.isDelete == false, QueryIncludes.QUEUELISTFULLINCLUDES);
+            var firstqueue = queues.OrderBy(q => q.queueNumber).First();
+            var gatePass = await _gatePassRepository.GetAsync(gt => gt.ID == firstqueue.gatePassID && gt.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
             if(gatePass == null)
             {
                 response = ResponseConstructor<QueueListViewModel>.ConstructBoolRes(ResponseCode.ERR_QUE_NO_QUEUE_FOUND, false);
@@ -76,34 +92,33 @@ namespace QWMSServer.Data.Services
                     case GatepassState.STATE_CALLING_3:
                         // Update state & Update queueList
                         gatePass.stateID = GatepassState.STATE_REGISTERED;
-                        var currentQueue = await _queueListRepository.GetAsync(qu => qu.gatePassID == gatePassID && qu.isDelete == false);
-                        var queueList = await _queueListRepository.GetManyAsync(qu => qu.queueOrder > currentQueue.queueOrder && qu.queueOrder <= (currentQueue.queueOrder+5) && qu.isDelete == false);
+                        var currentQueue = await _queueListRepository.GetAsync(qu => qu.gatePassID == gatePass.ID && qu.isDelete == false);
+                        var queueList = await _queueListRepository.GetManyAsync(qu => qu.queueNumber > currentQueue.queueNumber && qu.queueNumber <= (currentQueue.queueNumber + 5) && qu.gatePass.truckGroup.ID == gatePass.truckGroup.ID && qu.isDelete == false);
                         // If there are less than 5 - move to the last
                         if(queueList.Count() < 5)
                         {
                             // Set new Order
-                            currentQueue.queueOrder += queueList.Count();
+                            currentQueue.queueNumber += queueList.Count();
                             // Shift up 1 item for orther QueueItem
                             foreach (var queueItem in queueList)
                             {
-                                queueItem.queueOrder -= 1;
+                                queueItem.queueNumber -= 1;
                                 _queueListRepository.Update(queueItem);
                             }
                         }else // If more than 5 - move down 5
                         {
                             // Set new order
-                            currentQueue.queueOrder += 5;
+                            currentQueue.queueNumber += 5;
                             // Shift up 1 item for orther QueueItem
                             foreach (var queueItem in queueList)
                             {
-                                queueItem.queueOrder -= 1;
+                                queueItem.queueNumber -= 1;
                                 _queueListRepository.Update(queueItem);
                             }
                         }
                         break;
                     default:
-                        response = ResponseConstructor<QueueListViewModel>.ConstructBoolRes(ResponseCode.ERR_QUE_NO_QUEUE_FOUND, false);
-                        break;
+                        return response = ResponseConstructor<QueueListViewModel>.ConstructBoolRes(ResponseCode.ERR_QUE_NO_QUEUE_FOUND, false);
                 }
                 _gatePassRepository.Update(gatePass);
                 if(await _unitOfWork.SaveChangesAsync())
@@ -121,60 +136,131 @@ namespace QWMSServer.Data.Services
         public async Task<ResponseViewModel<QueueListViewModel>> GetQueueList()
         {
             ResponseViewModel<QueueListViewModel> response = new ResponseViewModel<QueueListViewModel>();
-            var queueList = await _queueListRepository.GetManyAsync(qu => qu.isDelete == false, QueryIncludes.QUEUELISTFULLINCLUDES);
-            if (queueList == null)
+            try
             {
-                response = ResponseConstructor<QueueListViewModel>.ConstructEnumerableData(ResponseCode.ERR_QUE_NO_QUEUE_FOUND, null);
-            }else
-            {
-                response = ResponseConstructor<QueueListViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, 
-                                                                                            Mapper.Map<IEnumerable<QueueList>, 
-                                                                                            IEnumerable<QueueListViewModel>>(queueList));
+                var queueList = await _queueListRepository.GetManyAsync(qu => qu.isDelete == false, QueryIncludes.QUEUELISTFULLINCLUDES);
+                if (queueList == null)
+                {
+                    response = ResponseConstructor<QueueListViewModel>.ConstructEnumerableData(ResponseCode.ERR_QUE_NO_QUEUE_FOUND, null);
+                }
+                else
+                {
+                    response = ResponseConstructor<QueueListViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS,
+                                                                                                Mapper.Map<IEnumerable<QueueList>,
+                                                                                                IEnumerable<QueueListViewModel>>(queueList));
+                }
+                return response;
             }
-            return response;
+            catch (Exception)
+            {
+                return response = ResponseConstructor<QueueListViewModel>.ConstructEnumerableData(ResponseCode.ERR_QUE_NO_QUEUE_FOUND, null);
+            }
         }
 
         public async Task<ResponseViewModel<WeightRecordViewModel>> UpdateWeightValue(WeightDataViewModel weightDataViewModel)
         {
             ResponseViewModel<WeightRecordViewModel> response = new ResponseViewModel<WeightRecordViewModel>();
-            WeightRecord weightRecord = new WeightRecord();
-            Random r = new Random();
-            var weighNum = await _weightRecordRepository.GetManyAsync(wt => wt.gatepassID == weightDataViewModel .gatePassID && wt.isDelete == false);
-            weightRecord.code = r.ToString();
-            weightRecord.gatepassID = weightDataViewModel.gatePassID;
-            weightRecord.isDelete = false;
-            weightRecord.weighBridgeID = weightDataViewModel.weighBridgeID;
-            weightRecord.weightEmployeeID = weightDataViewModel.employeeID;
-            weightRecord.weightValue = weightDataViewModel.weightValue;
-            weightRecord.frontCameraCapturePath = Constant.TruckCapturePath + weightDataViewModel.fontCameraName;
-            weightRecord.gearCameraCapturePath = Constant.TruckCapturePath + weightDataViewModel.gearCameraName;
-            weightRecord.cabinCameraCapturePath = Constant.TruckCapturePath + weightDataViewModel.cabinCameraName;
-            weightRecord.containerCameraCapturePath = Constant.TruckCapturePath + weightDataViewModel.containerCameraName;
-            weightRecord.weightNo = weighNum.Count() + 1;
-            _weightRecordRepository.Add(weightRecord);
-            if (await _unitOfWork.SaveChangesAsync())
+            try
             {
-                response = ResponseConstructor<WeightRecordViewModel>.ConstructBoolRes(ResponseCode.SUCCESS, true);
+                WeightRecord weightRecord = new WeightRecord();
+                Random r = new Random();
+                //if (await _authService.CheckUserPermission(weightDataViewModel.employeeID, weightDataViewModel.employeeRFID, "UpdateWeightValue"))
+                //{
+                var weighNum = await _weightRecordRepository.GetManyAsync(wt => wt.gatepassID == weightDataViewModel.gatePassID && wt.isDelete == false);
+                weightRecord.code = r.Next().ToString();
+                weightRecord.gatepassID = weightDataViewModel.gatePassID;
+                weightRecord.isDelete = false;
+                weightRecord.weighBridgeID = weightDataViewModel.weighBridgeID;
+                weightRecord.weighBridge = await _weighBridgeRepository.GetByIdAsync(weightDataViewModel.weighBridgeID);
+                weightRecord.weightEmployeeID = weightDataViewModel.employeeID;
+                weightRecord.employee = await _employeeRepository.GetByIdAsync(weightDataViewModel.employeeID);
+                weightRecord.weightTime = DateTime.Now;
+                weightRecord.weightValue = weightDataViewModel.weightValue;
+                weightRecord.frontCameraCapturePath = Constant.TruckCapturePath + weightDataViewModel.fontCameraName;
+                weightRecord.gearCameraCapturePath = Constant.TruckCapturePath + weightDataViewModel.gearCameraName;
+                weightRecord.cabinCameraCapturePath = Constant.TruckCapturePath + weightDataViewModel.cabinCameraName;
+                weightRecord.containerCameraCapturePath = Constant.TruckCapturePath + weightDataViewModel.containerCameraName;
+                weightRecord.weightNo = weighNum.Count() + 1;
+                var gatePass = await _gatePassRepository.GetAsync(gt => gt.ID == weightDataViewModel.gatePassID && gt.isDelete == false);
+                if(gatePass.stateID == GatepassState.STATE_FINISH_SECURITY_CHECK_IN)
+                    gatePass.stateID = GatepassState.STATE_FINISH_WEIGHT_IN;
+                else if(gatePass.stateID == GatepassState.STATE_FINISH_WAREHOUSE_CHECK_OUT)
+                    gatePass.stateID = GatepassState.STATE_FINISH_WEIGHT_OUT;
+                _gatePassRepository.Update(gatePass);
+                _weightRecordRepository.Add(weightRecord);
+                if (await _unitOfWork.SaveChangesAsync())
+                {
+                    response = ResponseConstructor<WeightRecordViewModel>.ConstructBoolRes(ResponseCode.SUCCESS, true);
+                }
+                else
+                {
+                    response = ResponseConstructor<WeightRecordViewModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
+                }
+                //}
+                //else
+                //{
+                //    response = ResponseConstructor<WeightRecordViewModel>.ConstructBoolRes(ResponseCode.ERR_WEI_WEIGH_NOT_PERMITTED, false);
+                //}
+                return response;
             }
-            else
+            catch (Exception)
             {
-                response = ResponseConstructor<WeightRecordViewModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
+                return response = ResponseConstructor<WeightRecordViewModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
             }
-            return response;
         }
 
         public async Task<ResponseViewModel<WeightRecordViewModel>> GetWeightValueByGatePassID(int gatePassID)
         {
             ResponseViewModel<WeightRecordViewModel> response = new ResponseViewModel<WeightRecordViewModel>();
-            var weighRecord = await _weightRecordRepository.GetManyAsync(wt => wt.gatepassID == gatePassID && wt.isDelete == false);
-            if(weighRecord == null)
+            try
             {
-                response = ResponseConstructor<WeightRecordViewModel>.ConstructEnumerableData(ResponseCode.ERR_QUE_WEIGH_NO_FOUND, Mapper.Map<IEnumerable<WeightRecord>, IEnumerable<WeightRecordViewModel>>(weighRecord));
+                var weighRecord = await _weightRecordRepository.GetManyAsync(wt => wt.gatepassID == gatePassID && wt.isDelete == false);
+                if (weighRecord == null)
+                {
+                    response = ResponseConstructor<WeightRecordViewModel>.ConstructEnumerableData(ResponseCode.ERR_QUE_WEIGH_NO_FOUND, Mapper.Map<IEnumerable<WeightRecord>, IEnumerable<WeightRecordViewModel>>(weighRecord));
+                }
+                else
+                {
+                    response = ResponseConstructor<WeightRecordViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, Mapper.Map<IEnumerable<WeightRecord>, IEnumerable<WeightRecordViewModel>>(weighRecord));
+                }
+                return response;
             }
-            else
+            catch (Exception)
             {
-                response = ResponseConstructor<WeightRecordViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, Mapper.Map<IEnumerable<WeightRecord>, IEnumerable<WeightRecordViewModel>>(weighRecord));
+                return response = ResponseConstructor<WeightRecordViewModel>.ConstructEnumerableData(ResponseCode.ERR_SEC_UNKNOW, null);
             }
+        }
+
+        public async Task<ResponseViewModel<UpdateLaneStatusViewModel>> UpdateLaneStatus(UpdateLaneStatusViewModel updateLaneStatusViewModel)
+        {
+            ResponseViewModel<UpdateLaneStatusViewModel> response = new ResponseViewModel<UpdateLaneStatusViewModel>();
+            //Get lane from laneName
+            var laneRecord = await _laneRepository.GetAsync(l => l.nameVi.Equals(updateLaneStatusViewModel.laneName), null);
+            if (laneRecord != null)
+            {
+                //Check current status
+                if(laneRecord.status == 0) // If lane block
+                {
+                    laneRecord.status = 1;
+                    laneRecord.usingStatus = 0;
+                }
+                else
+                {
+                    if (laneRecord.usingStatus == 0) // If lane free
+                    {
+                        laneRecord.status = 0;
+                        laneRecord.usingStatus = 0;
+                    }
+                    else // If lane using
+                    {
+                        response.errorCode = -1;
+                    }
+                }
+            }
+
+            _laneRepository.Update(laneRecord);
+            await _unitOfWork.SaveChangesAsync();
+            await _queueService.ReOrderQueue();
             return response;
         }
     }

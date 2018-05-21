@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QWMSServer.Model.ViewModels;
+using System.Net.Http;
 
 namespace QWMSServer.Data.Services
 {
@@ -16,6 +17,8 @@ namespace QWMSServer.Data.Services
 
         Task<ResponseViewModel<GatePassViewModel>> RegisterSecurityCheck(string rfidCode);
 
-        Task<ResponseViewModel<GatePassViewModel>> ConfirmSecurityCheck(GatePassViewModel gatePassView);
+        Task<ResponseViewModel<GatePassViewModel>> ConfirmSecurityCheck(SecurityUpdateStateViewModel updateStateView);
+
+        MultipartFormDataContent GetDriverImage(string filePath);
     }
 }

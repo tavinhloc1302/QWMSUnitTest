@@ -21,7 +21,7 @@ namespace QWMSServer.Data.Infrastructures
                 config.CreateMap<TruckType, TruckTypeViewModel>().ReverseMap();
                 config.CreateMap<State, StateViewModel>().ReverseMap();
                 config.CreateMap<Lane, LaneViewModel>().ReverseMap();
-                config.CreateMap<Wareshouse, WarehouseViewModel>().ReverseMap();
+                config.CreateMap<Warehouse, WarehouseViewModel>().ReverseMap();
                 config.CreateMap<Plant, PlantViewModel>().ReverseMap();
                 config.CreateMap<Truck, TruckViewModel>().ReverseMap();
                 config.CreateMap<QueueList, QueueListViewModel>().ReverseMap();
@@ -31,6 +31,11 @@ namespace QWMSServer.Data.Infrastructures
                 config.CreateMap<DeliveryOrder, DOViewModel>().ReverseMap();
                 config.CreateMap<PurchaseOrder, POViewModel>().ReverseMap();
                 config.CreateMap<Employee, EmployeeViewModel>().ReverseMap();
+                config.CreateMap<TruckGroup, TruckGroupViewModel>().ReverseMap();
+                config.CreateMap<Token, TokenViewModel>().ReverseMap();
+                config.CreateMap<EmployeeGroup, EmployeeGroupViewModel>().ReverseMap();
+                config.CreateMap<User, UserViewModel>().ReverseMap();
+                config.CreateMap<RFIDCard, RFIDCardViewModel>().ReverseMap();
             });
         }
     }

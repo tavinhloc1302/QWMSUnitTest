@@ -26,6 +26,8 @@ namespace QWMSServer.Model.ViewModels
 
         public int laneID { get; set; }
 
+        public int queueNumber { get; set; }
+
         public bool isDelete { get; set; }
 
         public TruckViewModel truck { get; set; }

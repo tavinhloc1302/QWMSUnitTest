@@ -63,17 +63,21 @@ namespace QWMSServer.Data.Infrastructures
             builder.RegisterType<UserRepository>().As<IUserRepository>().InstancePerRequest();
             builder.RegisterType<VoiceRecordRepository>().As<IVoiceRecordRepository>().InstancePerRequest();
             builder.RegisterType<WarehouseTypeRepository>().As<IWarehouseTypeRepository>().InstancePerRequest();
-            builder.RegisterType<WareshouseRepository>().As<IWareshouseRepository>().InstancePerRequest();
+            builder.RegisterType<WarehouseRepository>().As<IWarehouseRepository>().InstancePerRequest();
             builder.RegisterType<WeighBridgeRepository>().As<IWeighBridgeRepository>().InstancePerRequest();
             builder.RegisterType<WeightRecordRepository>().As<IWeightRecordRepository>().InstancePerRequest();
             builder.RegisterType<CustomerWarehouseRepository>().As<ICustomerWarehouseRepository>().InstancePerRequest();
-
+            builder.RegisterType<TokenRepository>().As<ITokenRepository>().InstancePerRequest();
 
             // Services
             builder.RegisterType<ProductService>().As<IProductService>().InstancePerRequest();
             builder.RegisterType<AdminService>().As<IAdminService>().InstancePerRequest();
             builder.RegisterType<SecurityServices>().As<ISecurityServicecs>().InstancePerRequest();
             builder.RegisterType<QueueService>().As<IQueueService>().InstancePerRequest();
+            builder.RegisterType<WeightService>().As<IWeightService>().InstancePerRequest();
+            builder.RegisterType<WarehouseService>().As<IWarehouseService>().InstancePerRequest();
+            builder.RegisterType<CommonService>().As<ICommonService>().InstancePerRequest();
+            builder.RegisterType<AuthService>().As<IAuthService>().InstancePerRequest();
         }
     }
 }

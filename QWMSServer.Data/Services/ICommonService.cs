@@ -9,5 +9,6 @@ namespace QWMSServer.Data.Services
 {
     public interface ICommonService
     {
+        // Task<bool> CheckUserPermission(int empID, string empRFIDCode, string APIName);
     }
 }

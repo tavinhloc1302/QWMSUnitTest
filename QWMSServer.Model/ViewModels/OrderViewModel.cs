@@ -30,7 +30,7 @@ namespace QWMSServer.Model.ViewModels
 
         public GatePassViewModel gatePass { get; set; }
 
-        public WarehouseViewModel wareshouse { get; set; }
+        public WarehouseViewModel warehouse { get; set; }
 
         //public PlantViewModel plant { get; set; }
 

@@ -9,6 +9,9 @@ using QWMSServer.Data.Infrastructures;
 using QWMSServer.Data.Repository;
 using QWMSServer.Data.Common;
 using AutoMapper;
+using System.Net.Http;
+using System.IO;
+using System.Net.Http.Headers;
 
 namespace QWMSServer.Data.Services
 {
@@ -52,68 +55,75 @@ namespace QWMSServer.Data.Services
                 switch(truckCondition)
                 {
                     case TRUCK_CONDITION_ALL:
-                        queryResult = await _queueListRepository.GetManyAsync(c =>
-                                   c.isDelete == false, QueryIncludes.SECURITY_QUEUE_INCLUDES);
-                        truckOnQueueViewModel = Mapper.Map<IEnumerable<QueueList>, IEnumerable<QueueListViewModel>>(queryResult);
+                        queryResult = (await _queueListRepository.GetManyAsync(c => c.isDelete == false, 
+                                                QueryIncludes.SECURITY_QUEUE_INCLUDES)
+                                      ).ToArray().OrderBy(q => q.queueOrder).ToList();
 
+                        truckOnQueueViewModel = Mapper.Map<IEnumerable<QueueList>, IEnumerable<QueueListViewModel>>(queryResult);
                         response = ResponseConstructor<QueueListViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, truckOnQueueViewModel);
                         break;
                     case TRUCK_CONDITION_CALLING:
-                        queryResult = await _queueListRepository.GetManyAsync(c =>
-                                   c.isDelete == false &&
-                                   ( c.gatePass.state.ID == GatepassState.STATE_CALLING_1 ||
-                                     c.gatePass.state.ID == GatepassState.STATE_CALLING_2 ||
-                                     c.gatePass.state.ID == GatepassState.STATE_CALLING_3), QueryIncludes.SECURITY_QUEUE_INCLUDES);
-                        truckOnQueueViewModel = Mapper.Map<IEnumerable<QueueList>, IEnumerable<QueueListViewModel>>(queryResult);
+                        queryResult = (await _queueListRepository.GetManyAsync(c =>
+                                                c.isDelete == false &&
+                                                (   c.gatePass.state.ID == GatepassState.STATE_CALLING_1 ||
+                                                    c.gatePass.state.ID == GatepassState.STATE_CALLING_2 ||
+                                                    c.gatePass.state.ID == GatepassState.STATE_CALLING_3
+                                                ),
+                                                QueryIncludes.SECURITY_QUEUE_INCLUDES)
+                                      ).ToArray().OrderBy(q => q.queueOrder).ToList();
 
+                        truckOnQueueViewModel = Mapper.Map<IEnumerable<QueueList>, IEnumerable<QueueListViewModel>>(queryResult);
                         response = ResponseConstructor<QueueListViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, truckOnQueueViewModel);
                         break;
 
                     case TRUCK_CONDITION_WAITING_CALL:
-                        queryResult = await _queueListRepository.GetManyAsync( c => 
-                                    c.isDelete == false &&
-                                    ( c.gatePass.state.ID == GatepassState.STATE_CALLING_1 ||
-                                      c.gatePass.state.ID == GatepassState.STATE_CALLING_2 ||
-                                      c.gatePass.state.ID == GatepassState.STATE_CALLING_3 ||
-                                      c.gatePass.state.ID == GatepassState.STATE_REGISTERED ), QueryIncludes.SECURITY_QUEUE_INCLUDES);
-                        truckOnQueueViewModel = Mapper.Map<IEnumerable<QueueList>, IEnumerable<QueueListViewModel>>(queryResult);
+                        queryResult = (await _queueListRepository.GetManyAsync( c => 
+                                                c.isDelete == false &&
+                                                (
+                                                    c.gatePass.state.ID == GatepassState.STATE_REGISTERED 
+                                                ), QueryIncludes.SECURITY_QUEUE_INCLUDES)
+                                        ).ToArray().OrderBy(q => q.queueOrder).ToList();
 
+                        truckOnQueueViewModel = Mapper.Map<IEnumerable<QueueList>, IEnumerable<QueueListViewModel>>(queryResult);
                         response = ResponseConstructor<QueueListViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, truckOnQueueViewModel);
                         break;
                     case TRUCK_CONDITION_1XXX_WAITING_CALL:
-                        queryResult = await _queueListRepository.GetManyAsync(c =>
-                                   c.isDelete == false &&
-                                   ( c.gatePass.state.ID == GatepassState.STATE_CALLING_1 ||
-                                     c.gatePass.state.ID == GatepassState.STATE_CALLING_2 ||
-                                     c.gatePass.state.ID == GatepassState.STATE_CALLING_3 ||
-                                     c.gatePass.state.ID == GatepassState.STATE_REGISTERED ) &&
-                                   c.gatePass.truckGroup.Code == TruckGroups.GROUP_1XXX, QueryIncludes.SECURITY_QUEUE_INCLUDES);
-                        truckOnQueueViewModel = Mapper.Map<IEnumerable<QueueList>, IEnumerable<QueueListViewModel>>(queryResult);
+                        queryResult = ( await _queueListRepository.GetManyAsync(c =>
+                                                c.isDelete == false &&
+                                                (
+                                                    c.gatePass.state.ID == GatepassState.STATE_REGISTERED
+                                                ) &&
+                                                c.gatePass.truckGroup.Code == TruckGroups.GROUP_1XXX, 
+                                                QueryIncludes.SECURITY_QUEUE_INCLUDES)
+                                        ).ToArray().OrderBy(q => q.queueOrder).ToList();
 
+                        truckOnQueueViewModel = Mapper.Map<IEnumerable<QueueList>, IEnumerable<QueueListViewModel>>(queryResult);
                         response = ResponseConstructor<QueueListViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, truckOnQueueViewModel);
                         break;
                     case TRUCK_CONDITION_2XXX_WAITING_CALL:
-                        queryResult = await _queueListRepository.GetManyAsync(c =>
-                                   c.isDelete == false &&
-                                   ( c.gatePass.state.ID == GatepassState.STATE_CALLING_1 ||
-                                     c.gatePass.state.ID == GatepassState.STATE_CALLING_2 ||
-                                     c.gatePass.state.ID == GatepassState.STATE_CALLING_3 ||
-                                     c.gatePass.state.ID == GatepassState.STATE_REGISTERED ) &&
-                                   c.gatePass.truckGroup.Code == TruckGroups.GROUP_2XXX, QueryIncludes.SECURITY_QUEUE_INCLUDES);
-                        truckOnQueueViewModel = Mapper.Map<IEnumerable<QueueList>, IEnumerable<QueueListViewModel>>(queryResult);
+                        queryResult = (await _queueListRepository.GetManyAsync(c =>
+                                                c.isDelete == false &&
+                                                (
+                                                    c.gatePass.state.ID == GatepassState.STATE_REGISTERED 
+                                                ) &&
+                                                c.gatePass.truckGroup.Code == TruckGroups.GROUP_2XXX, 
+                                                QueryIncludes.SECURITY_QUEUE_INCLUDES)
+                                        ).ToArray().OrderBy(q => q.queueOrder).ToList();
 
+                        truckOnQueueViewModel = Mapper.Map<IEnumerable<QueueList>, IEnumerable<QueueListViewModel>>(queryResult);
                         response = ResponseConstructor<QueueListViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, truckOnQueueViewModel);
                         break;
                     case TRUCK_CONDITION_3XXX_WAITING_CALL:
-                        queryResult = await _queueListRepository.GetManyAsync(c =>
-                                   c.isDelete == false &&
-                                   ( c.gatePass.state.ID == GatepassState.STATE_CALLING_1 ||
-                                     c.gatePass.state.ID == GatepassState.STATE_CALLING_2 ||
-                                     c.gatePass.state.ID == GatepassState.STATE_CALLING_3 ||
-                                     c.gatePass.state.ID == GatepassState.STATE_REGISTERED ) &&
-                                   c.gatePass.truckGroup.Code == TruckGroups.GROUP_3XXX, QueryIncludes.SECURITY_QUEUE_INCLUDES);
-                        truckOnQueueViewModel = Mapper.Map<IEnumerable<QueueList>, IEnumerable<QueueListViewModel>>(queryResult);
+                        queryResult = ( await _queueListRepository.GetManyAsync(c =>
+                                                c.isDelete == false &&
+                                                (
+                                                    c.gatePass.state.ID == GatepassState.STATE_REGISTERED
+                                                ) &&
+                                                c.gatePass.truckGroup.Code == TruckGroups.GROUP_3XXX, 
+                                                QueryIncludes.SECURITY_QUEUE_INCLUDES)
+                                        ).ToArray().OrderBy(q => q.queueOrder).ToList();
 
+                        truckOnQueueViewModel = Mapper.Map<IEnumerable<QueueList>, IEnumerable<QueueListViewModel>>(queryResult);
                         response = ResponseConstructor<QueueListViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, truckOnQueueViewModel);
                         break;
                     default:
@@ -236,7 +246,7 @@ namespace QWMSServer.Data.Services
             return response;
         }
 
-        public async Task<ResponseViewModel<GatePassViewModel>> ConfirmSecurityCheck(GatePassViewModel gatePassView)
+        public async Task<ResponseViewModel<GatePassViewModel>> ConfirmSecurityCheck(SecurityUpdateStateViewModel updateStateView)
         {
             ResponseViewModel<GatePassViewModel> response;
             GatePass queryGatePassResult;
@@ -249,7 +259,7 @@ namespace QWMSServer.Data.Services
                 // Cound Not Connect to Database
                 response = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_DB_CONNECTION_FAILED, null);
             }
-            else if(gatePassView == null)
+            else if(updateStateView == null)
             {
                 // Wrong request format
                 response = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_SEC_WRONG_BODY_REQUEST_FORMAT, null);
@@ -259,7 +269,7 @@ namespace QWMSServer.Data.Services
                 // Get Queue by gatePassCode from database
                 queryGatePassResult = await _gatePassRepository.GetAsync(q => 
                                       q.isDelete == false &&
-                                      q.code == gatePassView.code, QueryIncludes.SECURITY_GATEPASS_INCLUDES);
+                                      q.code == updateStateView.gatePassCode, QueryIncludes.SECURITY_GATEPASS_INCLUDES);
                 // @TODO: Get permission of confirm RFID
                 //
                 bool isConfirmPermited = true;
@@ -290,6 +300,7 @@ namespace QWMSServer.Data.Services
                             case GatepassState.STATE_CALLING_1:
                             case GatepassState.STATE_CALLING_2:
                             case GatepassState.STATE_CALLING_3:
+                            case GatepassState.STATE_IN_SECURITY_CHECK_IN:
                                 // Get state ID of "Finish security check-in"
                                 queryStateResult = await _stateRepository.GetAsync(s => s.ID == GatepassState.STATE_FINISH_SECURITY_CHECK_IN); // STATE_SECURITY_CHECK_IN);
                                 // Updat gatepass/state
@@ -297,12 +308,21 @@ namespace QWMSServer.Data.Services
                                 queryGatePassResult.enterTime = DateTime.Now;
                                 tmpResponseCode = ResponseCode.SUCCESS;
                                 break;
-                            case GatepassState.STATE_FINISH_WAREHOUSE_CHECK_IN: //STATE_INTERNAL_WAREHOUSE_CHECK_OUT:
+                            case GatepassState.STATE_FINISH_WEIGHT_OUT:
                                 // Get state ID of "Finish security check-out"
                                 queryStateResult = await _stateRepository.GetAsync(s => s.ID == GatepassState.STATE_FINISH_SECURITY_CHECK_OUT); // STATE_SECURITY_CHECK_OUT);
                                 // Updat gatepass/state
                                 queryGatePassResult.stateID = queryStateResult.ID;
-                                queryGatePassResult.enterTime = DateTime.Now;
+                                queryGatePassResult.leaveTime = DateTime.Now;
+                                queryGatePassResult.isDelete = true;
+                                queryGatePassResult.queueLists.First().isDelete = true;
+                                if(queryGatePassResult.orders != null && queryGatePassResult.orders.Count > 0)
+                                {
+                                    foreach (Order order in queryGatePassResult.orders)
+                                    {
+                                        order.isDelete = true;
+                                    }
+                                }
                                 tmpResponseCode = ResponseCode.SUCCESS;
                                 break;
                             default:
@@ -318,7 +338,7 @@ namespace QWMSServer.Data.Services
                     // @TODO: Update state record
 
                     // Re-query after changing
-                    queryGatePassResult = await _gatePassRepository.GetAsync(q => q.code == gatePassView.code, QueryIncludes.SECURITY_GATEPASS_INCLUDES);
+                    queryGatePassResult = await _gatePassRepository.GetAsync(q => q.code == updateStateView.gatePassCode, QueryIncludes.SECURITY_GATEPASS_INCLUDES);
                     gatePassViewModel = Mapper.Map<GatePass, GatePassViewModel>(queryGatePassResult);
                     
                     // Return gatepass/truck
@@ -326,6 +346,31 @@ namespace QWMSServer.Data.Services
                 }
             }
             return response;
+        }
+
+        public MultipartFormDataContent GetDriverImage(string filePath)
+        {
+            byte[] fileContent;
+            MultipartFormDataContent MIMEContent;
+            StreamContent streamContent;
+            FileInfo fileInfo;
+
+            MIMEContent = null;
+
+            try
+            {
+                fileInfo = new FileInfo(filePath);
+                fileContent = File.ReadAllBytes(filePath);
+                
+                // Create content
+                MIMEContent = new MultipartFormDataContent();
+                streamContent = new StreamContent(new MemoryStream(fileContent));
+                streamContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+                MIMEContent.Add(streamContent,fileInfo.Name,fileInfo.FullName);
+            }
+            catch(Exception) { }
+
+            return MIMEContent;
         }
 
         // Define constant

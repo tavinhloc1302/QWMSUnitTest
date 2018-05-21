@@ -111,6 +111,18 @@ namespace QWMSServer.Data.Services
                 case ResponseCode.ERR_QUE_NO_GATEPASS_FOUND:
                     errorText = ResponseText.ERR_QUE_NO_GATEPASS_FOUND_VI;
                     break;
+                case ResponseCode.ERR_LOGIN_WRONG_USERNAME_PASS:
+                    errorText = ResponseText.ERR_LOGIN_WRONG_USERNAME_PASS;
+                    break;
+                case ResponseCode.ERR_USER_NOT_EXSIT:
+                    errorText = ResponseText.ERR_USER_NOT_EXSIT_VI;
+                    break;
+                case ResponseCode.ERR_INVALID_LOGIN:
+                    errorText = ResponseText.ERR_INVALID_LOGIN_VI;
+                    break;
+                case ResponseCode.ERR_USER_PERMISSION:
+                    errorText = ResponseText.ERR_USER_PERMISSION;
+                    break;
                 default:
                     errorText = ResponseText.ERR_SEC_UNKNOW;
                     break;
