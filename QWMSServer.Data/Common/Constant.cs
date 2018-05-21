@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,27 +23,42 @@ namespace QWMSServer.Data.Common
         public static int TRUCKGROUP2X = 2;
         public static int TRUCKGROUP3X = 3;
 
-        public static int NULLLANE = 65; // change
+        public static int NULLLANE = 1; // change
     }
 
     public static class QueryIncludes
     {
-        public static List<String> LANEFULLINCLUDES = new List<string>{ "LoadingBay", "LoadingType", "TruckType" };
+        public static List<String> LANEFULLINCLUDES = new List<string> { "LoadingBay", "LoadingType", "TruckType" };
         public static List<String> DRIVERFULLINCLUDES = new List<string> { "carrierVendor" };
+        public static List<String> MATERIALFULLINCLUDES = new List<string> { "unit" };
         public static List<String> CUSTOMERFULLINCUDES = new List<string> { "customerWarehouses" };
-        public static List<String> GATEPASSFULLINCLUDES = new List<string> { "Truck.TruckType", "Driver", "State", "Employee", "orders.DeliveryOrder", "queueLists.Lane.LoadingBay.Wareshouse.Plant.Company", "truckGroup" };
-        public static List<String> QUEUELISTFULLINCLUDES = new List<string> { "truck", "lane", "gatePass" };
+        public static List<String> GATEPASSFULLINCLUDES = new List<string> { "truck.truckType", "Driver", "State", "Employee", "orders.DeliveryOrder", "queueLists.Lane.LoadingBay.Warehouse.Plant.Company", "truckGroup", "Truck.CarrierVendor", "orders.orderMaterials.material.unit", "orders.orderType" };
+        public static List<String> QUEUELISTFULLINCLUDES = new List<string> { "truck", "lane", "gatePass", "gatePass.state" };
         public static List<String> USERFULLINCLUDES = new List<string> { "employees.groupMaps.employeeGroup.functionMaps.systemFunction" };
-        public static List<String> EMPLOYEEFULLINCLUDES = new List<string> { "groupMaps.employeeGroup.functionMaps.systemFunction" };
+        public static List<String> EMPLOYEEFULLINCLUDES = new List<string> { "groupMaps.employeeGroup.functionMaps.systemFunction", "rfidCard" };
+        public static List<String> TRUCKFULLINCLUDES = new List<string> { "truckType", "loadingType", "carrierVendor", "driver" };
+        public static List<String> PLANTINCLUDES = new List<String> { "company" };
+        public static List<String> WAREHOUSEINCLUDES = new List<string> { "plant", "loadingBays" };
+        public static List<String> LOADINGBAYINCLUDES = new List<string> { "warehouse", "lanes" };
+        public static List<String> LANEINCLUDES = new List<string> { "loadingBay", "loadingType", "truckType", "loadingBay.warehouse" };
+
         // Security App
-        public static List<String> SECURITY_QUEUE_INCLUDES = new List<string> { "Lane.LoadingBay.Wareshouse", "GatePass.orders.OrderType", "GatePass.Truck.TruckType", "GatePass.State" };
-        public static List<String> SECURITY_GATEPASS_INCLUDES = new List<string> { "queueLists", "State" };
+        public static List<String> SECURITY_QUEUE_INCLUDES = new List<string> { "Lane.LoadingBay.Warehouse", "GatePass.orders.OrderType", "GatePass.Truck.TruckType", "GatePass.State", "GatePass.TruckGroup", "GatePass.RFIDCard", "GatePass.orders.deliveryOrder.customer", "GatePass.orders.purchaseOrder.carrierVendor", "GatePass.RFIDCard" };
+        public static List<String> SECURITY_GATEPASS_INCLUDES = new List<string> { "queueLists", "Driver", "Truck", "TruckGroup", "Truck.TruckType","orders.orderType", "orders.deliveryOrder.Customer", "orders.PurchaseOrder.carrierVendor", "RFIDCard", "queueLists.Lane.LoadingBay.Warehouse", "State" };
+
+        // Queue App
+        public static List<String> QUEUE_GATEPASS_ORDER_INCLUDES = new List<string> { "orders" };
+
+        // Weight App
+        public static List<String> WEIGHT_LANE_INCLUDES = new List<string> { "truckType", "loadingBay.warehouse" };
     }
 
     public static class ResponseCode
     {
         public const int SUCCESS = 0;
 
+        public const int ERR_USER_NOT_EXSIT = 1;
+        public const int ERR_INVALID_LOGIN = 2;
         // Error Code OFF Security App
         public const int ERR_DB_CONNECTION_FAILED = 1001;
         public const int ERR_SEC_NOT_SUPPORT_CONDITION = 1002;
@@ -61,6 +77,15 @@ namespace QWMSServer.Data.Common
         public const int ERR_QUE_NO_GATEPASS_FOUND = 3002;
         public const int ERR_QUE_GATEPASS_WRONG_STATE = 3003;
         public const int ERR_QUE_WEIGH_NO_FOUND = 3004;
+        public const int ERR_WEI_WEIGH_NOT_PERMITTED = 3005;
+        public const int ERR_WEI_CALL_NOT_PERMITTED = 3006;
+        public const int ERR_USER_PERMISSION = 3007;
+		public const int ERR_NO_OBJECT_FOUND = 3008;
+        public const int ERR_DB_FAIL_TO_SAVE = 3009;
+
+        // Error Login
+        public const int ERR_LOGIN_WRONG_USERNAME_PASS = 4001;
+
     }
 
     public static class ResponseText
@@ -92,7 +117,16 @@ namespace QWMSServer.Data.Common
         public const string ERR_QUE_NO_QUEUE_FOUND_VI = "Lỗi: Không tìm thấy danh sách hàng đợi";
         public const string ERR_QUE_NO_GATEPASS_FOUND_VI = "Lỗi: Không tìm thấy GatePass với ID hiện tại";
         public const string ERR_QUE_GATEPASS_WRONG_STATE_VI = "Lỗi: GatePass không thực hiện đúng trạng thái";
-        public const string ERR_QUE_WEIGH_NO_FOUND = "Lỗi: Không tìm thấy thông tin cân hoặc xe chưa cân";
+        public const string ERR_QUE_WEIGH_NO_FOUND_VI = "Lỗi: Không tìm thấy thông tin cân hoặc xe chưa cân";
+        public const string ERR_WEI_WEIGH_NOT_PERMITTED_VI = "Lỗi: Nhân viên không có quyền cân xe";
+        public const string ERR_WEI_CALL_NOT_PERMITTED_VI = "Lỗi: Nhân viên không có quyền gọi xe";
+        public const string ERR_USER_PERMISSION = "Lỗi: Nhân viên không có quyền thực hiện tác vụ";
+		public const string ERR_USER_PERMISSION_VI = "Lỗi: Nhân viên không có quyền thực hiện tác vụ";
+        public const string ERR_USER_NOT_EXSIT_VI = "Lỗi đăng nhập: User không tồn tại";
+        public const string ERR_INVALID_LOGIN_VI = "Lỗi đăng nhập: email hoặc mật khẩu không đúng";
+
+        // Error Login
+        public const string ERR_LOGIN_WRONG_USERNAME_PASS = "Invalid username or passwork";
     }
 
     public static class GatepassState
@@ -120,13 +154,44 @@ namespace QWMSServer.Data.Common
 
     public static class TruckGroups
     {
-        public const string GROUP_1XXX = "1xxx";
-        public const string GROUP_2XXX = "2xxx";
-        public const string GROUP_3XXX = "3xxx";
+        public const string GROUP_1XXX = "TG001";
+        public const string GROUP_2XXX = "TG002";
+        public const string GROUP_3XXX = "TG003";
     }
 
     public static class APIList
     {
         public static int CreateRegisteredQueueItem = 3;
     }
+
+    public static class LaneStatus
+    {
+        public const int FREE = 0;
+        public const int OCCUPIED = 1;
+    }
+
+    public static class Crypt
+    {
+        public static String ToSha256(String data)
+        {
+            var byteData = Encoding.UTF8.GetBytes(data);
+            SHA256Managed hasher = new SHA256Managed();
+            byte[] hash = hasher.ComputeHash(byteData);
+            string hashString = string.Empty;
+            foreach (byte x in hash)
+            {
+                hashString += String.Format("{0:x2}", x);
+            }
+            return hashString;
+        }
+    }
+
+    public static class OrderTypeConst
+    {
+        public const int DELIVERYORDER = 0;
+        public const int PURCHASEORDER = 1;
+        public const int INTERNALORDER = 3;
+        public const int OTHERSORDER = 4;
+    }
+
 }

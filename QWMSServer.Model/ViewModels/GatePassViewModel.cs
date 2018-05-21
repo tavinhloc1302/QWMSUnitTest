@@ -23,16 +23,24 @@ namespace QWMSServer.Model.ViewModels
 
         public int RFIDCardID { get; set; }
 
+        public int truckGroupID { get; set; }
+
         public DriverViewModel driver { get; set; }
 
         public TruckViewModel truck { get; set; }
 
         public StateViewModel state { get; set; }
 
+        public TruckGroupViewModel truckGroup { get; set; }
+
+        public RFIDCardViewModel RFIDCard { get; set; }
+
         //public EmployeeVieModel employee { get; set; }
 
         public ICollection<OrderViewModel> orders { get; set; }
 
         public ICollection<QueueListViewModel> queueLists { get; set; }
+
+        public int loadingBayID { get; set; }
     }
 }

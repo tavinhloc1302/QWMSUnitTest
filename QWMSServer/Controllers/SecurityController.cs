@@ -13,6 +13,7 @@ using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Net.Http.Headers;
+using QWMSServer.Filter;
 
 namespace QWMSServer.Controllers
 {
@@ -25,6 +26,7 @@ namespace QWMSServer.Controllers
             _securityServices = securityServicecs;
         }
 
+        //[AuthenticateRequire]
         [HttpGet]
         [Route("Get/Trucks/{truckCondition}", Name = "GetTrucks")]
         public async Task<ResponseViewModel<QueueListViewModel>> GetTrucks(string truckCondition)
@@ -48,26 +50,34 @@ namespace QWMSServer.Controllers
 
         [HttpPost]
         [Route("Post/ConfirmSecurityCheck", Name = "ConfirmSecurityCheck")]
-        public async Task<ResponseViewModel<GatePassViewModel>> ConfirmSecurityCheck([FromBody] GatePassViewModel updateStateView)
+        public async Task<ResponseViewModel<GatePassViewModel>> ConfirmSecurityCheck([FromBody] SecurityUpdateStateViewModel updateStateView)
         {
             return await _securityServices.ConfirmSecurityCheck(updateStateView);
         }
 
         [HttpGet]
-        [Route("Get/Image/{imagePath}")]
-        public async Task<HttpResponseMessage> GetImage(string imagePath)
+        [Route("Get/Image")]
+        public async Task<HttpResponseMessage> GetImage()
         {
-            var result = new HttpResponseMessage(HttpStatusCode.OK);
-            String filePath = HostingEnvironment.MapPath("~/Images/bitlogo.jpg");
-            FileStream fileStream = new FileStream(filePath, FileMode.Open);
-            Image image = Image.FromStream(fileStream);
-            MemoryStream memoryStream = new MemoryStream();
-            image.Save(memoryStream, ImageFormat.Jpeg);
-            result.Content = new ByteArrayContent(memoryStream.ToArray());
-            result.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
-            fileStream.Close();
+            HttpResponseMessage resMesg;
+            MultipartFormDataContent MIMEContent;
+            string filePath;
+            ResponseViewModel<RFIDCardViewModel> ret = new ResponseViewModel<RFIDCardViewModel>();
+            
+            filePath = Request.Headers.GetValues("filePath").First();
+            MIMEContent = _securityServices.GetDriverImage(filePath);
 
-            return result;
+            if(MIMEContent != null)
+            {
+                resMesg = new HttpResponseMessage(HttpStatusCode.OK);
+                resMesg.Content = MIMEContent;
+            }
+            else
+            {
+                resMesg = new HttpResponseMessage(HttpStatusCode.NotFound);
+            }
+            
+            return resMesg;
         }
     }
 }

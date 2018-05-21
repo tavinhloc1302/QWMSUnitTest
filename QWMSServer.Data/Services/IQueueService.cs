@@ -24,14 +24,28 @@ namespace QWMSServer.Data.Services
 
         Task<ResponseViewModel<GatePassViewModel>> UpdateGatePass(GatePassViewModel gatePassViewModel);
 
-        bool AddDriverPicture(string filename, byte[] fileContent);
+        ResponseViewModel<GenericResponseModel> AddDriverPicture(string filename, byte[] fileContent);
 
         Task<ResponseViewModel<GatePassViewModel>> UpdateGatePassWithRFIDCode(GatePassViewModel gatePassViewModel);
 
-        Task<bool> CreateRegisteredQueueItem(int gatePassID, string driverImageName, string employeeRFID, string driverRFID);
+        Task<ResponseViewModel<GenericResponseModel>> CreateRegisteredQueueItem(int gatePassID, string driverImageName, string employeeRFID, string driverRFID);
 
-        Task<bool> ReOrderQueue();// test
+        Task<ResponseViewModel<GenericResponseModel>> ReOrderQueue();
 
         Task<ResponseViewModel<DOViewModel>> ImportDO(List<DOViewModel> listDO);
+
+        Task<ResponseViewModel<POViewModel>> ImportPO(List<POViewModel> listPO);
+
+        Task<ResponseViewModel<OrderViewModel>> GetAllDONotPlaned(string customerCode);
+
+        Task<ResponseViewModel<OrderViewModel>> GetAllPONotPlaned(string vendorCode);
+
+        Task<ResponseViewModel<CreateGatePassViewModel>> CreateGatepassWithDO(CreateGatePassViewModel createGatePassViewModel);
+
+        Task<ResponseViewModel<CreateGatePassViewModel>> CreateGatepassWithPO(CreateGatePassViewModel createGatePassViewModel);
+
+        Task<ResponseViewModel<LoadingBayViewModel>> GetAllLoadingBay();
+
+        Task<ResponseViewModel<LoadingBayViewModel>> GetLoadingBayByTruck(string truckCode);
     }
 }

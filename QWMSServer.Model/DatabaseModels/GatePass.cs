@@ -64,6 +64,10 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("loadingBayID")]
         public int? loadingBayID { get; set; }
 
+        [Column("theoryWeightValue")]
+        public float? theoryWeightValue { get; set; }
+
+
         [ForeignKey("RFIDCardID")]
         public RFIDCard RFIDCard { get; set; }
 

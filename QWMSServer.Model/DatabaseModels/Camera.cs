@@ -21,6 +21,12 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("Code")]
         public string Code { get; set; }
 
+        [Column("IP")]
+        public string IP { get; set; }
+
+        [Column("PCIP")]
+        public string PCIP { get; set; }
+
         [Column("isDelete")]
         public bool isDelete { get; set; }
 

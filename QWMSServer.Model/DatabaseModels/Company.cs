@@ -4,13 +4,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QWMSServer.Model.DatabaseModels
 {
-	[Table("t_company")]
-	public class Company
-	{
-		public Company ()
-		{
-            plants = new HashSet<Plant>();
-		}
+    [Table("t_company")]
+    public class Company
+    {
+        public Company()
+        {
+            
+        }
 
         [Key]
         [Required]
@@ -32,7 +32,5 @@ namespace QWMSServer.Model.DatabaseModels
 
         [Column("isDelete")]
         public bool isDelete { get; set; }
-
-        public ICollection<Plant> plants { get; set; }
     }
 }

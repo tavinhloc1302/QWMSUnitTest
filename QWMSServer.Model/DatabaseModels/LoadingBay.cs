@@ -38,7 +38,7 @@ namespace QWMSServer.Model.DatabaseModels
 
 
         [ForeignKey("warehouseID")]
-        public Wareshouse wareshouse { get; set; }
+        public Warehouse warehouse { get; set; }
 
         public ICollection<Lane> lanes { get; set; }
 

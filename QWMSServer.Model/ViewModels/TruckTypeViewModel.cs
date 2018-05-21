@@ -12,7 +12,7 @@ namespace QWMSServer.Model.ViewModels
 
         public string code { get; set; }
 
-        public string desciption { get; set; }
+        public string description { get; set; }
 
         public bool isDelete { get; set; }
     }
