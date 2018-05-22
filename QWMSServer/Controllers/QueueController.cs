@@ -75,24 +75,18 @@ namespace QWMSServer.Controllers
 
         [HttpPost]
         [Route("GatePass/AddDriverPicture", Name = "AddDriverPicture")]
-        public async Task<bool> AddDriverPicture()
+        public async Task<ResponseViewModel<GenericResponseModel>> AddDriverPicture()
         {
             var provider = new MultipartMemoryStreamProvider();
             await Request.Content.ReadAsMultipartAsync(provider);
             // extract file name and file contents
-            var fileNameParam = provider.Contents[0].Headers.ContentDisposition.Parameters
+            /*var fileNameParam = provider.Contents[0].Headers.ContentDisposition.Parameters
                 .FirstOrDefault(p => p.Name.ToLower() == "filename");
-            string fileName = (fileNameParam == null) ? "" : fileNameParam.Value.Trim('"');
+            string fileName = (fileNameParam == null) ? "" : fileNameParam.Value.Trim('"');*/
+            string fileName = provider.Contents[0].Headers.ContentDisposition.Name;
             byte[] file = await provider.Contents[0].ReadAsByteArrayAsync();
-            if (!_queueService.AddDriverPicture(fileName, file))
-                return false;
-            // Here you can use EF with an entity with a byte[] property, or
-            // an stored procedure with a varbinary parameter to insert the
-            // data into the DB
-            //var result
-            //    = string.Format("Received '{0}' with length: {1}", fileName, file.Length);
-            return true;
 
+            return _queueService.AddDriverPicture(fileName, file);
         }
 
         [HttpPost]
@@ -104,7 +98,7 @@ namespace QWMSServer.Controllers
 
         [HttpPost]
         [Route("GatePass/CreateRegisteredQueueItem/", Name = "CreateRegisteredQueueItem")]
-        public async Task<bool> CreateRegisteredQueueItem([FromBody]GatePassRegistFrom gatePassRegistFrom)
+        public async Task<ResponseViewModel<GenericResponseModel>> CreateRegisteredQueueItem([FromBody]GatePassRegistFrom gatePassRegistFrom)
         {
             return await _queueService.CreateRegisteredQueueItem(gatePassRegistFrom.gatePassID, 
                                                                  gatePassRegistFrom.driverImageFileName, 
@@ -114,7 +108,7 @@ namespace QWMSServer.Controllers
 
         [HttpGet]
         [Route("GatePass/ReOrderQueue/", Name = "ReOrderQueue")]
-        public async Task<bool> ReOrderQueue()
+        public async Task<ResponseViewModel<GenericResponseModel>> ReOrderQueue()
         {
             return await _queueService.ReOrderQueue();
         }
@@ -124,6 +118,55 @@ namespace QWMSServer.Controllers
         public async Task<ResponseViewModel<DOViewModel>> ImportDO([FromBody]List<DOViewModel> listDO)
         {
             return await _queueService.ImportDO(listDO);
+        }
+
+        [HttpPost]
+        [Route("PO/Import", Name = "ImportPO")]
+        public async Task<ResponseViewModel<POViewModel>> ImportPO([FromBody]List<POViewModel> listPO)
+        {
+            return await _queueService.ImportPO(listPO);
+        }
+
+        [HttpGet]
+        [Route("DO/GetAllNotPlaned/{customerCode}", Name = "GetAllDONotPlaned")]
+        public async Task<ResponseViewModel<OrderViewModel>> GetAllDONotPlaned(string customerCode)
+        {
+            return await _queueService.GetAllDONotPlaned(customerCode);
+        }
+
+        [HttpGet]
+        [Route("PO/GetAllNotPlaned/{vendorCode}", Name = "GetAllPONotPlaned")]
+        public async Task<ResponseViewModel<OrderViewModel>> GetAllPONotPlaned(string vendorCode)
+        {
+            return await _queueService.GetAllPONotPlaned(vendorCode);
+        }
+
+        [HttpPost]
+        [Route("GatePass/CreateGatepassWithDO", Name = "CreateGatepassWithDO")]
+        public async Task<ResponseViewModel<CreateGatePassViewModel>> CreateGatepassWithDO([FromBody]CreateGatePassViewModel createGatePassViewModel)
+        {
+            return await _queueService.CreateGatepassWithDO(createGatePassViewModel);
+        }
+
+        [HttpPost]
+        [Route("GatePass/CreateGatepassWithPO", Name = "CreateGatepassWithPO")]
+        public async Task<ResponseViewModel<CreateGatePassViewModel>> CreateGatepassWithPO([FromBody]CreateGatePassViewModel createGatePassViewModel)
+        {
+            return await _queueService.CreateGatepassWithPO(createGatePassViewModel);
+        }
+
+        [HttpGet]
+        [Route("GatePass/GetAllLoadingBay", Name = "GetAllLoadingBay")]
+        public async Task<ResponseViewModel<LoadingBayViewModel>> GetAllLoadingBay()
+        {
+            return await _queueService.GetAllLoadingBay();
+        }
+
+        [HttpGet]
+        [Route("LoadingBay/GetLoadingBayByTruck/{truckCode}", Name = "GetLoadingBayByTruck")]
+        public async Task<ResponseViewModel<LoadingBayViewModel>> GetLoadingBayByTruck(string truckCode)
+        {
+            return await _queueService.GetLoadingBayByTruck(truckCode);
         }
     }
 }

@@ -52,10 +52,11 @@ namespace QWMSServer.Data.Infrastructures
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<VoiceRecord> VoiceRecord { get; set; }
         public virtual DbSet<WarehouseType> WarehouseType { get; set; }
-        public virtual DbSet<Wareshouse> Wareshouse { get; set; }
+        public virtual DbSet<Warehouse> Warehouse { get; set; }
         public virtual DbSet<WeighBridge> WeighBridge { get; set; }
         public virtual DbSet<WeightRecord> WeightRecord { get; set; }
         public virtual DbSet<CustomerWarehouse> CustomerWarehouse { get; set; }
+        public virtual DbSet<Token> Token { get; set; }
 
         public QWMSDBContext() : base("name=QWMSDBConnection")
         {

@@ -46,10 +46,14 @@ namespace QWMSServer.Model.ViewModels
 
         public bool isDelete { get; set; }
 
+        public int suggestDriverID { get; set; }
+
         public TruckTypeViewModel truckType { get; set; }
 
         public LoadingTypeViewModel loadingType { get; set; }
 
         public CarrierVendorViewModel carrierVendor { get; set; }
+
+        public DriverViewModel driver { get; set; }
     }
 }

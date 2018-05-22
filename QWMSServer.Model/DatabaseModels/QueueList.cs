@@ -31,6 +31,9 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("queueOrder")]
         public int? queueOrder { get; set; }
 
+        [Column("queueNumber")]
+        public int? queueNumber { get; set; }
+
         [Column("estimateTime")]
         public int? estimateTime { get; set; }
 

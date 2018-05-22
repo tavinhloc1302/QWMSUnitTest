@@ -22,8 +22,8 @@ namespace QWMSServer.Model.DatabaseModels
         public string code { get; set; }
         
         [StringLength(255)]
-        [Column("desciption")]
-        public string desciption { get; set; }
+        [Column("description")]
+        public string description { get; set; }
 
         [Column("isDelete")]
         public bool isDelete { get; set; }

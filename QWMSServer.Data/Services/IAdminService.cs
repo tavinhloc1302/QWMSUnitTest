@@ -49,6 +49,193 @@ namespace QWMSServer.Data.Services
 
         Task<ResponseViewModel<CarrierVendorViewModel>> DeleteCarrier(CarrierVendorViewModel carrierView);
 
-        Task<List<SystemFunctionViewModel>> GetUserPermission(int userID);
+		///* Login service */
+  //      Task<List<SystemFunctionViewModel>> GetUserPermission(int userID);
+
+  //      Task<ResponseViewModel<UserViewModel>> Login(string userName, string passWord);
+
+        /* Material management block */
+        Task<ResponseViewModel<MaterialViewModel>> GetAllMaterial();
+
+        Task<ResponseViewModel<MaterialViewModel>> SearchMaterial(string code);
+
+        Task<ResponseViewModel<MaterialViewModel>> GetMaterialByCode(string code);
+
+        Task<ResponseViewModel<MaterialViewModel>> CreateNewMaterial(MaterialViewModel materialView);
+
+        Task<ResponseViewModel<MaterialViewModel>> UpdateMaterial(MaterialViewModel materialView);
+
+        Task<ResponseViewModel<MaterialViewModel>> DeleteMaterial(MaterialViewModel materialView);
+
+        /* UnitType management block */
+        Task<ResponseViewModel<UnitTypeViewModel>> GetAllUnitType();
+
+        Task<ResponseViewModel<UnitTypeViewModel>> SearchUnitType(string code);
+
+        Task<ResponseViewModel<UnitTypeViewModel>> GetUnitTypeByCode(string code);
+
+        Task<ResponseViewModel<UnitTypeViewModel>> CreateNewUnitType(UnitTypeViewModel unitTypeView);
+
+        Task<ResponseViewModel<UnitTypeViewModel>> UpdateUnitType(UnitTypeViewModel unitTypeView);
+
+        Task<ResponseViewModel<UnitTypeViewModel>> DeleteUnitType(UnitTypeViewModel unitTypeView);
+
+        /* Truck management block */
+        Task<ResponseViewModel<TruckViewModel>> GetAllTruck();
+
+        Task<ResponseViewModel<TruckViewModel>> TruckGetAllSuggestedDriver();
+
+        Task<ResponseViewModel<TruckViewModel>> SearchTruck(string code);
+
+        Task<ResponseViewModel<TruckViewModel>> GetTruckByCode(string code);
+
+        Task<ResponseViewModel<TruckViewModel>> CreateNewTruck(TruckViewModel truckView);
+
+        Task<ResponseViewModel<TruckViewModel>> UpdateTruck(TruckViewModel truckView);
+
+        Task<ResponseViewModel<TruckViewModel>> DeleteTruck(TruckViewModel truckView);
+
+        /* Truck Type management block */
+        Task<ResponseViewModel<TruckTypeViewModel>> GetAllTruckType();
+
+        Task<ResponseViewModel<TruckTypeViewModel>> SearchTruckType(string code);
+
+        Task<ResponseViewModel<TruckTypeViewModel>> GetTruckTypeByCode(string code);
+
+        Task<ResponseViewModel<TruckTypeViewModel>> CreateNewTruckType(TruckTypeViewModel truckTypeView);
+
+        Task<ResponseViewModel<TruckTypeViewModel>> UpdateTruckType(TruckTypeViewModel truckTypeView);
+
+        Task<ResponseViewModel<TruckTypeViewModel>> DeleteTruckType(TruckTypeViewModel truckTypeView);
+
+        /* Loading Type management block */
+        Task<ResponseViewModel<LoadingTypeViewModel>> GetAllLoadingType();
+
+        Task<ResponseViewModel<LoadingTypeViewModel>> SearchLoadingType(string code);
+
+        Task<ResponseViewModel<LoadingTypeViewModel>> GetLoadingTypeByCode(string code);
+
+        Task<ResponseViewModel<LoadingTypeViewModel>> CreateNewLoadingType(LoadingTypeViewModel loadingTypeView);
+
+        Task<ResponseViewModel<LoadingTypeViewModel>> UpdateLoadingType(LoadingTypeViewModel loadingTypeView);
+
+        Task<ResponseViewModel<LoadingTypeViewModel>> DeleteLoadingType(LoadingTypeViewModel loadingTypeView);
+
+        /* Employee management block */
+        Task<ResponseViewModel<EmployeeViewModel>> GetAllEmployee();
+
+        Task<ResponseViewModel<EmployeeViewModel>> SearchEmployee(string code);
+
+        Task<ResponseViewModel<EmployeeViewModel>> GetEmployeeByCode(string code);
+
+        Task<ResponseViewModel<EmployeeViewModel>> CreateNewEmployee(EmployeeViewModel employeeView);
+
+        Task<ResponseViewModel<EmployeeViewModel>> UpdateEmployee(EmployeeViewModel employeeView);
+
+        Task<ResponseViewModel<EmployeeViewModel>> DeleteEmployee(EmployeeViewModel employeeView);
+
+        /* Employee management block */
+        Task<ResponseViewModel<EmployeeGroupViewModel>> GetAllEmployeeGroup();
+
+        Task<ResponseViewModel<EmployeeGroupViewModel>> SearchEmployeeGroup(string code);
+
+        Task<ResponseViewModel<EmployeeGroupViewModel>> GetEmployeeGroupByCode(string code);
+
+        Task<ResponseViewModel<EmployeeGroupViewModel>> CreateNewEmployeeGroup(EmployeeGroupViewModel employeeGroupView);
+
+        Task<ResponseViewModel<EmployeeGroupViewModel>> UpdateEmployeeGroup(EmployeeGroupViewModel employeeGroupView);
+
+        Task<ResponseViewModel<EmployeeGroupViewModel>> DeleteEmployeeGroup(EmployeeGroupViewModel employeeGroupView);
+
+        /* User management block */
+        Task<ResponseViewModel<UserViewModel>> GetAllUser();
+
+        Task<ResponseViewModel<UserViewModel>> SearchUser(string code);
+
+        Task<ResponseViewModel<UserViewModel>> GetUserByCode(string code);
+
+        Task<ResponseViewModel<UserViewModel>> CreateNewUser(UserViewModel userView);
+
+        Task<ResponseViewModel<UserViewModel>> UpdateUser(UserViewModel userView);
+
+        Task<ResponseViewModel<UserViewModel>> DeleteUser(UserViewModel userView);
+
+        /* Employee Role management block */
+        Task<ResponseViewModel<EmployeeRoleViewModel>> GetAllEmployeeRole();
+
+        Task<ResponseViewModel<EmployeeRoleViewModel>> SearchEmployeeRole(string code);
+
+        Task<ResponseViewModel<EmployeeRoleViewModel>> GetEmployeeRoleByCode(string code);
+
+        Task<ResponseViewModel<EmployeeRoleViewModel>> CreateNewEmployeeRole(EmployeeRoleViewModel employeeRoleView);
+
+        Task<ResponseViewModel<EmployeeRoleViewModel>> UpdateEmployeeRole(EmployeeRoleViewModel employeeRoleView);
+
+        Task<ResponseViewModel<EmployeeRoleViewModel>> DeleteEmployeeRole(EmployeeRoleViewModel employeeRoleView);
+
+        /* Plant management block */
+        Task<ResponseViewModel<PlantViewModel>> GetAllPlant();
+
+        Task<ResponseViewModel<PlantViewModel>> SearchPlant(string code);
+
+        Task<ResponseViewModel<PlantViewModel>> GetPlantByCode(string code);
+
+        Task<ResponseViewModel<PlantViewModel>> CreateNewPlant(PlantViewModel plantView);
+
+        Task<ResponseViewModel<PlantViewModel>> UpdatePlant(PlantViewModel plantView);
+
+        Task<ResponseViewModel<PlantViewModel>> DeletePlant(PlantViewModel plantView);
+
+        /* Company management block */
+        Task<ResponseViewModel<CompanyViewModel>> GetAllCompany();
+
+        Task<ResponseViewModel<CompanyViewModel>> SearchCompany(string code);
+
+        Task<ResponseViewModel<CompanyViewModel>> GetCompanyByCode(string code);
+
+        Task<ResponseViewModel<CompanyViewModel>> CreateNewCompany(CompanyViewModel companyView);
+
+        Task<ResponseViewModel<CompanyViewModel>> UpdateCompany(CompanyViewModel companyView);
+
+        Task<ResponseViewModel<CompanyViewModel>> DeleteCompany(CompanyViewModel companyView);
+
+        /* Warehouse management block */
+        Task<ResponseViewModel<WarehouseViewModel>> GetAllWarehouse();
+
+        Task<ResponseViewModel<WarehouseViewModel>> SearchWarehouse(string code);
+
+        Task<ResponseViewModel<WarehouseViewModel>> GetWarehouseByCode(string code);
+
+        Task<ResponseViewModel<WarehouseViewModel>> CreateNewWarehouse(WarehouseViewModel warehouseView);
+
+        Task<ResponseViewModel<WarehouseViewModel>> UpdateWarehouse(WarehouseViewModel warehouseView);
+
+        Task<ResponseViewModel<WarehouseViewModel>> DeleteWarehouse(WarehouseViewModel warehouseView);
+
+        /* Loading Bay management block */
+        Task<ResponseViewModel<LoadingBayViewModel>> GetAllLoadingBay();
+
+        Task<ResponseViewModel<LoadingBayViewModel>> SearchLoadingBay(string code);
+
+        Task<ResponseViewModel<LoadingBayViewModel>> GetLoadingBayByCode(string code);
+
+        Task<ResponseViewModel<LoadingBayViewModel>> CreateNewLoadingBay(LoadingBayViewModel loadingBayView);
+
+        Task<ResponseViewModel<LoadingBayViewModel>> UpdateLoadingBay(LoadingBayViewModel loadingBayView);
+
+        Task<ResponseViewModel<LoadingBayViewModel>> DeleteLoadingBay(LoadingBayViewModel loadingBayView);
+
+        /* Lane management block */
+        Task<ResponseViewModel<LaneViewModel>> GetAllLane();
+
+        Task<ResponseViewModel<LaneViewModel>> SearchLane(string code);
+
+        Task<ResponseViewModel<LaneViewModel>> GetLaneByCode(string code);
+
+        Task<ResponseViewModel<LaneViewModel>> CreateNewLane(LaneViewModel laneView);
+
+        Task<ResponseViewModel<LaneViewModel>> UpdateLane(LaneViewModel laneView);
+
+        Task<ResponseViewModel<LaneViewModel>> DeleteLane(LaneViewModel laneView);
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using QWMSServer.Data.Common;
@@ -33,6 +32,13 @@ namespace QWMSServer.Data.Services
         private readonly ICustomerWarehouseRepository _customerWarehouseRepository;
         private readonly IOrderMaterialRepository _orderMaterialRepository;
         private readonly IMaterialRepository _materialRepository;
+        private readonly IDriverRepository _driverRepository;
+        private readonly IUnitTypeRepository _unitTypeRepository;
+        private readonly ILoadingBayRepository _loadingBayRepository;
+        private readonly ICommonService _commonService;
+        private readonly IPurchaseOrderRepository _purchaseOrderRepository;
+        private readonly IPurchaseOrderTypeRepository _purchaseOrderTypeRepository;
+        private readonly IPlantRepository _plantRepository;
 
         public QueueService(IUnitOfWork unitOfWork, IGatePassRepository gatePassRepository, IStateRepository stateRepository,
                             ILaneRepository laneRepository, ITruckRepository truckRepository, IQueueListRepository queueListRepository,
@@ -45,7 +51,14 @@ namespace QWMSServer.Data.Services
                             IDeliveryOrderTypeRepository deliveryOrderTypeRepository,
                             ICustomerWarehouseRepository customerWarehouseRepository,
                             IOrderMaterialRepository orderMaterialRepository,
-                            IMaterialRepository materialRepository)
+                            IMaterialRepository materialRepository,
+                            IDriverRepository driverRepository,
+                            IUnitTypeRepository unitTypeRepository,
+                            ILoadingBayRepository loadingBayRepository,
+                            ICommonService commonService,
+                            IPurchaseOrderRepository purchaseOrderRepository,
+                            IPurchaseOrderTypeRepository purchaseOrderTypeRepository,
+                            IPlantRepository plantRepository)
         {
             _unitOfWork = unitOfWork;
             _gatePassRepository = gatePassRepository;
@@ -64,6 +77,13 @@ namespace QWMSServer.Data.Services
             _customerWarehouseRepository = customerWarehouseRepository;
             _orderMaterialRepository = orderMaterialRepository;
             _materialRepository = materialRepository;
+            _driverRepository = driverRepository;
+            _unitTypeRepository = unitTypeRepository;
+            _loadingBayRepository = loadingBayRepository;
+            _commonService = commonService;
+            _purchaseOrderRepository = purchaseOrderRepository;
+            _purchaseOrderTypeRepository = purchaseOrderTypeRepository;
+            _plantRepository = plantRepository;
         }
 
         public async Task<bool> SaveChangesAsync()
@@ -74,183 +94,237 @@ namespace QWMSServer.Data.Services
         public async Task<ResponseViewModel<GatePassViewModel>> GetAllGatePass()
         {
             ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
-            var result = await _gatePassRepository.GetManyAsync(c => true, QueryIncludes.GATEPASSFULLINCLUDES);
-            if (result == null)
-                responseViewModel.errorText = "No GatePass Found";
-            responseViewModel.responseDatas = Mapper.Map<IEnumerable<GatePass>, IEnumerable<GatePassViewModel>>(result);
-            return responseViewModel;
+            try
+            {
+                var result = await _gatePassRepository.GetManyAsync(c => true, QueryIncludes.GATEPASSFULLINCLUDES);
+                if (result == null)
+                    return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không có GatePass trong CSDL", null);
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, Mapper.Map<IEnumerable<GatePass>, IEnumerable<GatePassViewModel>>(result));
+
+            }
+            catch (Exception)
+            {
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không có GatePass trong CSDL", null); ;
+            }
         }
 
         public async Task<ResponseViewModel<GatePassViewModel>> GetGatePassByID(int ID)
         {
-            var result = await _gatePassRepository.GetAsync(g => g.ID == ID || g.stateID != 0 || g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
             ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
-            if (result == null)
-                responseViewModel.errorText = "No GatePass Found";
-            responseViewModel.responseData = Mapper.Map<GatePass, GatePassViewModel>(result);
-            return responseViewModel;
+            try
+            {
+                var result = await _gatePassRepository.GetAsync(g => g.ID == ID && g.stateID != 0 && g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
+                if (result == null)
+                    return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không tìm thấy GatePass", null);
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.SUCCESS, Mapper.Map<GatePass, GatePassViewModel>(result));
+
+            }
+            catch (Exception)
+            {
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không tìm thấy GatePass", null);
+            }
         }
 
         public async Task<ResponseViewModel<GatePassViewModel>> GetGatePassByCode(string Code)
         {
-            var result = await _gatePassRepository.GetAsync(g => g.code.Equals(Code) || g.stateID != 0 || g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
             ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
-            if (result == null)
-                responseViewModel.errorText = "No GatePass Found";
-            responseViewModel.responseData = Mapper.Map<GatePass, GatePassViewModel>(result);
-            return responseViewModel;
+            try
+            {
+                var result = await _gatePassRepository.GetAsync(g => g.code.Equals(Code) && g.stateID != 0 && g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
+                if (result == null)
+                    return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không tìm thấy GatePass", null);
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.SUCCESS, Mapper.Map<GatePass, GatePassViewModel>(result));
+            }
+            catch (Exception)
+            {
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không tìm thấy GatePass", null);
+            }
         }
 
         public async Task<ResponseViewModel<GatePassViewModel>> GetGatePassByRFID(string Code)
         {
-            var result = await _gatePassRepository.GetAsync(g => g.RFIDCard.code.Equals(Code) || g.stateID != 0 || g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
             ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
-            if (result == null)
-                responseViewModel.errorText = "No GatePass Found";
-            responseViewModel.responseData = Mapper.Map<GatePass, GatePassViewModel>(result);
-            return responseViewModel;
+            try
+            {
+                var result = await _gatePassRepository.GetAsync(g => g.RFIDCard.code.Equals(Code) && g.stateID != 0 && g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
+                if (result == null)
+                    return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không tìm thấy GatePass", null);
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.SUCCESS, Mapper.Map<GatePass, GatePassViewModel>(result));
+            }
+            catch (Exception e)
+            {
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không tìm thấy GatePass", null);
+            }
         }
 
         public async Task<ResponseViewModel<GatePassViewModel>> GetGatePassByPlateNumber(string PlateNumber)
         {
-            var result = await _gatePassRepository.GetAsync(g => g.truck.plateNumber.Equals(PlateNumber) || g.stateID != 0 || g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
             ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
-            if (result == null)
-                responseViewModel.errorText = "No GatePass Found";
-            responseViewModel.responseData = Mapper.Map<GatePass, GatePassViewModel>(result);
-            return responseViewModel;
+            try
+            {
+                var result = await _gatePassRepository.GetAsync(g => g.truck.plateNumber.Contains(PlateNumber) && g.stateID != 0 && g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
+                if (result == null)
+                    return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không tìm thấy GatePass", null);
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.SUCCESS, Mapper.Map<GatePass, GatePassViewModel>(result));
+            }
+            catch (Exception)
+            {
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không tìm thấy GatePass", null);
+            }
         }
 
         public async Task<ResponseViewModel<GatePassViewModel>> UpdateGatePass(GatePassViewModel gatePassViewModel)
         {
             ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
-            if (gatePassViewModel != null)
+            try
             {
-                GatePass gatePassClient = Mapper.Map<GatePassViewModel, GatePass>(gatePassViewModel);
-                if (gatePassClient != null)
+                if (gatePassViewModel != null)
                 {
-                    var result = await _gatePassRepository.GetAsync(g => g.ID == gatePassViewModel.ID || g.stateID != 0 || g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
-                    result.driverID = gatePassClient.driver.ID;
-                    // State Update Sequence
-                    // result.stateID = xxxx;
-                    _gatePassRepository.Update(result);
-                    if (await this.SaveChangesAsync())
+                    GatePass gatePassClient = Mapper.Map<GatePassViewModel, GatePass>(gatePassViewModel);
+                    if (gatePassClient != null)
                     {
-                        responseViewModel = await this.GetGatePassByCode(gatePassViewModel.code);
+                        var result = await _gatePassRepository.GetAsync(g => g.ID == gatePassViewModel.ID && g.stateID != 0 && g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
+                        result.driverID = gatePassClient.driver.ID;
+                        // State Update Sequence
+                        // result.stateID = xxxx;
+                        _gatePassRepository.Update(result);
+                        if (await this.SaveChangesAsync())
+                        {
+                            responseViewModel = await this.GetGatePassByCode(gatePassViewModel.code);
+                        }
+                        else
+                        {
+                            responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_DB_FAIL_TO_SAVE, "Lưu đối tượng thất bại", null);
+                        }
                     }
                     else
                     {
-                        responseViewModel.errorText = "Save Fail";
+                        responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_SEC_UNKNOW, "Mapper bị lỗi", null);
                     }
                 }
                 else
                 {
-                    responseViewModel.errorText = "Cannot map";
+                    responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_SEC_UNKNOW, "Input rỗng", null);
                 }
+                return responseViewModel;
             }
-            else
+            catch (Exception)
             {
-                responseViewModel.errorText = "Input is null";
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_SEC_UNKNOW, "Input rỗng", null);
             }
-            return responseViewModel;
         }
 
-        public bool AddDriverPicture(string fileName, byte[] fileContent)
+        public ResponseViewModel<GenericResponseModel> AddDriverPicture(string fileName, byte[] fileContent)
         {
+            ResponseViewModel<GenericResponseModel> response = new ResponseViewModel<GenericResponseModel>();
             string filePath = Constant.DriverCapturePath + fileName;
             // Write to file
             if (fileName == null || fileContent == null)
-                return false;
-            File.WriteAllBytes(filePath, fileContent);
-            return true;
+            {
+                response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
+            }
+            else
+            {
+                File.WriteAllBytes(filePath, fileContent);
+                response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.SUCCESS, true);
+            }
+            return response;
         }
 
         public async Task<ResponseViewModel<GatePassViewModel>> UpdateGatePassWithRFIDCode(GatePassViewModel gatePassViewModel)
         {
             ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
-            if (gatePassViewModel != null)
+            try
             {
-                GatePass gatePassClient = Mapper.Map<GatePassViewModel, GatePass>(gatePassViewModel);
-                if (gatePassClient != null)
+                if (gatePassViewModel != null)
                 {
-                    var result = await _gatePassRepository.GetAsync(g => g.ID == gatePassViewModel.ID || g.stateID != 0 || g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
-                    result.RFIDCardID = gatePassViewModel.RFIDCardID;
-                    _gatePassRepository.Update(result);
-                    if (await this.SaveChangesAsync())
+                    GatePass gatePassClient = Mapper.Map<GatePassViewModel, GatePass>(gatePassViewModel);
+                    if (gatePassClient != null)
                     {
-                        responseViewModel = await this.GetGatePassByCode(gatePassViewModel.code);
+                        var result = await _gatePassRepository.GetAsync(g => g.ID == gatePassViewModel.ID && g.stateID != 0 && g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
+                        result.RFIDCardID = gatePassViewModel.RFIDCardID;
+                        _gatePassRepository.Update(result);
+                        if (await this.SaveChangesAsync())
+                        {
+                            responseViewModel = await this.GetGatePassByCode(gatePassViewModel.code);
+                        }
+                        else
+                        {
+                            responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_DB_FAIL_TO_SAVE, "Lưu đối tượng thất bại", null);
+                        }
                     }
                     else
                     {
-                        responseViewModel.errorText = "Save Fail";
+                        responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_SEC_UNKNOW, "Mapper bị lỗi", null);
                     }
                 }
                 else
                 {
-                    responseViewModel.errorText = "Cannot map";
+                    responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_SEC_UNKNOW, "Input rỗng", null);
                 }
+                return responseViewModel;
             }
-            else
+            catch (Exception)
             {
-                responseViewModel.errorText = "Input is null";
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_SEC_UNKNOW, "Input rỗng", null); ;
             }
-            return responseViewModel;
         }
 
-        public async Task<bool> CreateRegisteredQueueItem(int gatePassID, string driverImageName, string employeeRFID, string driverRFID)
+        public async Task<ResponseViewModel<GenericResponseModel>> CreateRegisteredQueueItem(int gatePassID, string driverImageName, string employeeRFID, string driverRFID)
         {
+            ResponseViewModel<GenericResponseModel> response = new ResponseViewModel<GenericResponseModel>();
             try
             {
                 if (driverImageName == null || employeeRFID == null || driverRFID == null)
-                    return false;
+                    return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
                 Random r = new Random();
                 /* Get GatePass by ID */
                 GatePass gatePass = await _gatePassRepository.GetAsync(gt => gt.ID == gatePassID, QueryIncludes.GATEPASSFULLINCLUDES);
                 RFIDCard card = await _RFIDCardRepository.GetAsync(ca => ca.code.Equals(driverRFID) && ca.isDelete == false);
-                Employee employee = await _employeepository.GetAsync(emp => emp.rfidCard.code.Equals(employeeRFID) && emp.isDelete == false, QueryIncludes.EMPLOYEEFULLINCLUDES);
-                if (gatePass == null || card == null || employee == null)
-                    return false;
-                bool found = false;
-                foreach (var group in employee.groupMaps)
-                {
-                    foreach (var function in group.employeeGroup.functionMaps)
-                    {
-                        if (function.systemFunction.API.Equals("CreateRegisteredQueueItem"))
-                            found = true;
-                    }
-                }
-                if (found == false)
-                    return false;
+                if (gatePass == null || card == null)
+                    return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
                 /* Create Queue Element */
-                QueueList queue = new QueueList();
-                /* Code autogen */
-                queue.code = r.Next().ToString();
-                queue.estimateTime = gatePass.truck.KPI;
-                queue.truckID = gatePass.truckID;
-                //queue.truckGroupID = this.findTruckGroup(gatePass);
-                queue.gatePassID = gatePass.ID;
-                queue.gatePass = gatePass;
-                queue.queueTime = DateTime.Now;
-                // Assign lane
-                queue.laneID = await this.assignLane((int)gatePass.loadingBayID, (int)gatePass.truckID);
-                // Create order
-                queue.queueOrder = await _queueListRepository.CountAsync(qu => qu.gatePass.truckGroupID == queue.gatePass.truckGroupID) + 1;
-                // Receive picture
-                string filePath = Constant.DriverCapturePath + driverImageName;
-                gatePass.driverCamCapturePath = filePath;
-                gatePass.RFIDCardID = card.ID;
+                if (gatePass.orders.ToArray()[0].orderTypeID != OrderTypeConst.INTERNALORDER) // Internal truck doesn't need to be queued just change state
+                {
+                    QueueList queue = new QueueList();
+                    /* Code autogen */
+                    queue.code = r.Next().ToString();
+                    queue.estimateTime = gatePass.truck.KPI;
+                    queue.truckID = gatePass.truckID;
+                    //queue.truckGroupID = this.findTruckGroup(gatePass);
+                    queue.gatePassID = gatePass.ID;
+                    queue.gatePass = gatePass;
+                    queue.queueTime = DateTime.Now;
+                    // Assign lane
+                    queue.laneID = await this.assignLane((int)gatePass.loadingBayID, (int)gatePass.truckID);
+                    // Create order
+                    queue.queueOrder = await _queueListRepository.CountAsync(qu => qu.gatePass.truckGroupID == queue.gatePass.truckGroupID) + 1;
+                    queue.queueNumber = await _queueListRepository.CountAsync(qu => qu.gatePass.truckGroupID == queue.gatePass.truckGroupID) + 1;
+                    // Receive picture
+                    string filePath = Constant.DriverCapturePath + driverImageName;
+                    gatePass.driverCamCapturePath = filePath;
+                    gatePass.RFIDCardID = card.ID;
+                    gatePass.stateID = GatepassState.STATE_REGISTERED;
+                    // Save queue to db
+                    _queueListRepository.Add(queue);
+                }
+                else
+                {
+                    string filePath = Constant.DriverCapturePath + driverImageName;
+                    gatePass.driverCamCapturePath = filePath;
+                    gatePass.RFIDCardID = card.ID;
+                    gatePass.stateID = GatepassState.STATE_IN_SECURITY_CHECK_IN;
+                }
                 // Save db
-                _queueListRepository.Add(queue);
                 _gatePassRepository.Update(gatePass);
                 if (await _unitOfWork.SaveChangesAsync())
-                    return true;
+                    return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.SUCCESS, true);
                 else
-                    return false;
+                    return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
             }
             catch (Exception e)
             {
-                throw e;
-                return false;
+                return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
             }
         }
 
@@ -278,7 +352,7 @@ namespace QWMSServer.Data.Services
         public async Task<int> assignLane(int loadingBayID, int truckID)
         {
             List<Lane> lanes = new List<Lane>();
-            var lanesInLoadingBay = await _laneRepository.GetManyAsync(ln => ln.loadingBayID == loadingBayID && ln.isDelete == false);
+            var lanesInLoadingBay = await _laneRepository.GetManyAsync(ln => ln.loadingBayID == loadingBayID && ln.isDelete == false && ln.status == 1);
             var truck = await _truckRepository.GetAsync(tr => tr.ID == truckID && tr.isDelete == false);
             foreach (var lane in lanesInLoadingBay)
             {
@@ -302,54 +376,63 @@ namespace QWMSServer.Data.Services
             return rlane.ID;
         }
 
-        public async Task<bool> ReOrderQueue()
+        public async Task<ResponseViewModel<GenericResponseModel>> ReOrderQueue()
         {
-            List<int> bakLaneID = new List<int>();
-            var queueList = await _queueListRepository.GetManyAsync(qu => qu.isDelete == false, QueryIncludes.QUEUELISTFULLINCLUDES);
-            foreach (var queue in queueList)
+            ResponseViewModel<GenericResponseModel> response = new ResponseViewModel<GenericResponseModel>();
+            try
             {
-                bakLaneID.Add((int)queue.laneID);
-                queue.laneID = Constant.NULLLANE;
-                _queueListRepository.Update(queue);
-            }
-            if(await _unitOfWork.SaveChangesAsync())
-            {
+                List<int> bakLaneID = new List<int>();
+                var queueList = await _queueListRepository.GetManyAsync(qu => qu.isDelete == false, QueryIncludes.QUEUELISTFULLINCLUDES);
                 foreach (var queue in queueList)
                 {
-                    queue.laneID = await assignLane((int)queue.gatePass.loadingBayID, (int)queue.truckID);
+                    bakLaneID.Add((int)queue.laneID);
+                    queue.laneID = Constant.NULLLANE;
                     _queueListRepository.Update(queue);
-                    if (!await _unitOfWork.SaveChangesAsync())
-                    {
-                        for (int i = 0; i < queueList.Count(); i++)
-                        {
-                            queueList.ToList()[i].laneID = bakLaneID[i];
-                            _queueListRepository.Update(queueList.ToList()[i]);
-                        }
-                        await _unitOfWork.SaveChangesAsync();
-                        return false;
-                    }
                 }
-                return true;
+                if (await _unitOfWork.SaveChangesAsync())
+                {
+                    foreach (var queue in queueList)
+                    {
+                        queue.laneID = await assignLane((int)queue.gatePass.loadingBayID, (int)queue.truckID);
+                        _queueListRepository.Update(queue);
+                        if (!await _unitOfWork.SaveChangesAsync())
+                        {
+                            for (int i = 0; i < queueList.Count(); i++)
+                            {
+                                queueList.ToList()[i].laneID = bakLaneID[i];
+                                _queueListRepository.Update(queueList.ToList()[i]);
+                            }
+                            await _unitOfWork.SaveChangesAsync();
+                            return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
+                        }
+                    }
+                    return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.SUCCESS, true);
+                }
+                else
+                {
+                    return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
+                }
             }
-            else
+            catch (Exception)
             {
-                return false;
+                return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
             }
-        }
-
-        public Task<bool> AddGatePassToQueue(GatePassViewModel gatePassViewModel)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<ResponseViewModel<GatePassViewModel>> GetGatePassByDriverID(int ID)
         {
-            var result = await _gatePassRepository.GetAsync(g => g.driverID == ID || g.stateID != 0 || g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
             ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
-            if (result == null)
-                responseViewModel.errorText = "No GatePass Found";
-            responseViewModel.responseData = Mapper.Map<GatePass, GatePassViewModel>(result);
-            return responseViewModel;
+            try
+            {
+                var result = await _gatePassRepository.GetAsync(g => g.driverID == ID && g.stateID != 0 && g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
+                if (result == null)
+                    return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không tìm thấy GatePass", null);
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.SUCCESS, Mapper.Map<GatePass, GatePassViewModel>(result));
+            }
+            catch (Exception)
+            {
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không tìm thấy GatePass", null);
+            }
         }
 
         public async Task<ResponseViewModel<DOViewModel>> ImportDO(List<DOViewModel> listDO)
@@ -472,7 +555,7 @@ namespace QWMSServer.Data.Services
                         order.code = listDO.ElementAt(i).dOCode;
                         try
                         {
-                            order.deliveryOrder = await _deliveryOrderRepository.GetAsync(ca => ca.doNumber.Equals(deliveryOrder.doNumber)); ;
+                            order.deliveryOrder = await _deliveryOrderRepository.GetAsync(ca => ca.doNumber.Equals(deliveryOrder.doNumber));
                             order.doID = order.deliveryOrder.ID;
                         }
                         catch
@@ -483,6 +566,22 @@ namespace QWMSServer.Data.Services
                         }
                         order.grossWeight = 0;
                         order.isDelete = false;
+                        order.orderTypeID = Constant.DELIVERYORDER;
+
+                        string valuePlantCode = listDO.ElementAt(i).plant;
+                        try
+                        {
+                            var getPlantID = await _plantRepository.GetAsync(ca => ca.code.Equals(valuePlantCode), null);
+                            order.plant = getPlantID;
+                            order.plantID = order.plant.ID;
+                        }
+                        catch
+                        {
+                            responseViewModel.errorCode = i + 1;
+                            responseViewModel.errorText = "Không có Plant#: " + valuePlantCode + " trong cơ sở dữ liệu";
+                            return responseViewModel;
+                        }
+
                         _orderRepository.Add(order);
 
                         await this.SaveChangesAsync();
@@ -564,6 +663,651 @@ namespace QWMSServer.Data.Services
                 }
                 //return 1;
                 responseViewModel.errorCode = 0;
+                return responseViewModel;
+            }
+            catch
+            {
+                responseViewModel.errorCode = -1;
+                responseViewModel.errorText = "Lỗi chưa xác định";
+                return responseViewModel;
+            }
+        }
+
+        public async Task<ResponseViewModel<POViewModel>> ImportPO(List<POViewModel> listPO)
+        {
+            ResponseViewModel<POViewModel> responseViewModel = new ResponseViewModel<POViewModel>();
+            try
+            {
+                for (int i = 0; i < listPO.Count; i++)
+                {
+                    //Check PO# in DB PurchaseOrder
+                    string valuePOCode = listPO.ElementAt(i).pOCode;
+                    var checkPOCode_PurchaseOrder = await _purchaseOrderRepository.GetAsync(c => c.code.Equals(valuePOCode), null);
+                    if (checkPOCode_PurchaseOrder == null)
+                    {
+                        //PO# in PurchaseOrder and Order have to R1-1
+                        //Check PO# in Order table
+                        var checkPOCode_Order = await _orderRepository.GetAsync(c => c.code.Equals(valuePOCode), null);
+                        if (checkPOCode_Order != null)
+                        {
+                            // Data is not sync
+                            // Return false
+                            //return 0;
+                            responseViewModel.errorCode = i + 1;
+                            responseViewModel.errorText = "Dữ liệu tại dòng thứ " + (i + 1).ToString() + " không đúng";
+                            return responseViewModel;
+                        }
+
+                        // If PO# don't have in DB then create new record with PO#
+                        // Create a new PO record in PurchaseOrder, a new Order record in Orders table
+                        // Create a new PO record in PurchaseOrder
+                        PurchaseOrder purchaseOrder = new PurchaseOrder();
+                        purchaseOrder.code = listPO.ElementAt(i).pOCode;
+                        purchaseOrder.poNumber = listPO.ElementAt(i).pOCode;
+
+                        try
+                        {
+                            purchaseOrder.purchaseOrderType = await _purchaseOrderTypeRepository.GetAsync(ca => ca.Code.Equals("PO"));
+                            purchaseOrder.poTypeID = purchaseOrder.purchaseOrderType.ID;
+                        }
+                        catch
+                        {
+                            responseViewModel.errorCode = i + 1;
+                            responseViewModel.errorText = "Không có POType#: PO trong cơ sở dữ liệu";
+                            return responseViewModel;
+                        }
+
+                        purchaseOrder.sloc = listPO.ElementAt(i).sLoc;
+                        purchaseOrder.remark = listPO.ElementAt(i).remark;
+                        purchaseOrder.invoiceNumber = listPO.ElementAt(i).billCode;
+                        purchaseOrder.isDelete = false;
+
+                        var vendorCode = listPO.ElementAt(i).vendorCode;
+                        //purchaseOrder.carrierVendor = await _carrierVendorRepository.GetAsync(ca => ca.code.Equals(vendorCode));
+                        try
+                        {
+                            purchaseOrder.carrierVendor = await _carrierVendorRepository.GetAsync(ca => ca.code.Equals(vendorCode), null);
+                            purchaseOrder.carrierVendorID = purchaseOrder.carrierVendor.ID;
+                        }
+                        catch
+                        {
+                            responseViewModel.errorCode = i + 1;
+                            responseViewModel.errorText = "Không có Vendor#: " + vendorCode + " trong cơ sở dữ liệu";
+                            return responseViewModel;
+                        }
+                        purchaseOrder.createDate = DateTime.Now;
+
+                        _purchaseOrderRepository.Add(purchaseOrder);
+                        await this.SaveChangesAsync();
+
+                        // Create a new Order record in Orders table
+                        Order order = new Order();
+                        var getPOId = await _purchaseOrderRepository.GetAsync(ca => ca.code.Equals(valuePOCode) && ca.isDelete == false, null);
+                        order.purchaseOrder = getPOId;
+                        order.poID = order.purchaseOrder.ID;
+                        order.code = order.purchaseOrder.code;
+                        order.orderTypeID = Constant.PURCHASEORDER;
+                        order.isDelete = false;
+                        string valuePlantCode = listPO.ElementAt(i).plant;
+                        try
+                        {
+                            var getPlantID = await _plantRepository.GetAsync(ca => ca.code.Equals(valuePlantCode), null);
+                            order.plant = getPlantID;
+                            order.plantID = order.plant.ID;
+                        }
+                        catch
+                        {
+                            responseViewModel.errorCode = i + 1;
+                            responseViewModel.errorText = "Không có Plant#: " + valuePlantCode + " trong cơ sở dữ liệu";
+                            return responseViewModel;
+                        }
+
+                        order.grossWeight = 0;
+
+                        _orderRepository.Add(order);
+                        await this.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        //PO# in DeliveryOrder and Order have to R1-1
+                        //Check DO# in Order table
+                        var checkPOCode_Order = await _orderRepository.GetAsync(c => c.code.Equals(valuePOCode), null);
+                        if (checkPOCode_Order == null)
+                        {
+                            // Data is not sync
+                            // Return false
+                            //return 0;
+                            responseViewModel.errorCode = i + 1;
+                            responseViewModel.errorText = "Dữ liệu tại dòng thứ " + (i + 1).ToString() + " không đúng";
+                            return responseViewModel;
+                        }
+                    }
+
+                    // Check POItem# with Oders.code have in OrderMaterials or not?
+                    // Check Oders.code in OrderMaterials
+                    // get orderID by valuePOCode
+                    var getOrderID = await _orderRepository.GetAsync(c => c.code.Equals(valuePOCode), null);
+                    var checkOderCode_OrderMaterial = await _orderMaterialRepository.GetManyAsync(c => c.orderID == getOrderID.ID, null);
+                    if (checkOderCode_OrderMaterial.Count() > 0)
+                    {
+                        // If have, compare DOItem have in checkOderCode_OrderMaterial. list or not
+                        //
+                        for (int j = 0; i < checkOderCode_OrderMaterial.Count(); j++)
+                        {
+                            if ((listPO.ElementAt(i).pOCode + "_" + listPO.ElementAt(i).pOItemCode) == checkOderCode_OrderMaterial.ElementAt(j).code)
+                            {
+                                responseViewModel.errorCode = i + 1;
+                                responseViewModel.errorText = "Dữ liệu tại dòng thứ " + (i + 1).ToString() + " đã có trong hệ thống";
+                                //return 0;
+                                return responseViewModel;
+                            }
+
+                        }
+                    }
+                    //------
+                    //Create new OrderMaterial record
+                    //OrderMaterial code = DO#+"_"+DOItem#
+                    OrderMaterial orderMaterial = new OrderMaterial();
+                    orderMaterial.code = listPO.ElementAt(i).pOCode + "_" + listPO.ElementAt(i).pOItemCode;
+                    orderMaterial.grossWeight = 0;
+                    orderMaterial.quantity = listPO.ElementAt(i).quanlity;
+                    //Get orderID by list.ElementAt(i).pOCode
+                    //orderMaterial.orderID = list.ElementAt(i).pOCode;
+                    var poCode_order = listPO.ElementAt(i).pOCode;
+                    orderMaterial.order = getOrderID;
+                    orderMaterial.orderID = orderMaterial.order.ID;
+
+                    var materialCode_material = listPO.ElementAt(i).materialCode;
+                    try
+                    {
+                        orderMaterial.material = await _materialRepository.GetAsync(c => c.code.Equals(materialCode_material), null);
+                        orderMaterial.materialID = orderMaterial.material.ID;
+                    }
+                    catch
+                    {
+                        responseViewModel.errorCode = i + 1;
+                        responseViewModel.errorText = "Không có Material#: " + materialCode_material + " trong cơ sở dữ liệu";
+                        return responseViewModel;
+                    }
+                    
+
+                    _orderMaterialRepository.Add(orderMaterial);
+                    await this.SaveChangesAsync();
+                }
+                //return 1;
+                responseViewModel.errorCode = 0;
+                return responseViewModel;
+            }
+            catch
+            {
+                responseViewModel.errorCode = -1;
+                responseViewModel.errorText = "Lỗi chưa xác định";
+                return responseViewModel;
+            }
+        }
+
+        public async Task<ResponseViewModel<OrderViewModel>> GetAllDONotPlaned(string customerCode)
+        {
+            ResponseViewModel<OrderViewModel> responseViewModel = new ResponseViewModel<OrderViewModel>();
+            try
+            {
+                //Get All Order record with GatepassID == null and doID != null
+                var result = await _orderRepository.GetManyAsync(g => g.gatePassID == null && g.doID != null && g.isDelete == false, null);
+                if (result == null)
+                {
+                    responseViewModel.errorCode = -1;
+                    responseViewModel.errorText = "Không tìm thấy DO chưa xếp";
+                    return responseViewModel;
+                }
+                else
+                {
+                    responseViewModel.errorCode = 0;
+                    List<OrderViewModel> listTemp = new List<OrderViewModel>();
+                    for (int i = 0; i < result.Count(); i++)
+                    {
+                        OrderViewModel tempO = Mapper.Map<Order, OrderViewModel>(result.ElementAt(i));
+                        //Get OrderMaterial each DO
+                        var listOrderMaterial = await _orderMaterialRepository.GetManyAsync(g => g.orderID == tempO.ID, null);
+                        if (listOrderMaterial.Count() != 0)
+                        {
+                            for (int j = 0; j < listOrderMaterial.Count(); j++)
+                            {
+                                OrderMaterialViewModel tempOM = Mapper.Map<OrderMaterial, OrderMaterialViewModel>(listOrderMaterial.ElementAt(j));
+                                tempOM.order = null;
+                                var material = await _materialRepository.GetAsync(g => g.ID == tempOM.materialID, null);
+                                if (material != null)
+                                {
+                                    MaterialViewModel tempM = Mapper.Map<Material, MaterialViewModel>(material);
+                                    var unit = await _unitTypeRepository.GetAsync(g => g.ID == material.unitID, null);
+                                    if (unit != null)
+                                    {
+                                        UnitTypeViewModel tempU = Mapper.Map<UnitType, UnitTypeViewModel>(unit);
+                                        tempM.unit = tempU;
+                                        tempOM.material = tempM;
+                                        tempO.orderMaterials.Add(tempOM);
+                                    }
+                                }
+                            }
+                        }
+
+                        //Get DO each Order
+                        var dO = await _deliveryOrderRepository.GetAsync(g => g.ID == tempO.doID, null);
+                        if (dO != null)
+                        {
+                            DeliveryOrderViewModel tempDO = Mapper.Map<DeliveryOrder, DeliveryOrderViewModel>(dO);
+                            tempO.deliveryOrder = tempDO;
+                            //Get Customer each Order
+                            var customer = await _customerRepository.GetAsync(g => g.code.Equals(customerCode) && g.isDelete == false, null);
+                            if (customer != null)
+                            {
+                                CustomerViewModel tempCustomer = Mapper.Map<Customer, CustomerViewModel>(customer);
+                                //Only Get DO from customer.ID == customerID
+                                if (customer.ID != dO.customerID)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    tempDO.customer = tempCustomer;
+                                    listTemp.Add(tempO);
+                                }  
+                            }
+                        }
+                    }
+
+                    if (listTemp == null || listTemp.Count <= 0)
+                    {
+                        responseViewModel.errorCode = -1;
+                        responseViewModel.errorText = "Không tìm thấy DO chưa xếp của khách hàng được chọn";
+                        return responseViewModel;
+                    }
+
+                    responseViewModel.errorCode = 0;
+                    responseViewModel.responseDatas = (IEnumerable<OrderViewModel>)listTemp;
+                    return responseViewModel;
+                }
+            }
+            catch
+            {
+                responseViewModel.errorCode = -1;
+                responseViewModel.errorText = "Lỗi chưa xác định";
+                return responseViewModel;
+            }
+        }
+
+        public async Task<ResponseViewModel<OrderViewModel>> GetAllPONotPlaned(string vendorCode)
+        {
+            ResponseViewModel<OrderViewModel> responseViewModel = new ResponseViewModel<OrderViewModel>();
+            try
+            {
+                //Get All Order record with GatepassID == null and poID != null
+                var result = await _orderRepository.GetManyAsync(g => g.gatePassID == null && g.poID != null && g.isDelete == false, null);
+                if (result == null)
+                {
+                    responseViewModel.errorCode = -1;
+                    responseViewModel.errorText = "Không tìm thấy PO chưa xếp";
+                    return responseViewModel;
+                }
+                else
+                {
+                    responseViewModel.errorCode = 0;
+                    List<OrderViewModel> listTemp = new List<OrderViewModel>();
+                    for (int i = 0; i < result.Count(); i++)
+                    {
+                        OrderViewModel tempO = Mapper.Map<Order, OrderViewModel>(result.ElementAt(i));
+                        //Get OrderMaterial each PO
+                        var listOrderMaterial = await _orderMaterialRepository.GetManyAsync(g => g.orderID == tempO.ID, null);
+                        if (listOrderMaterial.Count() != 0)
+                        {
+                            for (int j = 0; j < listOrderMaterial.Count(); j++)
+                            {
+                                OrderMaterialViewModel tempOM = Mapper.Map<OrderMaterial, OrderMaterialViewModel>(listOrderMaterial.ElementAt(j));
+                                tempOM.order = null;
+                                var material = await _materialRepository.GetAsync(g => g.ID == tempOM.materialID, null);
+                                if (material != null)
+                                {
+                                    MaterialViewModel tempM = Mapper.Map<Material, MaterialViewModel>(material);
+                                    var unit = await _unitTypeRepository.GetAsync(g => g.ID == material.unitID, null);
+                                    if (unit != null)
+                                    {
+                                        UnitTypeViewModel tempU = Mapper.Map<UnitType, UnitTypeViewModel>(unit);
+                                        tempM.unit = tempU;
+                                        tempOM.material = tempM;
+                                        tempO.orderMaterials.Add(tempOM);
+                                    }
+                                }
+                            }
+                        }
+
+                        //Get DO each Order
+                        var pO = await _purchaseOrderRepository.GetAsync(g => g.ID == tempO.poID, null);
+                        if (pO != null)
+                        {
+                            PurchaseOrderViewModel tempPO = Mapper.Map<PurchaseOrder, PurchaseOrderViewModel>(pO);
+                            tempO.purchaseOrder = tempPO;
+                            //Get Vendor each Order
+                            var vendor = await _carrierVendorRepository.GetAsync(g => g.code.Equals(vendorCode) && g.isDelete == false, null);
+                            if (vendor != null)
+                            {
+                                CarrierVendorViewModel tempVendor = Mapper.Map<CarrierVendor, CarrierVendorViewModel>(vendor);
+                                //Only Get PO from vendor.ID == carrierVendorID
+                                if (vendor.ID != pO.carrierVendorID)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    tempPO.carrierVendor = tempVendor;
+                                    listTemp.Add(tempO);
+                                }
+                            }
+                        }
+                    }
+
+                    if (listTemp == null || listTemp.Count <= 0)
+                    {
+                        responseViewModel.errorCode = -1;
+                        responseViewModel.errorText = "Không tìm thấy DO chưa xếp của khách hàng được chọn";
+                        return responseViewModel;
+                    }
+
+                    responseViewModel.errorCode = 0;
+                    responseViewModel.responseDatas = (IEnumerable<OrderViewModel>)listTemp;
+                    return responseViewModel;
+                }
+            }
+            catch
+            {
+                responseViewModel.errorCode = -1;
+                responseViewModel.errorText = "Lỗi chưa xác định";
+                return responseViewModel;
+            }
+        }
+
+        public async Task<ResponseViewModel<CreateGatePassViewModel>> CreateGatepassWithDO(CreateGatePassViewModel createGatePassViewModel)
+        {
+            ResponseViewModel<CreateGatePassViewModel> responseViewModel = new ResponseViewModel<CreateGatePassViewModel>();
+            try
+            {
+                //Search GatePass_Code in DB 
+                var result = await _gatePassRepository.GetAsync(g => g.code.Equals(createGatePassViewModel.gatePassViewModel.code) && g.isDelete == false, null);
+                if (result != null)
+                {
+                    //If have return false
+                    responseViewModel.errorCode = -1;
+                    responseViewModel.errorText = "Mã Gatepass đã có trong cơ sở dữ liệu";
+                    return responseViewModel;
+                }
+                else
+                {
+                    //If don't have, create GatePass
+                    GatePass gatePass = new GatePass();
+                    gatePass.code = createGatePassViewModel.gatePassViewModel.code;
+                    gatePass.createDate = createGatePassViewModel.gatePassViewModel.createDate;
+                    gatePass.isDelete = false;
+                    gatePass.loadingBayID = createGatePassViewModel.gatePassViewModel.loadingBayID;
+                    gatePass.enterTime = DateTime.Now;
+                    gatePass.leaveTime = DateTime.Now;
+                    //gatePass.ID = 1;
+                    if (createGatePassViewModel.gatePassViewModel.driver != null)
+                    {
+                        try
+                        {
+                            //var driverCode = createGatePassViewModel.gatePassViewModel.code;
+                            //var driver = await _driverRepository.GetAsync(g => g.code.Equals(driverCode) && g.isDelete == false, null);
+                            gatePass.driverID = createGatePassViewModel.gatePassViewModel.driver.ID;
+                        }
+                        catch
+                        {
+                            responseViewModel.errorCode = -1;
+                            responseViewModel.errorText = "Không có tài xế được chọn trong cơ sở dữ liệu";
+                            return responseViewModel;
+                        }
+                    }
+                    if (createGatePassViewModel.gatePassViewModel.truck != null)
+                    {
+                        try
+                        {
+                            //gatePass.truck = await _truckRepository.GetAsync(g => ((g.ID == createGatePassViewModel.gatePassViewModel.truck.ID) && (g.isDelete == false)), null);
+                            gatePass.truckID = createGatePassViewModel.gatePassViewModel.truck.ID;
+                            gatePass.stateID = 2;
+                            gatePass.truckTyeID = createGatePassViewModel.gatePassViewModel.truck.truckTypeID;
+                        }
+                        catch
+                        {
+                            responseViewModel.errorCode = -1;
+                            responseViewModel.errorText = "Không có xe được chọn trong cơ sở dữ liệu";
+                            return responseViewModel;
+                        }
+                    }
+                    else
+                    {
+                        //responseViewModel.errorCode = -1;
+                        //responseViewModel.errorText = "Cần chọn xe để tạo Gatepass";
+                        //return responseViewModel;
+                        gatePass.stateID = 1;
+                    }
+
+                    _gatePassRepository.Add(gatePass);
+                    await this.SaveChangesAsync();
+                }
+
+                // Add GatePass_ID into listOrder
+                //Get GatePassID with createGatePassViewModel.gatePassViewModel.code
+                var gatepass = await _gatePassRepository.GetAsync(g => g.code.Equals(createGatePassViewModel.gatePassViewModel.code) && g.isDelete == false, null);
+                for (int i = 0; i < createGatePassViewModel.listOrderViewModel.Count; i++)
+                {
+                    var oderCode = createGatePassViewModel.listOrderViewModel.ElementAt(i).code;
+                    var order = await _orderRepository.GetAsync(g => g.code.Equals(oderCode) && g.isDelete == false, null);
+                    order.gatePassID = gatepass.ID;
+                    _orderRepository.Update(order);
+                    await this.SaveChangesAsync();
+                }
+
+                //Update TruckGroupID for fatePass
+                var updateGatePass = await _gatePassRepository.GetAsync(g => g.code.Equals(createGatePassViewModel.gatePassViewModel.code) && g.isDelete == false, QueryIncludes.QUEUE_GATEPASS_ORDER_INCLUDES);
+                var getTruckGroupID = findTruckGroup(updateGatePass);
+                updateGatePass.truckGroupID = getTruckGroupID;
+                _gatePassRepository.Update(updateGatePass);
+
+                await this.SaveChangesAsync();
+                return responseViewModel;
+            }
+            catch (Exception e)
+            {
+                throw e;
+                //responseViewModel.errorCode = -1;
+                //responseViewModel.errorText = "Lỗi chưa xác định";
+                //return responseViewModel;
+            }
+        }
+
+        public async Task<ResponseViewModel<CreateGatePassViewModel>> CreateGatepassWithPO(CreateGatePassViewModel createGatePassViewModel)
+        {
+            ResponseViewModel<CreateGatePassViewModel> responseViewModel = new ResponseViewModel<CreateGatePassViewModel>();
+            try
+            {
+                //Search GatePass_Code in DB 
+                var result = await _gatePassRepository.GetAsync(g => g.code.Equals(createGatePassViewModel.gatePassViewModel.code) && g.isDelete == false, null);
+                if (result != null)
+                {
+                    //If have return false
+                    responseViewModel.errorCode = -1;
+                    responseViewModel.errorText = "Mã Gatepass đã có trong cơ sở dữ liệu";
+                    return responseViewModel;
+                }
+                else
+                {
+                    //If don't have, create GatePass
+                    GatePass gatePass = new GatePass();
+                    gatePass.code = createGatePassViewModel.gatePassViewModel.code;
+                    gatePass.createDate = createGatePassViewModel.gatePassViewModel.createDate;
+                    gatePass.isDelete = false;
+                    gatePass.loadingBayID = createGatePassViewModel.gatePassViewModel.loadingBayID;
+                    gatePass.enterTime = DateTime.Now;
+                    gatePass.leaveTime = DateTime.Now;
+                    //gatePass.ID = 1;
+                    if (createGatePassViewModel.gatePassViewModel.driver != null)
+                    {
+                        try
+                        {
+                            //var driverCode = createGatePassViewModel.gatePassViewModel.code;
+                            //var driver = await _driverRepository.GetAsync(g => g.code.Equals(driverCode) && g.isDelete == false, null);
+                            gatePass.driverID = createGatePassViewModel.gatePassViewModel.driver.ID;
+                        }
+                        catch
+                        {
+                            responseViewModel.errorCode = -1;
+                            responseViewModel.errorText = "Không có tài xế được chọn trong cơ sở dữ liệu";
+                            return responseViewModel;
+                        }
+                    }
+                    if (createGatePassViewModel.gatePassViewModel.truck != null)
+                    {
+                        try
+                        {
+                            //gatePass.truck = await _truckRepository.GetAsync(g => ((g.ID == createGatePassViewModel.gatePassViewModel.truck.ID) && (g.isDelete == false)), null);
+                            gatePass.truckID = createGatePassViewModel.gatePassViewModel.truck.ID;
+                            gatePass.stateID = 2;
+                            gatePass.truckTyeID = createGatePassViewModel.gatePassViewModel.truck.truckTypeID;
+                        }
+                        catch
+                        {
+                            responseViewModel.errorCode = -1;
+                            responseViewModel.errorText = "Không có xe được chọn trong cơ sở dữ liệu";
+                            return responseViewModel;
+                        }
+                    }
+                    else
+                    {
+                        //responseViewModel.errorCode = -1;
+                        //responseViewModel.errorText = "Cần chọn xe để tạo Gatepass";
+                        //return responseViewModel;
+                        gatePass.stateID = 1;
+                    }
+
+                    _gatePassRepository.Add(gatePass);
+                    await this.SaveChangesAsync();
+                }
+
+                // Add GatePass_ID into listOrder
+                //Get GatePassID with createGatePassViewModel.gatePassViewModel.code
+                var gatepass = await _gatePassRepository.GetAsync(g => g.code.Equals(createGatePassViewModel.gatePassViewModel.code) && g.isDelete == false, null);
+                for (int i = 0; i < createGatePassViewModel.listOrderViewModel.Count; i++)
+                {
+                    var oderCode = createGatePassViewModel.listOrderViewModel.ElementAt(i).code;
+                    var order = await _orderRepository.GetAsync(g => g.code.Equals(oderCode) && g.isDelete == false, null);
+                    order.gatePassID = gatepass.ID;
+                    _orderRepository.Update(order);
+                    await this.SaveChangesAsync();
+                }
+
+                //Update TruckGroupID for fatePass
+                var updateGatePass = await _gatePassRepository.GetAsync(g => g.code.Equals(createGatePassViewModel.gatePassViewModel.code) && g.isDelete == false, QueryIncludes.QUEUE_GATEPASS_ORDER_INCLUDES);
+                var getTruckGroupID = findTruckGroup(updateGatePass);
+                updateGatePass.truckGroupID = getTruckGroupID;
+                _gatePassRepository.Update(updateGatePass);
+
+                await this.SaveChangesAsync();
+                return responseViewModel;
+            }
+            catch (Exception e)
+            {
+                throw e;
+                //responseViewModel.errorCode = -1;
+                //responseViewModel.errorText = "Lỗi chưa xác định";
+                //return responseViewModel;
+            }
+        }
+
+        public async Task<ResponseViewModel<LoadingBayViewModel>> GetAllLoadingBay()
+        {
+            ResponseViewModel<LoadingBayViewModel> responseViewModel = new ResponseViewModel<LoadingBayViewModel>();
+            try
+            {
+                var result = await _loadingBayRepository.GetManyAsync(g => g.isDelete == false, null);
+                if (result == null)
+                {
+                    responseViewModel.errorCode = -1;
+                    responseViewModel.errorText = "Không tìm thấy LoadingBay";
+                    return responseViewModel;
+                }
+                else
+                {
+                    List<LoadingBayViewModel> listTemp = new List<LoadingBayViewModel>();
+                    for (int i = 0; i < result.Count(); i++)
+                    {
+                        LoadingBayViewModel tempLD = Mapper.Map<LoadingBay, LoadingBayViewModel>(result.ElementAt(i));
+                        listTemp.Add(tempLD);
+                    }
+                    responseViewModel.errorCode = 0;
+                    responseViewModel.responseDatas = (IEnumerable<LoadingBayViewModel>)listTemp;
+                    return responseViewModel;
+                }
+            }
+            catch
+            {
+                responseViewModel.errorCode = -1;
+                responseViewModel.errorText = "Lỗi chưa xác định";
+                return responseViewModel;
+            }
+        }
+
+        public async Task<ResponseViewModel<LoadingBayViewModel>> GetLoadingBayByTruck(string truckCode)
+        {
+            ResponseViewModel<LoadingBayViewModel> responseViewModel = new ResponseViewModel<LoadingBayViewModel>();
+            try
+            {
+                //return Value
+                List<LoadingBayViewModel> returnValue = new List<LoadingBayViewModel>();
+                //Get truck by code
+                var truck = await _truckRepository.GetAsync(g => g.code.Equals(truckCode) && g.isDelete == false, null);
+                //Get All Lane
+                var allLane = await _laneRepository.GetManyAsync(g => g.isDelete == false, null);
+
+                //Check input truck != null, allLane.Count() > 0
+                if ((truck == null) || (allLane.Count() == 0))
+                {
+                    responseViewModel.errorCode = 1;
+                    responseViewModel.errorText = "Lỗi input";
+                    return responseViewModel;
+                }
+
+                //Search in allLane have
+                for (int i = 0; i < allLane.Count(); i++)
+                {
+                    bool isHave = false; // flag Check LoadingBayID
+
+                    //Check LoadingBayID in current lane with LoadingBayID in return value
+                    if (returnValue.Count > 0)
+                    {
+                        for (int j = 0; j < returnValue.Count; j++)
+                        {
+                            if (returnValue.ElementAt(j).ID == allLane.ElementAt(i).loadingBayID)
+                            {
+                                isHave = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!isHave)
+                    {
+                        // Check truckTypeID, loadingTypeID in truck and current lane
+                        if ((truck.truckTypeID == allLane.ElementAt(i).truckTypeID) &&
+                                (truck.loadingTypeID == allLane.ElementAt(i).loadingTypeID))
+                        {
+                            //Add loadingBay into returnValue
+                            var loadingBayID = allLane.ElementAt(i).loadingBayID;
+                            var loadingBay = await _loadingBayRepository.GetAsync(g => g.ID == loadingBayID && g.isDelete == false, null);
+                            LoadingBayViewModel tempLD = Mapper.Map<LoadingBay, LoadingBayViewModel>(loadingBay);
+                            returnValue.Add(tempLD);
+                        }
+                    }
+                }
+
+                responseViewModel.errorCode = 0;
+                responseViewModel.responseDatas = (IEnumerable<LoadingBayViewModel>)returnValue;
                 return responseViewModel;
             }
             catch

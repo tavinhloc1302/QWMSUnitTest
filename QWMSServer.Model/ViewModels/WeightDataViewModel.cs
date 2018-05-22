@@ -23,5 +23,8 @@ namespace QWMSServer.Model.ViewModels
         public float weightValue { get; set; }
 
         public int weighBridgeID { get; set; }
+
+        public string employeeRFID { get; set; }
+
     }
 }

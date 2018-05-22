@@ -12,8 +12,14 @@ namespace QWMSServer.Model.ViewModels
 
         public string Code { get; set; }
 
+        public string username { get; set; }
+
+        public string password { get; set; }
+
         public bool isDelete { get; set; }
 
         public ICollection<EmployeeViewModel> employees { get; set; }
+
+        public TokenViewModel token { get; set; }
     }
 }

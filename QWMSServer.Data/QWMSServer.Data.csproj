@@ -184,6 +184,7 @@
     <Compile Include="Repository\IStateRecordRepository.cs" />
     <Compile Include="Repository\IStateRepository.cs" />
     <Compile Include="Repository\ISystemFunctionRepository.cs" />
+    <Compile Include="Repository\ITokenRepository.cs" />
     <Compile Include="Repository\ITruckActionRepository.cs" />
     <Compile Include="Repository\ITruckRepository.cs" />
     <Compile Include="Repository\ITruckTypeRepository.cs" />
@@ -191,7 +192,7 @@
     <Compile Include="Repository\IUserRepository.cs" />
     <Compile Include="Repository\IVoiceRecordRepository.cs" />
     <Compile Include="Repository\IWarehouseTypeRepository.cs" />
-    <Compile Include="Repository\IWareshouseRepository.cs" />
+    <Compile Include="Repository\IWarehouseRepository.cs" />
     <Compile Include="Repository\IWeightBridgeRepository.cs" />
     <Compile Include="Repository\IWeightRecordRepository.cs" />
     <Compile Include="Repository\LaneRepository.cs">
@@ -263,6 +264,9 @@
     <Compile Include="Repository\SystemFunctionRepository.cs">
       <DependentUpon>ISystemFunctionRepository.cs</DependentUpon>
     </Compile>
+    <Compile Include="Repository\TokenRepository.cs">
+      <DependentUpon>ITokenRepository.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repository\TruckActionRepository.cs">
       <DependentUpon>ITruckActionRepository.cs</DependentUpon>
     </Compile>
@@ -281,11 +285,11 @@
     <Compile Include="Repository\VoiceRecordRepository.cs">
       <DependentUpon>IVoiceRecordRepository.cs</DependentUpon>
     </Compile>
+    <Compile Include="Repository\WarehouseRepository.cs">
+      <DependentUpon>IWarehouseRepository.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repository\WarehouseTypeRepository.cs">
       <DependentUpon>IWarehouseTypeRepository.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Repository\WareshouseRepository.cs">
-      <DependentUpon>IWareshouseRepository.cs</DependentUpon>
     </Compile>
     <Compile Include="Repository\WeightBridgeRepository.cs">
       <DependentUpon>IWeightBridgeRepository.cs</DependentUpon>
@@ -296,6 +300,13 @@
     <Compile Include="Services\AdminService.cs">
       <DependentUpon>IAdminService.cs</DependentUpon>
     </Compile>
+    <Compile Include="Services\AuthService.cs">
+      <DependentUpon>IAuthService.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Services\CommonService.cs">
+      <DependentUpon>ICommonService.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Services\IAuthService.cs" />
     <Compile Include="Services\ResponseConstructor.cs" />
     <Compile Include="Services\IAdminService.cs" />
     <Compile Include="Services\ICommonService.cs" />
@@ -311,8 +322,11 @@
     <Compile Include="Services\QueueService.cs">
       <DependentUpon>IQueueService.cs</DependentUpon>
     </Compile>
-    <Compile Include="Services\WarehouseService.cs" />
+    <Compile Include="Services\IWarehouseService.cs" />
     <Compile Include="Services\IWeightService.cs" />
+    <Compile Include="Services\WarehouseService.cs">
+      <DependentUpon>IWarehouseService.cs</DependentUpon>
+    </Compile>
     <Compile Include="Services\WeightService.cs">
       <DependentUpon>IWeightService.cs</DependentUpon>
     </Compile>

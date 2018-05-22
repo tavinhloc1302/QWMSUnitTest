@@ -20,6 +20,6 @@ namespace QWMSServer.Model.ViewModels
 
         public bool isDelete { get; set; }
 
-        //public Company company { get; set; }
+        public CompanyViewModel company { get; set; }
     }
 }

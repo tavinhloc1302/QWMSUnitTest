@@ -20,7 +20,7 @@ namespace QWMSServer.Model.ViewModels
 
         public bool isDelete { get; set; }
 
-        public WarehouseViewModel wareshouse { get; set; }
+        public WarehouseViewModel warehouse { get; set; }
 
         public ICollection<LaneViewModel> lanes { get; set; }
     }
