@@ -443,43 +443,49 @@ namespace QWMSServer.Tests.ServiceTest
         //    return !queueList.isDelete;
         //}
 
-        //[TestMethod]
-        //public async Task TestMethod_AssignLane_Ok()
-        //{
-        //    var normalLoadingBayId = 1;
-        //    var normalTruckId = 1;
-        //    var lowestKpiLaneId = await _queueService.assignLane(
-        //        normalLoadingBayId, normalTruckId);
-        //    var highestKpiLane = await _laneRepository.GetByIdAsync(
-        //        lowestKpiLaneId);
-        //    Assert.AreEqual(normalLoadingBayId, highestKpiLane.loadingBayID);
-        //}
+        [TestMethod]
+        public async Task TestMethod_AssignLane_Ok()
+        {
+            var sampleLoadingBay = DataRecords.LOADING_BAY_NORMAL;
+            var sampleTruck = DataRecords.TRUCK_NORMAL;
+            var lowestKpiLaneId = await _queueService.assignLane(
+                sampleLoadingBay.ID, sampleTruck.ID);
+            var lowestKpiLane = await _laneRepository.GetByIdAsync(lowestKpiLaneId);
+            Assert.IsNotNull(lowestKpiLane);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_AssignLane_NoLoadingBay()
+        {
+            var sampleLoadingBay = DataRecords.LOADING_BAY_DELETED;
+            var sampleTruck = DataRecords.TRUCK_NORMAL;
+            var lowestKpiLaneId = await _queueService.assignLane(
+                sampleLoadingBay.ID, sampleTruck.ID);
+            Assert.IsNull(lowestKpiLaneId);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_AssignLane_NoTruck()
+        {
+            var sampleLoadingBay = DataRecords.LOADING_BAY_NORMAL;
+            var sampleTruck = DataRecords.TRUCK_DELETED;
+            var lowestKpiLaneId = await _queueService.assignLane(
+                sampleLoadingBay.ID, sampleTruck.ID);
+            Assert.IsNull(lowestKpiLaneId);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_ReOrderQueue_Ok()
+        {
+            var response = await _queueService.ReOrderQueue();
+            Assert.IsTrue(response.booleanResponse);
+        }
 
         //[TestMethod]
-        //public async Task TestMethod_AssignLane_NoLane()
+        //public async Task TestMethod_ImportDO_Ok()
         //{
-        //    var normalTruckId = 1;
-        //    var lowestKpiLaneId = await _queueService.assignLane(
-        //        CANNOT_BE_MATCHED_ID, normalTruckId);
-        //    Assert.IsNull(lowestKpiLaneId);
-        //}
-
-        //[TestMethod]
-        //public async Task TestMethod_AssignLane_NoTruck()
-        //{
-        //    var normalLoadingBayId = 1;
-        //    var lowestKpiLaneId = await _queueService.assignLane(
-        //        normalLoadingBayId, CANNOT_BE_MATCHED_ID);
-        //    Assert.IsNull(lowestKpiLaneId);
-        //}
-
-        //[TestMethod]
-        //public async Task TestMethod_ReOrderQueue_Ok()
-        //{
-        //    var normalLoadingBayId = 1;
-        //    var lowestKpiLaneId = await _queueService.assignLane(
-        //        normalLoadingBayId, CANNOT_BE_MATCHED_ID);
-        //    Assert.IsNull(lowestKpiLaneId);
+        //    var response = await _queueService.ImportDO();
+        //    Assert.IsTrue(response.booleanResponse);
         //}
     }
 }
