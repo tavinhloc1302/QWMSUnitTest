@@ -15,16 +15,45 @@ namespace QWMSServer.Tests.Dummy
 {
     public abstract class RepositoryBaseTest<TEntity> : IAsyncRepository<TEntity> where TEntity : class
     {
-        abstract public IQueryable<TEntity> Objects { get; }
+        protected IList<TEntity> _ObjectList = null;
+        public IQueryable<TEntity> Objects => _ObjectList.AsQueryable();
+
+        public RepositoryBaseTest()
+        {
+            this._ObjectList = this.GetObjectList();
+        }
+
+        public abstract IList<TEntity> GetObjectList();
+        public void SetObjectList(IList<TEntity> value)
+        {
+            this._ObjectList = value;
+        }
+
+        protected IList<TEntity> ObjectList
+        {
+            get
+            {
+                return this.GetObjectList();
+            }
+            set
+            {
+                this.SetObjectList(value);
+            }
+
+        }
 
         public async void Add(TEntity entity)
         {
-            throw new NotImplementedException();
+            var biggestIdObj = this.Objects.OrderByDescending(o => ObjectUtils.GetProperty<int>(o, "ID")).First();
+            var biggestId = ObjectUtils.GetProperty<int>(biggestIdObj, "ID");
+            ObjectUtils.SetProperty(entity, "ID", biggestId + 1);
+
+            this.ObjectList.Add(entity);
         }
 
         public async Task<int> CountAsync(Expression<Func<TEntity, bool>> where)
         {
-            return this.Objects.Count();
+            return this.Query(where).Count();
         }
 
         public async void Delete(TEntity entity)
@@ -44,7 +73,7 @@ namespace QWMSServer.Tests.Dummy
 
         public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Query(where).First();
         }
 
         public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> where, IEnumerable<string> includes = null)
@@ -60,22 +89,44 @@ namespace QWMSServer.Tests.Dummy
 
         public async Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> where)
         {
-            throw new NotImplementedException();
+            return this.Query(where).ToList();
         }
 
         public async Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            return this.Query(where, includes).ToList();
         }
 
         public IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> where, IEnumerable<string> includes = null)
         {
-            throw new NotImplementedException();
+            var query = this.Objects.Where(where);
+            if (includes != null)
+                foreach (String name in includes)
+                    query = query.Include(name);
+
+            return query;
         }
 
         public async void Update(TEntity entity)
         {
-            throw new NotImplementedException();
+            var found = false;
+            var listIndex = 0;
+            for (; listIndex < this.ObjectList.Count; listIndex++)
+            {
+                var curEntity = this.ObjectList[listIndex];
+                if (ObjectUtils.GetProperty<int>(curEntity, "ID") == ObjectUtils.GetProperty<int>(entity, "ID"))
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                throw new KeyNotFoundException("No matching entity to update.");
+            }
+
+            this.ObjectList[listIndex] = entity;
         }
     }
 }

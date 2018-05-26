@@ -99,9 +99,13 @@
   <ItemGroup>
     <Compile Include="Dummy\CarrierVendorRepositoryTest.cs" />
     <Compile Include="Dummy\CustomerRepositoryTest.cs" />
+    <Compile Include="Dummy\DataRecords.cs" />
     <Compile Include="Dummy\DriverRepositoryTest.cs" />
     <Compile Include="Dummy\GatePassRepositoryTest.cs" />
     <Compile Include="Dummy\LaneRepositoryTest.cs" />
+    <Compile Include="Dummy\EmployeeRepositoryTest.cs" />
+    <Compile Include="Dummy\OrderTypeRepositoryTest.cs" />
+    <Compile Include="Dummy\OrderRepositoryTest.cs" />
     <Compile Include="Dummy\QueueListRepositoryTest.cs" />
     <Compile Include="Dummy\RepositoryBaseTest.cs" />
     <Compile Include="Dummy\RFIDCardRepositoryTest.cs" />

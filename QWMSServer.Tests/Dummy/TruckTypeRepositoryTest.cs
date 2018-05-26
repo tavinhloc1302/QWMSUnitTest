@@ -7,25 +7,14 @@ namespace QWMSServer.Tests.Dummy
 {
     public class TruckTypeRepositoryTest : RepositoryBaseTest<TruckType>, ITruckTypeRepository
     {
-        public override IQueryable<TruckType> Objects => new List<TruckType>() {
-                new TruckType() {
-                    ID = 1,
-                    code = "1111",
-                    desciption = "1111 Desc",
-                    isDelete = false
-                },
-                new TruckType() {
-                    ID = 2,
-                    code = "2222",
-                    desciption = "2222 Desc",
-                    isDelete = true
-                },
-                new TruckType() {
-                    ID = 3,
-                    code = "3333",
-                    desciption = "3333 Desc",
-                    isDelete = false
-                }
-            }.AsQueryable();
+        public override IList<TruckType> GetObjectList()
+        {
+            return new List<TruckType>() {
+                DataRecords.TRUCK_TYPE_TRUCK,
+                DataRecords.TRUCK_TYPE_CONTAINER,
+                DataRecords.TRUCK_TYPE_PUMP,
+                DataRecords.TRUCK_TYPE_TRUCK_CONTAINER,
+            };
+        }
     }
 }
