@@ -37,6 +37,14 @@ namespace QWMSServer.Tests.ServiceTest
         private readonly ICustomerWarehouseRepository _customerWarehouseRepository;
         private readonly IOrderMaterialRepository _orderMaterialRepository;
         private readonly IMaterialRepository _materialRepository;
+        private readonly IDriverRepository _driverRepository;
+        private readonly IUnitTypeRepository _unitTypeRepository;
+        private readonly ILoadingBayRepository _loadingBayRepository;
+        private readonly ICommonService _commonService;
+        private readonly IPurchaseOrderRepository _purchaseOrderRepository;
+        private readonly IPurchaseOrderTypeRepository _purchaseOrderTypeRepository;
+        private readonly IPlantRepository _plantRepository;
+
         private readonly QueueService _queueService;
 
         public QueueServiceTest()
@@ -47,101 +55,108 @@ namespace QWMSServer.Tests.ServiceTest
             _unitOfWork = new UnitOfWorkTest();
             _gatePassRepository = new GatePassRepositoryTest();
             _stateRepository = new StateRepositoryTest();
-            // _laneRepository = new LaneRepositoryTest();
+            _laneRepository = new LaneRepositoryTest();
             _truckRepository = new TruckRepositoryTest();
             _queueListRepository = new QueueListRepositoryTest();
             _RFIDCardRepository = new RFIDCardRepositoryTest();
-            // _employeepository = new EmployeeRepositoryTest();
-            // _saleOrderRepository = new SaleOrderRepositoryTest();
-            // _deliveryOrderRepository = new DeliveryOrderRepositoryTest();
-            // _orderRepository = new OrderRepositoryTest();
+            _employeepository = new EmployeeRepositoryTest();
+            //_saleOrderRepository = new SaleOrderRepositoryTest();
+            //_deliveryOrderRepository = new DeliveryOrderRepositoryTest();
+            _orderRepository = new OrderRepositoryTest();
             _carrierVendorRepository = new CarrierVendorRepositoryTest();
             _customerRepository = new CustomerRepositoryTest();
-            // _deliveryOrderTypeRepository = new DeliveryOrderTypeRepositoryTest();
-            // _customerWarehouseRepository = new CustomerWarehouseRepositoryTest();
-            // _orderMaterialRepository = new OrderMaterialRepositoryTest();
-            // _materialRepository = new MaterialRepositoryTest();
+            //_deliveryOrderTypeRepository = new DeliveryOrderTypeRepositoryTest();
+            //_customerWarehouseRepository = new CustomerWarehouseRepositoryTest();
+            //_orderMaterialRepository = new OrderMaterialRepositoryTest();
+            //_materialRepository = new MaterialRepositoryTest();
+            _driverRepository = new DriverRepositoryTest();
+            //_unitTypeRepository = new UnitTypeRepositoryTest();
+            //_loadingBayRepository = new LoadingBayRepositoryTest();
+            //_commonService = new CommonServiceTest();
+            //_purchaseOrderRepository = new PurchaseOrderRepositoryTest();
+            //_purchaseOrderTypeRepository = new PurchaseOrderTypeRepositoryTest();
+            //_plantRepository = new PlantRepositoryTest();
             _queueService = new QueueService(
-                _unitOfWork, _gatePassRepository, _stateRepository,
-                _laneRepository, _truckRepository, _queueListRepository,
-                _RFIDCardRepository, _employeepository, _saleOrderRepository,
-                _deliveryOrderRepository, _orderRepository,
-                _carrierVendorRepository, _customerRepository,
-                _deliveryOrderTypeRepository, _customerWarehouseRepository,
-                _orderMaterialRepository, _materialRepository
+               _unitOfWork, _gatePassRepository, _stateRepository, _laneRepository,
+               _truckRepository, _queueListRepository, _RFIDCardRepository,
+               _employeepository, _saleOrderRepository, _deliveryOrderRepository,
+               _orderRepository, _carrierVendorRepository, _customerRepository,
+               _deliveryOrderTypeRepository, _customerWarehouseRepository,
+               _orderMaterialRepository, _materialRepository, _driverRepository,
+               _unitTypeRepository, _loadingBayRepository, _commonService,
+               _purchaseOrderRepository, _purchaseOrderTypeRepository,
+               _plantRepository
             );
         }
 
-        protected static bool IsAvailableGatePass(GatePass gate)
-        {
-            return gate.stateID != 0 && gate.isDelete == false;
-        }
+        //protected static bool IsAvailableGatePass(GatePass gate)
+        //{
+        //    return gate.stateID != 0 && gate.isDelete == false;
+        //}
 
-        protected static bool IsDeletedGatePass(GatePass gate)
-        {
-            return gate.isDelete == true;
-        }
+        //protected static bool IsDeletedGatePass(GatePass gate)
+        //{
+        //    return gate.isDelete == true;
+        //}
 
-        protected static bool IsBusyGatePass(GatePass gate)
-        {
-            return gate.stateID == 0;
-        }
+        //protected static bool IsBusyGatePass(GatePass gate)
+        //{
+        //    return gate.stateID == 0;
+        //}
 
         [TestMethod]
         public async Task TestMethod_GetAllGatePass()
         {
-            var actualResult = await _queueService.GetAllGatePass();
-            Assert.IsNotNull(actualResult);
+            var response = await _queueService.GetAllGatePass();
+
+            var gates = response.responseDatas;
+            Assert.AreEqual(gates.Count(), _gatePassRepository.Objects.Count());
         }
 
-        protected GatePass GetSampleGatePass(Func<GatePass, bool> filterFunc = null)
-        {
-            if (filterFunc == null) {
+        //protected GatePass GetSampleGatePass(Func<GatePass, bool> filterFunc = null)
+        //{
+        //    if (filterFunc == null) {
 
-                return _gatePassRepository.Objects.First();
-            }
+        //        return _gatePassRepository.Objects.First();
+        //    }
 
-            return _gatePassRepository.Objects.First(filterFunc);
-        }
+        //    return _gatePassRepository.Objects.First(filterFunc);
+        //}
 
         [TestMethod]
         public async Task TestMethod_GetGatePassByID_Found()
         {
-            var sampleGate = this.GetSampleGatePass(QueueServiceTest.IsAvailableGatePass);
-            Assert.IsNotNull(sampleGate);
+            var index = DataRecords.GATE_PASS_NORMAL.ID;
+            var response = await _queueService.GetGatePassByID(index);
 
-            var response = await _queueService.GetGatePassByID(sampleGate.ID);
             var gate = response.responseData;
-            Assert.AreEqual(gate, sampleGate);
+            Assert.AreEqual(index, gate.ID);
         }
 
         [TestMethod]
         public async Task TestMethod_GetGatePassByID_NotFound()
         {
-            var index = CANNOT_BE_MATCHED_ID;
+            var index = DataRecords.GATE_PASS_DELETED.ID;
             var response = await _queueService.GetGatePassByID(index);
 
             var gate = response.responseData;
-            Assert.AreEqual(gate, null);
+            Assert.IsNull(gate);
         }
 
         [TestMethod]
         public async Task TestMethod_GetGatePassByDriverID_Found()
         {
-            var sampleGate = this.GetSampleGatePass(
-                g => g.driver != null && QueueServiceTest.IsAvailableGatePass(g));
-            Assert.IsNotNull(sampleGate);
-
-            var response = await _queueService.GetGatePassByDriverID(sampleGate.driver.ID);
+            var index = DataRecords.GATE_PASS_NORMAL.driver.ID;
+            var response = await _queueService.GetGatePassByDriverID(index);
 
             var gate = response.responseData;
-            Assert.AreEqual(gate.driver.ID, sampleGate.driver.ID);
+            Assert.AreEqual(index, gate.driver.ID);
         }
 
         [TestMethod]
         public async Task TestMethod_GetGatePassByDriverID_NotFound()
         {
-            var index = CANNOT_BE_MATCHED_ID;
+            var index = DataRecords.GATE_PASS_DELETED.driver.ID;
             var response = await _queueService.GetGatePassByDriverID(index);
 
             var gate = response.responseData;
@@ -151,20 +166,17 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_GetGatePassByCode_Found()
         {
-            var sampleGate = this.GetSampleGatePass(
-                g => !String.IsNullOrEmpty(g.code) && QueueServiceTest.IsAvailableGatePass(g));
-            Assert.IsNotNull(sampleGate);
-
-            var response = await _queueService.GetGatePassByCode(sampleGate.code);
+            var index = DataRecords.GATE_PASS_NORMAL.code;
+            var response = await _queueService.GetGatePassByCode(index);
 
             var gate = response.responseData;
-            Assert.AreEqual(gate.code, sampleGate.code);
+            Assert.AreEqual(index, gate.code);
         }
 
         [TestMethod]
         public async Task TestMethod_GetGatePassByCode_NotFound()
         {
-            var index = CANNOT_BE_MATCHED_CODE;
+            var index = DataRecords.GATE_PASS_DELETED.code;
             var response = await _queueService.GetGatePassByCode(index);
 
             var gate = response.responseData;
@@ -174,21 +186,17 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_GetGatePassByRFID_Found()
         {
-            var sampleGate = this.GetSampleGatePass(
-                g => g.RFIDCardID != null && QueueServiceTest.IsAvailableGatePass(g));
-            Assert.IsNotNull(sampleGate);
-
-            var sampleRFIDCard = await this._RFIDCardRepository.GetByIdAsync(sampleGate.RFIDCardID.Value);
-            var response = await _queueService.GetGatePassByRFID(sampleRFIDCard.code);
+            var index = DataRecords.GATE_PASS_NORMAL.RFIDCard.code;
+            var response = await _queueService.GetGatePassByRFID(index);
 
             var gate = response.responseData;
-            Assert.AreEqual(gate.RFIDCardID, sampleGate.RFIDCardID);
+            Assert.AreEqual(index, gate.RFIDCard.code);
         }
 
         [TestMethod]
         public async Task TestMethod_GetGatePassByRFID_NotFound()
         {
-            var index = CANNOT_BE_MATCHED_CODE;
+            var index = DataRecords.GATE_PASS_DELETED.RFIDCard.code;
             var response = await _queueService.GetGatePassByRFID(index);
 
             var gate = response.responseData;
@@ -198,20 +206,17 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_GetGatePassByPlateNumber_Found()
         {
-            var sampleGate = this.GetSampleGatePass(
-                g => g.truckID != null && QueueServiceTest.IsAvailableGatePass(g));
-            Assert.IsNotNull(sampleGate);
-
-            var response = await _queueService.GetGatePassByPlateNumber(sampleGate.truck.plateNumber);
+            var index = DataRecords.GATE_PASS_NORMAL.truck.plateNumber;
+            var response = await _queueService.GetGatePassByPlateNumber(index);
 
             var gate = response.responseData;
-            Assert.AreEqual(gate.truck.plateNumber, sampleGate.truck.plateNumber);
+            Assert.AreEqual(index, gate.truck.plateNumber);
         }
 
         [TestMethod]
         public async Task TestMethod_GetGatePassByPlateNumber_NotFound()
         {
-            var index = CANNOT_BE_MATCHED_CODE;
+            var index = DataRecords.GATE_PASS_DELETED.truck.plateNumber;
             var response = await _queueService.GetGatePassByPlateNumber(index);
 
             var gate = response.responseData;
@@ -223,7 +228,7 @@ namespace QWMSServer.Tests.ServiceTest
         {
             var sampleDriverCamCapturePath = "Path random, yolo!";
 
-            var sampleGate = this.GetSampleGatePass();
+            var sampleGate = DataRecords.GATE_PASS_FOR_UPDATE;
             sampleGate.driverCamCapturePath = sampleDriverCamCapturePath;
             var sampleGateView = Mapper.Map<GatePass, GatePassViewModel>(sampleGate);
 
@@ -238,13 +243,13 @@ namespace QWMSServer.Tests.ServiceTest
             var fileName = "testDriverAvatar.png";
             var driverAvatarData = File.ReadAllBytes("../../Resources/driver_avatar.png");
 
-            var add_ok = _queueService.AddDriverPicture(fileName, driverAvatarData);
-            Assert.IsTrue(add_ok);
+            var response = _queueService.AddDriverPicture(fileName, driverAvatarData);
+            Assert.IsTrue(response.booleanResponse);
 
-            string addedFilePath = Constant.DriverCapturePath + fileName;
-            var addedDriverAvatarData = File.ReadAllBytes(addedFilePath);
+            //string addedFilePath = Constant.DriverCapturePath + fileName;
+            //var addedDriverAvatarData = File.ReadAllBytes(addedFilePath);
 
-            Assert.AreEqual(driverAvatarData, addedDriverAvatarData);
+            //Assert.AreEqual(driverAvatarData, addedDriverAvatarData);
         }
 
         [TestMethod]
@@ -252,8 +257,8 @@ namespace QWMSServer.Tests.ServiceTest
         {
             var driverAvatarData = File.ReadAllBytes("../../Resources/driver_avatar.png");
 
-            var add_ok = _queueService.AddDriverPicture(null, driverAvatarData);
-            Assert.IsFalse(add_ok);
+            var response = _queueService.AddDriverPicture(null, driverAvatarData);
+            Assert.IsFalse(response.booleanResponse);
         }
 
         [TestMethod]
@@ -261,22 +266,22 @@ namespace QWMSServer.Tests.ServiceTest
         {
             var fileName = "testDriverAvatar.png";
 
-            var add_ok = _queueService.AddDriverPicture(fileName, null);
-            Assert.IsFalse(add_ok);
+            var response = _queueService.AddDriverPicture(fileName, null);
+            Assert.IsFalse(response.booleanResponse);
         }
 
         [TestMethod]
         public async Task TestMethod_UpdateGatePassWithRFIDCode_Ok()
         {
-            var sampleRFIDCode = 100;
+            var sampleRFIDCardId = DataRecords.RFID_CARD_NORMAL_2.ID;
+            var sampleGate = DataRecords.GATE_PASS_FOR_UPDATE;
 
-            var sampleGate = this.GetSampleGatePass();
             var sampleGateView = Mapper.Map<GatePass, GatePassViewModel>(sampleGate);
-            sampleGateView.RFIDCardID = sampleRFIDCode;
+            sampleGateView.RFIDCardID = sampleRFIDCardId;
 
             var updateResponse = await _queueService.UpdateGatePassWithRFIDCode(sampleGateView);
             var updatedGate = updateResponse.responseData;
-            Assert.AreEqual(sampleRFIDCode, updatedGate.RFIDCardID);
+            Assert.AreEqual(sampleRFIDCardId, updatedGate.RFIDCardID);
         }
 
         [TestMethod]
@@ -290,111 +295,197 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_UpdateGatePassWithRFIDCode_NotFound()
         {
-            var sampleRFIDCode = 100;
+            var sampleRFIDCardId = DataRecords.RFID_CARD_NORMAL_2.ID;
+            var sampleGate = DataRecords.GATE_PASS_DELETED;
 
-            var sampleGate = this.GetSampleGatePass();
             var sampleGateView = Mapper.Map<GatePass, GatePassViewModel>(sampleGate);
-            sampleGateView.ID = CANNOT_BE_MATCHED_ID;
-            sampleGateView.RFIDCardID = sampleRFIDCode;
+            sampleGateView.RFIDCardID = sampleRFIDCardId;
 
             var updateResponse = await _queueService.UpdateGatePassWithRFIDCode(sampleGateView);
             var updatedGate = updateResponse.responseData;
             Assert.IsNull(updatedGate);
         }
 
-        protected GatePass GetFullRFIDCardSampleGate() {
-            return this.GetSampleGatePass(
-                gp => gp.employee.RFIDCardID != null && gp.RFIDCardID != null
-            );
-        }
+        //protected GatePass GetFullRFIDCardSampleGate() {
+        //    return this.GetSampleGatePass(
+        //        gp => gp.employee.RFIDCardID != null && gp.RFIDCardID != null
+        //    );
+        //}
 
         [TestMethod]
         public async Task TestMethod_CreateRegisteredQueueItem_Ok()
         {
-            var sampleGate = this.GetFullRFIDCardSampleGate();
-            var isUpdateOK = await _queueService.CreateRegisteredQueueItem(
+            var sampleGate = DataRecords.GATE_PASS_FOR_UPDATE;
+            var sampleEmpRFIDCard = DataRecords.RFID_CARD_NORMAL;
+            var sampleDriverRFIDCard = DataRecords.RFID_CARD_NORMAL_2;
+
+            var response = await _queueService.CreateRegisteredQueueItem(
                 sampleGate.ID, "avatar.png",
-                sampleGate.employee.RFIDCardID.Value.ToString(),
-                sampleGate.RFIDCardID.Value.ToString());
-            Assert.IsTrue(isUpdateOK);
+                sampleEmpRFIDCard.code,
+                sampleDriverRFIDCard.code);
+            Assert.IsTrue(response.booleanResponse);
         }
 
         [TestMethod]
         public async Task TestMethod_CreateRegisteredQueueItem_NotFound_Gate()
         {
-            var sampleGate = this.GetFullRFIDCardSampleGate();
-            var isUpdateOK = await _queueService.CreateRegisteredQueueItem(
+            var sampleEmpRFIDCard = DataRecords.RFID_CARD_NORMAL;
+            var sampleDriverRFIDCard = DataRecords.RFID_CARD_NORMAL_2;
+
+            var response = await _queueService.CreateRegisteredQueueItem(
                 CANNOT_BE_MATCHED_ID, "avatar.png",
-                sampleGate.employee.RFIDCardID.Value.ToString(),
-                sampleGate.RFIDCardID.Value.ToString());
-            Assert.IsFalse(isUpdateOK);
+                sampleEmpRFIDCard.code,
+                sampleDriverRFIDCard.code);
+            Assert.IsFalse(response.booleanResponse);
         }
 
         [TestMethod]
         public async Task TestMethod_CreateRegisteredQueueItem_NotFound_EmployeeRFID()
         {
-            var sampleGate = this.GetFullRFIDCardSampleGate();
-            var isUpdateOK = await _queueService.CreateRegisteredQueueItem(
+            var sampleGate = DataRecords.GATE_PASS_FOR_UPDATE;
+            var sampleDriverRFIDCard = DataRecords.RFID_CARD_NORMAL;
+
+            var response = await _queueService.CreateRegisteredQueueItem(
                 sampleGate.ID, "avatar.png",
                 CANNOT_BE_MATCHED_CODE,
-                sampleGate.RFIDCardID.Value.ToString());
-            Assert.IsFalse(isUpdateOK);
+                sampleDriverRFIDCard.code);
+            Assert.IsFalse(response.booleanResponse);
         }
 
         [TestMethod]
         public async Task TestMethod_CreateRegisteredQueueItem_NotFound_DriverRFID()
         {
-            var sampleGate = this.GetFullRFIDCardSampleGate();
-            var isUpdateOK = await _queueService.CreateRegisteredQueueItem(
+            var sampleGate = DataRecords.GATE_PASS_FOR_UPDATE;
+            var sampleEmpRFIDCard = DataRecords.RFID_CARD_NORMAL;
+
+            var response = await _queueService.CreateRegisteredQueueItem(
                 sampleGate.ID, "avatar.png",
-                sampleGate.employee.RFIDCardID.Value.ToString(),
+                sampleEmpRFIDCard.code,
                 CANNOT_BE_MATCHED_CODE);
-            Assert.IsFalse(isUpdateOK);
+            Assert.IsFalse(response.booleanResponse);
         }
 
         [TestMethod]
-        public void TestMethod_findTruckGroup_DeliPump()
+        public void TestMethod_FindTruckGroup_DeliPump()
         {
-            var sampleGate = this.GetSampleGatePass(
-                gp => gp.orders.First().orderTypeID == Constant.DELIVERYORDER
-                && gp.truckTyeID == Constant.PUMP);
+            var sampleGate = DataRecords.GATE_PASS_1ST_ORDER_DELI_TYPE_PUMP;
             var truckGroup = _queueService.findTruckGroup(sampleGate);
             Assert.AreEqual(Constant.TRUCKGROUP2X, truckGroup);
         }
 
         [TestMethod]
-        public void TestMethod_findTruckGroup_DeliNotPump()
+        public void TestMethod_FindTruckGroup_DeliNotPump()
         {
-            var sampleGate = this.GetSampleGatePass(
-                gp => gp.orders.First().orderTypeID == Constant.DELIVERYORDER
-                && gp.truckTyeID != Constant.PUMP);
+            var sampleGate = DataRecords.GATE_PASS_1ST_ORDER_DELI_TYPE_NOT_PUMP;
             var truckGroup = _queueService.findTruckGroup(sampleGate);
             Assert.AreEqual(Constant.TRUCKGROUP1X, truckGroup);
         }
 
         [TestMethod]
-        public void TestMethod_findTruckGroup_Purchase()
+        public void TestMethod_FindTruckGroup_Purchase()
         {
-            var sampleGate = this.GetSampleGatePass(
-                gp => gp.orders.First().orderTypeID == Constant.PURCHASEORDER);
+            var sampleGate = DataRecords.GATE_PASS_1ST_ORDER_PURCHASE;
             var truckGroup = _queueService.findTruckGroup(sampleGate);
             Assert.AreEqual(Constant.TRUCKGROUP3X, truckGroup);
         }
 
         [TestMethod]
-        public void TestMethod_findTruckGroup_NotDeliOrPurchase()
+        public void TestMethod_FindTruckGroup_NotDeliOrPurchase()
         {
-            var sampleGate = this.GetSampleGatePass(
-                gp => gp.orders.First().orderTypeID != Constant.DELIVERYORDER
-                && gp.orders.First().orderTypeID != Constant.PURCHASEORDER);
+            var sampleGate = DataRecords.GATE_PASS_1ST_ORDER_TYPE_OTHER;
             var truckGroup = _queueService.findTruckGroup(sampleGate);
             Assert.AreEqual(Constant.TRUCKGROUP3X, truckGroup);
         }
 
+        //protected Lane GetSampleLane(Func<Lane, bool> filterFunc = null)
+        //{
+        //    if (filterFunc == null) {
+
+        //        return _laneRepository.Objects.First();
+        //    }
+
+        //    return _laneRepository.Objects.First(filterFunc);
+        //}
+
+        //protected static bool IsAvailableLane(Lane lane)
+        //{
+        //    return !lane.isDelete && lane.status == 1;
+        //}
+
+        //protected Truck GetSampleTruck(Func<Truck, bool> filterFunc = null)
+        //{
+        //    if (filterFunc == null) {
+
+        //        return _truckRepository.Objects.First();
+        //    }
+
+        //    return _truckRepository.Objects.First(filterFunc);
+        //}
+
+        //protected static bool IsAvailableTruck(Truck truck)
+        //{
+        //    return !truck.isDelete;
+        //}
+
+        // protected QueueList GetSampleQueueList(Func<QueueList, bool> filterFunc = null)
+        // {
+        //     if (filterFunc == null) {
+
+        //         return _queueListRepository.Objects.First();
+        //     }
+
+        //     return _queueListRepository.Objects.First(filterFunc);
+        // }
+
+        //protected static bool IsAvailableQueueList(QueueList queueList)
+        //{
+        //    queueList.
+        //    return !queueList.isDelete;
+        //}
+
         [TestMethod]
-        public void TestMethod_assignLane()
+        public async Task TestMethod_AssignLane_Ok()
         {
-            // var truckGroup = _queueService.assignLane(sampleGate);
+            var sampleLoadingBay = DataRecords.LOADING_BAY_NORMAL;
+            var sampleTruck = DataRecords.TRUCK_NORMAL;
+            var lowestKpiLaneId = await _queueService.assignLane(
+                sampleLoadingBay.ID, sampleTruck.ID);
+            var lowestKpiLane = await _laneRepository.GetByIdAsync(lowestKpiLaneId);
+            Assert.IsNotNull(lowestKpiLane);
         }
+
+        [TestMethod]
+        public async Task TestMethod_AssignLane_NoLoadingBay()
+        {
+            var sampleLoadingBay = DataRecords.LOADING_BAY_DELETED;
+            var sampleTruck = DataRecords.TRUCK_NORMAL;
+            var lowestKpiLaneId = await _queueService.assignLane(
+                sampleLoadingBay.ID, sampleTruck.ID);
+            Assert.IsNull(lowestKpiLaneId);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_AssignLane_NoTruck()
+        {
+            var sampleLoadingBay = DataRecords.LOADING_BAY_NORMAL;
+            var sampleTruck = DataRecords.TRUCK_DELETED;
+            var lowestKpiLaneId = await _queueService.assignLane(
+                sampleLoadingBay.ID, sampleTruck.ID);
+            Assert.IsNull(lowestKpiLaneId);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_ReOrderQueue_Ok()
+        {
+            var response = await _queueService.ReOrderQueue();
+            Assert.IsTrue(response.booleanResponse);
+        }
+
+        //[TestMethod]
+        //public async Task TestMethod_ImportDO_Ok()
+        //{
+        //    var response = await _queueService.ImportDO();
+        //    Assert.IsTrue(response.booleanResponse);
+        //}
     }
 }
