@@ -17,20 +17,44 @@ namespace QWMSServer.Tests.ServiceTest
         private readonly IDriverRepository _driverRepository;
         private readonly ICarrierVendorRepository _carrierRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IMaterialRepository _materialRepository;
+        private readonly IUnitTypeRepository _unittypeRepository;
+        private readonly ITruckRepository _truckRepository;
+        private readonly ITruckTypeRepository _truckTypeRepository;
+        private readonly ILoadingTypeRepository _loadingTypeRepository;
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IEmployeeGroupRepository _employeeGroupRepository;
+        private readonly IEmployeeRoleRepository _employeeRoleRepository;
+        private readonly IPlantRepository _plantRepository;
+        private readonly ICompanyRepository _companyRepository;
+        private readonly IWarehouseRepository _warehouseRepository;
+        private readonly ILoadingBayRepository _loadingBayRepository;
+        private readonly ILaneRepository _laneRepository;
         private readonly AdminService _adminService;
 
         public AdminServiceTest()
         {
             AutoMapper.Mapper.Reset();
             AutoMapperConfig.Configure();
+
             _unitOfWork = new UnitOfWorkTest();
             _customerRepository = new CustomerRepositoryTest();
             _driverRepository = new DriverRepositoryTest();
             _carrierRepository = new CarrierVendorRepositoryTest();
             _userRepository = new UserRepositoryTest();
-            _adminService = new AdminService(_unitOfWork, _customerRepository, _driverRepository, _carrierRepository, _userRepository);
+            _materialRepository = new MaterialRepositoryTest();
+            _unittypeRepository = new UnitTypeRepositoryTest();
+            _truckRepository = new TruckRepositoryTest();
+            _loadingTypeRepository = new LoadingTypeRepositoryTest();
+            _employeeRepository = new EmployeeRepositoryTest();
+            _employeeGroupRepository = new EmployeeGroupRepositoryTest();
+            _plantRepository = new PlantRepositoryTest();
+            _companyRepository = new CompanyRepositoryTest();
+            _warehouseRepository = new WarehouseRepositoryTest();
+            _loadingBayRepository = new LoadingBayRepositoryTest();
+            _laneRepository = new LaneRepositoryTest();
 
-
+            _adminService = new AdminService(_unitOfWork, _customerRepository, _driverRepository, _carrierRepository, _userRepository, _materialRepository, _unittypeRepository, _truckRepository, _truckTypeRepository, _loadingTypeRepository, _employeeRepository, _employeeGroupRepository, _employeeRoleRepository, _plantRepository, _companyRepository, _warehouseRepository, _loadingBayRepository, _laneRepository);
         }
 
         [TestMethod]
@@ -271,17 +295,6 @@ namespace QWMSServer.Tests.ServiceTest
         }
 
         // ---------------------------------------------> End GetDriverByCode test cases
-
-        // ---------------------------------------------> Begin GetUserPermission test cases
-
-        [TestMethod]
-        public async Task TestMethod_GetUserPermission()
-        {
-            var actualResult = await _adminService.GetUserPermission(1);
-            Assert.IsTrue(actualResult.Count == 0);
-        }
-
-        // ---------------------------------------------> End GetUserPermission test cases
 
         // ---------------------------------------------> Begin SearchCarrier test cases
 

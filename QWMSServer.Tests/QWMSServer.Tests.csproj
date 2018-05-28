@@ -98,15 +98,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dummy\CarrierVendorRepositoryTest.cs" />
+    <Compile Include="Dummy\CompanyRepositoryTest.cs" />
     <Compile Include="Dummy\CustomerRepositoryTest.cs" />
     <Compile Include="Dummy\DataRecords.cs" />
     <Compile Include="Dummy\DriverRepositoryTest.cs" />
+    <Compile Include="Dummy\EmployeeGroupRepositoryTest.cs" />
     <Compile Include="Dummy\GatePassRepositoryTest.cs" />
     <Compile Include="Dummy\LaneRepositoryTest.cs" />
     <Compile Include="Dummy\EmployeeRepositoryTest.cs" />
     <Compile Include="Dummy\LoadingBayRepositoryTest.cs" />
+    <Compile Include="Dummy\MaterialRepositoryTest.cs" />
     <Compile Include="Dummy\OrderTypeRepositoryTest.cs" />
     <Compile Include="Dummy\OrderRepositoryTest.cs" />
+    <Compile Include="Dummy\PlantRepositoryTest.cs" />
     <Compile Include="Dummy\QueueListRepositoryTest.cs" />
     <Compile Include="Dummy\RepositoryBaseTest.cs" />
     <Compile Include="Dummy\RFIDCardRepositoryTest.cs" />
@@ -116,7 +120,9 @@
     <Compile Include="Dummy\LoadingTypeRepositoryTest.cs" />
     <Compile Include="Dummy\TruckTypeRepositoryTest.cs" />
     <Compile Include="Dummy\UnitOfWorkTest.cs" />
+    <Compile Include="Dummy\UnitTypeRepositoryTest.cs" />
     <Compile Include="Dummy\UserRepositoryTest.cs" />
+    <Compile Include="Dummy\WarehouseRepositoryTest.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceTest\AdminServiceTest.cs" />

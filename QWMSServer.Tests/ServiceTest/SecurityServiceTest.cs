@@ -85,7 +85,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_ConfirmSecurityCheck()
         {
-            GatePassViewModel gatePassView = new GatePassViewModel() { code = "0123" };
+            SecurityUpdateStateViewModel gatePassView = new SecurityUpdateStateViewModel() { gatePassCode = "123" };
             var actualResult = await _securityServices.ConfirmSecurityCheck(gatePassView);
             Assert.IsNotNull(actualResult);
         }
@@ -93,7 +93,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_ConfirmSecurityCheck_ShouldFail_NoCode()
         {
-            GatePassViewModel gatePassView = new GatePassViewModel();
+            SecurityUpdateStateViewModel gatePassView = new SecurityUpdateStateViewModel();
             var actualResult = await _securityServices.ConfirmSecurityCheck(gatePassView);
             Assert.IsNull(actualResult.responseData);
         }
