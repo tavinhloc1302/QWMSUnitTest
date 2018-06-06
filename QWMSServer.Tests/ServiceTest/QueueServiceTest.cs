@@ -71,7 +71,7 @@ namespace QWMSServer.Tests.ServiceTest
             //_materialRepository = new MaterialRepositoryTest();
             _driverRepository = new DriverRepositoryTest();
             //_unitTypeRepository = new UnitTypeRepositoryTest();
-            //_loadingBayRepository = new LoadingBayRepositoryTest();
+            _loadingBayRepository = new LoadingBayRepositoryTest();
             //_commonService = new CommonServiceTest();
             //_purchaseOrderRepository = new PurchaseOrderRepositoryTest();
             //_purchaseOrderTypeRepository = new PurchaseOrderTypeRepositoryTest();
@@ -89,21 +89,6 @@ namespace QWMSServer.Tests.ServiceTest
             );
         }
 
-        //protected static bool IsAvailableGatePass(GatePass gate)
-        //{
-        //    return gate.stateID != 0 && gate.isDelete == false;
-        //}
-
-        //protected static bool IsDeletedGatePass(GatePass gate)
-        //{
-        //    return gate.isDelete == true;
-        //}
-
-        //protected static bool IsBusyGatePass(GatePass gate)
-        //{
-        //    return gate.stateID == 0;
-        //}
-
         [TestMethod]
         public async Task TestMethod_GetAllGatePass()
         {
@@ -112,16 +97,6 @@ namespace QWMSServer.Tests.ServiceTest
             var gates = response.responseDatas;
             Assert.AreEqual(gates.Count(), _gatePassRepository.Objects.Count());
         }
-
-        //protected GatePass GetSampleGatePass(Func<GatePass, bool> filterFunc = null)
-        //{
-        //    if (filterFunc == null) {
-
-        //        return _gatePassRepository.Objects.First();
-        //    }
-
-        //    return _gatePassRepository.Objects.First(filterFunc);
-        //}
 
         [TestMethod]
         public async Task TestMethod_GetGatePassByID_Found()
@@ -306,12 +281,6 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNull(updatedGate);
         }
 
-        //protected GatePass GetFullRFIDCardSampleGate() {
-        //    return this.GetSampleGatePass(
-        //        gp => gp.employee.RFIDCardID != null && gp.RFIDCardID != null
-        //    );
-        //}
-
         [TestMethod]
         public async Task TestMethod_CreateRegisteredQueueItem_Ok()
         {
@@ -397,52 +366,6 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.AreEqual(Constant.TRUCKGROUP3X, truckGroup);
         }
 
-        //protected Lane GetSampleLane(Func<Lane, bool> filterFunc = null)
-        //{
-        //    if (filterFunc == null) {
-
-        //        return _laneRepository.Objects.First();
-        //    }
-
-        //    return _laneRepository.Objects.First(filterFunc);
-        //}
-
-        //protected static bool IsAvailableLane(Lane lane)
-        //{
-        //    return !lane.isDelete && lane.status == 1;
-        //}
-
-        //protected Truck GetSampleTruck(Func<Truck, bool> filterFunc = null)
-        //{
-        //    if (filterFunc == null) {
-
-        //        return _truckRepository.Objects.First();
-        //    }
-
-        //    return _truckRepository.Objects.First(filterFunc);
-        //}
-
-        //protected static bool IsAvailableTruck(Truck truck)
-        //{
-        //    return !truck.isDelete;
-        //}
-
-        // protected QueueList GetSampleQueueList(Func<QueueList, bool> filterFunc = null)
-        // {
-        //     if (filterFunc == null) {
-
-        //         return _queueListRepository.Objects.First();
-        //     }
-
-        //     return _queueListRepository.Objects.First(filterFunc);
-        // }
-
-        //protected static bool IsAvailableQueueList(QueueList queueList)
-        //{
-        //    queueList.
-        //    return !queueList.isDelete;
-        //}
-
         [TestMethod]
         public async Task TestMethod_AssignLane_Ok()
         {
@@ -487,5 +410,33 @@ namespace QWMSServer.Tests.ServiceTest
         //    var response = await _queueService.ImportDO();
         //    Assert.IsTrue(response.booleanResponse);
         //}
+
+        [TestMethod]
+        public async Task TestMethod_GetAllLoadingBay_NotFound()
+        {
+            LoadingBayRepositoryTest.FLAG_ADD = 0;
+            var response = await _queueService.GetAllLoadingBay();
+            Assert.AreNotEqual(0, response.errorCode);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetAllLoadingBay_Ok()
+        {
+            LoadingBayRepositoryTest.FLAG_ADD = 1;
+            var response = await _queueService.GetAllLoadingBay();
+            LoadingBayRepositoryTest.FLAG_ADD = 0;
+
+            Assert.IsNotNull(response.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetAllLoadingBay_Exception()
+        {
+            LoadingBayRepositoryTest.FLAG_ADD = -1;
+            var response = await _queueService.GetAllLoadingBay();
+            LoadingBayRepositoryTest.FLAG_ADD = 0;
+
+            Assert.IsNotNull(response.responseDatas);
+        }
     }
 }
