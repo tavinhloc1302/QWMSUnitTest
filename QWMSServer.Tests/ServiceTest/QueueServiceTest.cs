@@ -71,7 +71,7 @@ namespace QWMSServer.Tests.ServiceTest
             //_materialRepository = new MaterialRepositoryTest();
             _driverRepository = new DriverRepositoryTest();
             //_unitTypeRepository = new UnitTypeRepositoryTest();
-            //_loadingBayRepository = new LoadingBayRepositoryTest();
+            _loadingBayRepository = new LoadingBayRepositoryTest();
             //_commonService = new CommonServiceTest();
             //_purchaseOrderRepository = new PurchaseOrderRepositoryTest();
             //_purchaseOrderTypeRepository = new PurchaseOrderTypeRepositoryTest();
@@ -410,5 +410,33 @@ namespace QWMSServer.Tests.ServiceTest
         //    var response = await _queueService.ImportDO();
         //    Assert.IsTrue(response.booleanResponse);
         //}
+
+        [TestMethod]
+        public async Task TestMethod_GetAllLoadingBay_NotFound()
+        {
+            LoadingBayRepositoryTest.FLAG_ADD = 0;
+            var response = await _queueService.GetAllLoadingBay();
+            Assert.AreNotEqual(0, response.errorCode);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetAllLoadingBay_Ok()
+        {
+            LoadingBayRepositoryTest.FLAG_ADD = 1;
+            var response = await _queueService.GetAllLoadingBay();
+            LoadingBayRepositoryTest.FLAG_ADD = 0;
+
+            Assert.IsNotNull(response.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetAllLoadingBay_Exception()
+        {
+            LoadingBayRepositoryTest.FLAG_ADD = -1;
+            var response = await _queueService.GetAllLoadingBay();
+            LoadingBayRepositoryTest.FLAG_ADD = 0;
+
+            Assert.IsNotNull(response.responseDatas);
+        }
     }
 }

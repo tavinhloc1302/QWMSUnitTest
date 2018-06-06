@@ -98,8 +98,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dummy\CarrierVendorRepositoryTest.cs" />
+    <Compile Include="Dummy\CustomerWarehouseRepositoryTest.cs" />
     <Compile Include="Dummy\CustomerRepositoryTest.cs" />
     <Compile Include="Dummy\DataRecords.cs" />
+    <Compile Include="Dummy\DeliveryOrderTypeRepositoryTest.cs" />
     <Compile Include="Dummy\SaleOrderRepositoryTest.cs" />
     <Compile Include="Dummy\DriverRepositoryTest.cs" />
     <Compile Include="Dummy\GatePassRepositoryTest.cs" />

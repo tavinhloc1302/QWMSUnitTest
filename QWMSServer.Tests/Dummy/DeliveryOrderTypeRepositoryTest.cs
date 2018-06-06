@@ -8,21 +8,24 @@ using System.Threading.Tasks;
 
 namespace QWMSServer.Tests.Dummy
 {
-    public class SaleOrderRepositoryTest : RepositoryBaseTest<SaleOrder>, ISaleOrderRepository
+    public class DeliveryOrderTypeRepositoryTest : RepositoryBaseTest<DeliveryOrderType>, IDeliveryOrderTypeRepository
     {
-        public override IList<SaleOrder> GetObjectList()
+        public override IList<DeliveryOrderType> GetObjectList()
         {
-            return new List<SaleOrder>() {
+            return new List<DeliveryOrderType>() {
+                DataRecords.DELIVERY_ORDER_TYPE_NORMAL,
+                DataRecords.DELIVERY_ORDER_TYPE_DELETED,
             };
         }
 
-        public override async Task<SaleOrder> GetAsync(Expression<Func<SaleOrder, bool>> where)
+        public override async Task<DeliveryOrderType> GetAsync(Expression<Func<DeliveryOrderType, bool>> where)
         {
-            var sampleObject = new SaleOrder()
+            var sampleObject = new DeliveryOrderType()
             {
                 ID = 1,
-                Code = "1111",
-                isDelete = false,
+                code = "1111",
+                description = "Normal",
+                isDelete = false
             };
 
             switch (FLAG_GET_ASYNC)

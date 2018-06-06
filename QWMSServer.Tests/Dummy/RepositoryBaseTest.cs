@@ -15,8 +15,16 @@ namespace QWMSServer.Tests.Dummy
 {
     public abstract class RepositoryBaseTest<TEntity> : IAsyncRepository<TEntity> where TEntity : class
     {
+        protected Random random = new Random();
         protected IList<TEntity> _ObjectList = null;
         public IQueryable<TEntity> Objects => _ObjectList.AsQueryable();
+
+        public static int FLAG_ADD = 0;
+
+        // 0: null
+        // 1: Normal
+        // 2: Deleted
+        public static int FLAG_GET_ASYNC = 0;
 
         public RepositoryBaseTest()
         {
@@ -42,13 +50,22 @@ namespace QWMSServer.Tests.Dummy
 
         }
 
-        public async void Add(TEntity entity)
+        public void Add(TEntity entity)
         {
-            var biggestIdObj = this.Objects.OrderByDescending(o => ObjectUtils.GetProperty<int>(o, "ID")).First();
-            var biggestId = ObjectUtils.GetProperty<int>(biggestIdObj, "ID");
-            ObjectUtils.SetProperty(entity, "ID", biggestId + 1);
+            //var biggestIdObj = this.Objects.OrderByDescending(o => ObjectUtils.GetProperty<int>(o, "ID")).First();
+            //var biggestId = ObjectUtils.GetProperty<int>(biggestIdObj, "ID");
+            //ObjectUtils.SetProperty(entity, "ID", biggestId + 1);
 
-            this.ObjectList.Add(entity);
+            //this.ObjectList.Add(entity);
+            switch (FLAG_ADD)
+            {
+                case 0:
+                    int randomId = (this.random.Next() % 1000000) + 1;
+                    ObjectUtils.SetProperty(entity, "ID", randomId);
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
         }
 
         public async Task<int> CountAsync(Expression<Func<TEntity, bool>> where)
@@ -71,15 +88,16 @@ namespace QWMSServer.Tests.Dummy
             return this.Objects;
         }
 
-        public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> where)
+        public virtual async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> where)
         {
             return this.Query(where).First();
         }
 
-        public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> where, IEnumerable<string> includes = null)
+        public virtual async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> where, IEnumerable<string> includes = null)
         {
             //return this.Objects.Filter(where.Compile()).First();
-            return this.Objects.Where(where).FirstOrDefault();
+            //return this.Objects.Where(where).FirstOrDefault();
+            return await this.GetAsync(where);
         }
 
         public async Task<TEntity> GetByIdAsync(int id)
@@ -89,12 +107,21 @@ namespace QWMSServer.Tests.Dummy
 
         public async Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> where)
         {
-            return this.Query(where).ToList();
+            //return this.Query(where).ToList();
+            var sampleEntity = await this.GetAsync(where);
+            var resultList = new List<TEntity>();
+            if (sampleEntity != null)
+            {
+                resultList.Add(sampleEntity);
+            };
+
+            return resultList;
         }
 
         public async Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> where, IEnumerable<string> includes = null)
         {
-            return this.Query(where, includes).ToList();
+            //return this.Query(where, includes).ToList();
+            return await this.GetManyAsync(where);
         }
 
         public IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> where, IEnumerable<string> includes = null)
