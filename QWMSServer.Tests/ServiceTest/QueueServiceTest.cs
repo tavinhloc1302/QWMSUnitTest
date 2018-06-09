@@ -11,6 +11,7 @@ using System;
 using System.Linq;
 using QWMSServer.Model.DatabaseModels;
 using QWMSServer.Data.Common;
+using System.Collections.Generic;
 
 namespace QWMSServer.Tests.ServiceTest
 {
@@ -60,8 +61,8 @@ namespace QWMSServer.Tests.ServiceTest
             _queueListRepository = new QueueListRepositoryTest();
             _RFIDCardRepository = new RFIDCardRepositoryTest();
             _employeepository = new EmployeeRepositoryTest();
-            //_saleOrderRepository = new SaleOrderRepositoryTest();
-            //_deliveryOrderRepository = new DeliveryOrderRepositoryTest();
+            _saleOrderRepository = new SaleOrderRepositoryTest();
+            _deliveryOrderRepository = new DeliveryOrderRepositoryTest();
             _orderRepository = new OrderRepositoryTest();
             _carrierVendorRepository = new CarrierVendorRepositoryTest();
             _customerRepository = new CustomerRepositoryTest();
@@ -404,39 +405,106 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsTrue(response.booleanResponse);
         }
 
-        //[TestMethod]
-        //public async Task TestMethod_ImportDO_Ok()
-        //{
-        //    var response = await _queueService.ImportDO();
-        //    Assert.IsTrue(response.booleanResponse);
-        //}
+        private List<DOViewModel> GetSampleDoList()
+        {
+            return new List<DOViewModel>() {
+                new DOViewModel() {
+                    dayCreate = "DO1111",
+                    dOCode = "DO1111",
+                    dOItemCode = "DOITEM1111",
+                    materialCode = "MAR1111",
+                    materialName = "Mar 1111",
+                    quanlity = "11",
+                    unit = "piece",
+                    sOCode = "SO1111",
+                    customerCode = "CUS1111",
+                    customerName = "Cus 1111",
+                    shipToCode = "SHIPTO1111",
+                    warehouseName = "Ware 1111",
+                    deliveryAddress = "Addr 1111",
+                    carrierCode = "CARI1111",
+                    carrierName = "Cari 11111",
+                    plant = "plant 11111",
+                    sLoc = "sloc 1111",
+                    remark = "remark 1111",
+                }
+            };
+        }
+
+        [TestMethod]
+        public async Task TestMethod_ImportDO_Ok()
+        {
+            SaleOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            OrderMaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            MaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            MaterialRepositoryTest.FLAG_ADD = 0;
+
+            var DoList = GetSampleDoList();
+            var response = await _queueService.ImportDO(DoList);
+            Assert.IsTrue(response.booleanResponse);
+
+            SaleOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            OrderMaterialRepositoryTest.FLAG_GET_ASYNC = 0;
+            MaterialRepositoryTest.FLAG_GET_ASYNC = 0;
+            MaterialRepositoryTest.FLAG_ADD = 0;
+        }
+
+        [TestMethod]
+        public async Task TestMethod_ImportPO_Ok()
+        {
+            var PoList = new List<POViewModel>() {
+                new POViewModel() {
+                    pOCode = "1111",
+                    pOItemCode = "item 1111",
+                    materialCode = "MAR1111",
+                    materialName = "Mar 1111",
+                    quanlity = "11",
+                    unit = "piece",
+                    vendorCode = "VEN1111",
+                    vendorName = "Ven 1111",
+                    billCode = "BILL1111",
+                    plant = "plant 1111",
+                    sLoc = "sloc 1111",
+                    remark = "remark 1111",
+                }
+            };
+
+            var response = await _queueService.ImportPO(PoList);
+            Assert.IsTrue(response.booleanResponse);
+        }
 
         [TestMethod]
         public async Task TestMethod_GetAllLoadingBay_NotFound()
         {
-            LoadingBayRepositoryTest.FLAG_ADD = 0;
+            LoadingBayRepositoryTest.FLAG_GET_ASYNC= 0;
             var response = await _queueService.GetAllLoadingBay();
-            Assert.AreNotEqual(0, response.errorCode);
+            Assert.AreEqual(0, response.errorCode);
+
+            LoadingBayRepositoryTest.FLAG_GET_ASYNC = 0;
         }
 
         [TestMethod]
         public async Task TestMethod_GetAllLoadingBay_Ok()
         {
-            LoadingBayRepositoryTest.FLAG_ADD = 1;
+            LoadingBayRepositoryTest.FLAG_GET_ASYNC = 1;
             var response = await _queueService.GetAllLoadingBay();
-            LoadingBayRepositoryTest.FLAG_ADD = 0;
-
             Assert.IsNotNull(response.responseDatas);
+
+            LoadingBayRepositoryTest.FLAG_GET_ASYNC = 0;
         }
 
         [TestMethod]
         public async Task TestMethod_GetAllLoadingBay_Exception()
         {
-            LoadingBayRepositoryTest.FLAG_ADD = -1;
+            LoadingBayRepositoryTest.FLAG_GET_ASYNC = -1;
             var response = await _queueService.GetAllLoadingBay();
-            LoadingBayRepositoryTest.FLAG_ADD = 0;
+            Assert.AreNotEqual(0, response.errorCode);
 
-            Assert.IsNotNull(response.responseDatas);
+            LoadingBayRepositoryTest.FLAG_GET_ASYNC = 0;
         }
     }
 }

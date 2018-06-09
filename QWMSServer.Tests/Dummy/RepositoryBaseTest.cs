@@ -19,12 +19,16 @@ namespace QWMSServer.Tests.Dummy
         protected IList<TEntity> _ObjectList = null;
         public IQueryable<TEntity> Objects => _ObjectList.AsQueryable();
 
+        // 0: Normal
+        // Other: Exception
         public static int FLAG_ADD = 0;
 
         // 0: null
         // 1: Normal
         // 2: Deleted
+        // Other: Exception
         public static int FLAG_GET_ASYNC = 0;
+        public static int COUNT_GET_ASYNC = 0;
 
         public RepositoryBaseTest()
         {

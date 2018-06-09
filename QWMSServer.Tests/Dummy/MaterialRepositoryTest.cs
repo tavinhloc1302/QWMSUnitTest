@@ -9,10 +9,19 @@ using QWMSServer.Model.DatabaseModels;
 
 namespace QWMSServer.Tests.Dummy
 {
-    public class MaterialRepositoryTest : IMaterialRepository
+    public class MaterialRepositoryTest : RepositoryBaseTest<Material>, IMaterialRepository
     {
-        public IQueryable<Material> Objects => new List<Material>() {
-            new Material() {
+        public override IList<Material> GetObjectList()
+        {
+            return new List<Material>()
+            {
+            };
+        }
+
+        public override async Task<Material> GetAsync(Expression<Func<Material, bool>> where)
+        {
+            var sampleObject = new Material()
+            {
                 code = "0123",
                 ID = 1,
                 isDelete = false,
@@ -28,81 +37,37 @@ namespace QWMSServer.Tests.Dummy
                     isDelete = false
                 },
                 unitID = 1
-            },
-            new Material() {
-                code = "3210",
-                ID = 2,
-                isDelete = false,
-                grossWeight = 1,
-                materialNameEn = "Material 2",
-                materialNameVi = "Material 2",
-                netWeight = 1,
-                unit = new UnitType
-                {
-                    code = "0123",
-                    description = "Unittype 1",
-                    ID = 1,
-                    isDelete = false
-                },
-                unitID = 1
+            };
+
+            //new Material()
+            //{
+            //    code = "3210",
+            //    ID = 2,
+            //    isDelete = false,
+            //    grossWeight = 1,
+            //    materialNameEn = "Material 2",
+            //    materialNameVi = "Material 2",
+            //    netWeight = 1,
+            //    unit = new UnitType
+            //    {
+            //        code = "0123",
+            //        description = "Unittype 1",
+            //        ID = 1,
+            //        isDelete = false
+            //    },
+            //    unitID = 1
+            //}
+
+            switch (FLAG_GET_ASYNC)
+            {
+                case 1:
+                    sampleObject.isDelete = true;
+                    break;
+                default:
+                    throw new InvalidOperationException();
             }
-        }.AsQueryable();
 
-        public void Add(Material entity)
-        {
-
-        }
-
-        public async Task<int> CountAsync(Expression<Func<Material, bool>> where)
-        {
-            return this.Objects.Count();
-        }
-
-        public void Delete(Material entity)
-        {
-        }
-
-        public void Delete(Expression<Func<Material, bool>> where)
-        {
-        }
-
-        public async Task<IEnumerable<Material>> GetAllAsync()
-        {
-            return this.Objects;
-        }
-
-        public async Task<Material> GetAsync(Expression<Func<Material, bool>> where)
-        {
-            return this.Objects.ElementAt(0);
-        }
-
-        public async Task<Material> GetAsync(Expression<Func<Material, bool>> where, IEnumerable<string> includes = null)
-        {
-            return this.Objects.ElementAt(0);
-        }
-
-        public async Task<Material> GetByIdAsync(int id)
-        {
-            return this.Objects.ElementAt(0);
-        }
-
-        public async Task<IEnumerable<Material>> GetManyAsync(Expression<Func<Material, bool>> where)
-        {
-            return this.Objects;
-        }
-
-        public async Task<IEnumerable<Material>> GetManyAsync(Expression<Func<Material, bool>> where, IEnumerable<string> includes = null)
-        {
-            return this.Objects;
-        }
-
-        public IQueryable<Material> Query(Expression<Func<Material, bool>> where, IEnumerable<string> includes = null)
-        {
-            return this.Objects.AsQueryable();
-        }
-
-        public void Update(Material entity)
-        {
+            return sampleObject;
         }
     }
 }
