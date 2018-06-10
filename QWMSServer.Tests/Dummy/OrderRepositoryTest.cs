@@ -39,16 +39,7 @@ namespace QWMSServer.Tests.Dummy
                 isDelete = false,
             };
 
-            switch (FLAG_GET_ASYNC)
-            {
-                case 1:
-                    sampleObject.isDelete = true;
-                    break;
-                default:
-                    throw new InvalidOperationException();
-            }
-
-            return sampleObject;
+            return this.SimpleGetPatcher(sampleObject);
         }
     }
 }

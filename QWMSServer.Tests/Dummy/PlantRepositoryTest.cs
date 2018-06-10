@@ -9,10 +9,18 @@ using QWMSServer.Model.DatabaseModels;
 
 namespace QWMSServer.Tests.Dummy
 {
-    public class PlantRepositoryTest : IPlantRepository
-    {
-        public IQueryable<Plant> Objects => new List<Plant>() {
-            new Plant() {
+    public class PlantRepositoryTest : RepositoryBaseTest<Plant>, IPlantRepository
+    {         
+        public override IList<Plant> GetObjectList()
+        {
+            return new List<Plant>() {
+            };
+        }
+
+        public override async Task<Plant> GetAsync(Expression<Func<Plant, bool>> where)
+        {
+            var sampleObject = new Plant()
+            {
                 code = "0123",
                 ID = 1,
                 isDelete = false,
@@ -26,79 +34,26 @@ namespace QWMSServer.Tests.Dummy
                     nameEn = "Company 1",
                     nameVi = "Company 1"
                 }
-            },
-            new Plant() {
-                code = "3210",
-                ID = 2,
-                isDelete = false,
-                nameEn = "Sky Rider 2",
-                nameVi = "Sky Rider 2",
-                company = new Company
-                {
-                    code = "0123",
-                    ID = 1,
-                    isDelete = false,
-                    nameEn = "Company 1",
-                    nameVi = "Company 1"
-                }
-            }
-        }.AsQueryable();
+            };
 
-        public void Add(Plant entity)
-        {
+            //new Plant()
+            //{
+            //    code = "3210",
+            //    ID = 2,
+            //    isDelete = false,
+            //    nameEn = "Sky Rider 2",
+            //    nameVi = "Sky Rider 2",
+            //    company = new Company
+            //    {
+            //        code = "0123",
+            //        ID = 1,
+            //        isDelete = false,
+            //        nameEn = "Company 1",
+            //        nameVi = "Company 1"
+            //    }
+            //}
 
-        }
-
-        public async Task<int> CountAsync(Expression<Func<Plant, bool>> where)
-        {
-            return this.Objects.Count();
-        }
-
-        public void Delete(Plant entity)
-        {
-        }
-
-        public void Delete(Expression<Func<Plant, bool>> where)
-        {
-        }
-
-        public async Task<IEnumerable<Plant>> GetAllAsync()
-        {
-            return this.Objects;
-        }
-
-        public async Task<Plant> GetAsync(Expression<Func<Plant, bool>> where)
-        {
-            return this.Objects.ElementAt(0);
-        }
-
-        public async Task<Plant> GetAsync(Expression<Func<Plant, bool>> where, IEnumerable<string> includes = null)
-        {
-            return this.Objects.ElementAt(0);
-        }
-
-        public async Task<Plant> GetByIdAsync(int id)
-        {
-            return this.Objects.ElementAt(0);
-        }
-
-        public async Task<IEnumerable<Plant>> GetManyAsync(Expression<Func<Plant, bool>> where)
-        {
-            return this.Objects;
-        }
-
-        public async Task<IEnumerable<Plant>> GetManyAsync(Expression<Func<Plant, bool>> where, IEnumerable<string> includes = null)
-        {
-            return this.Objects;
-        }
-
-        public IQueryable<Plant> Query(Expression<Func<Plant, bool>> where, IEnumerable<string> includes = null)
-        {
-            return this.Objects.AsQueryable();
-        }
-
-        public void Update(Plant entity)
-        {
+            return this.SimpleGetPatcher(sampleObject);
         }
     }
 }
