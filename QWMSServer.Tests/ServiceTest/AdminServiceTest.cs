@@ -378,7 +378,7 @@ namespace QWMSServer.Tests.ServiceTest
 
         // ---------------------------------------------> End UpdateCarrier test cases
 
-        // ---------------------------------------------> Begin UpdateCustomer test cases
+        // ---------------------------------------------> Begin UpdateCustomer test case
 
         [TestMethod]
         public async Task TestMethod_UpdateCustomer()
@@ -408,7 +408,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_UpdateDriver()
         {
-            DriverViewModel driverView = new DriverViewModel() { code = "0123" };
+            DriverViewModel driverView = new DriverViewModel() { code = "0123", carrierVendor = new CarrierVendorViewModel { code = "0123" } };
             var actualResult = await _adminService.UpdateDriver(driverView);
             Assert.IsNotNull(actualResult.responseData);
         }
@@ -429,5 +429,223 @@ namespace QWMSServer.Tests.ServiceTest
         }
 
         // ---------------------------------------------> End UpdateDriver test cases
+
+        // ---------------------------------------------> Begin GetAllMaterial test cases
+
+        [TestMethod]
+        public async Task TestMethod_GetAllMaterial()
+        {
+            var actualResult = await _adminService.GetAllMaterial();
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        // ---------------------------------------------> End GetAllMaterial test cases
+
+        // ---------------------------------------------> Begin SearchMaterial test cases
+
+        [TestMethod]
+        public async Task TestMethod_SearchMaterial()
+        {
+            var actualResult = await _adminService.SearchMaterial("0123");
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_SearchMaterial_ShouldFail_NoCode()
+        {
+            var actualResult = await _adminService.SearchMaterial(null);
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        // ---------------------------------------------> End SearchMaterial test cases
+
+        // ---------------------------------------------> Begin GetMaterialByCode test cases
+
+        [TestMethod]
+        public async Task TestMethod_GetMaterialByCode()
+        {
+            var actualResult = await _adminService.GetMaterialByCode("0123");
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetMaterialByCode_ShouldFail_NoCode()
+        {
+            var actualResult = await _adminService.GetMaterialByCode(null);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        // ---------------------------------------------> End SearchMaterial test cases
+
+        // ---------------------------------------------> Begin CreateNewMaterial test cases
+
+        [TestMethod]
+        public async Task TestMethod_CreateNewMaterial()
+        {
+            MaterialViewModel viewModel = new MaterialViewModel
+            {
+                code = "0123"
+            };
+            var actualResult = await _adminService.CreateNewMaterial(viewModel);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateNewMaterial_ShouldFail_NoCode()
+        {
+            MaterialViewModel viewModel = new MaterialViewModel();
+            var actualResult = await _adminService.CreateNewMaterial(viewModel);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateNewMaterial_ShouldFail_NullModel()
+        {
+            var actualResult = await _adminService.CreateNewMaterial(null);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        // ---------------------------------------------> End CreateNewMaterial test cases
+
+        // ---------------------------------------------> Begin UpdateMaterial test cases
+
+        [TestMethod]
+        public async Task TestMethod_UpdateMaterial()
+        {
+            MaterialViewModel viewModel = new MaterialViewModel
+            {
+                code = "0123"
+            };
+            var actualResult = await _adminService.UpdateMaterial(viewModel);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateMaterial_ShouldFail_NoCode()
+        {
+            MaterialViewModel viewModel = new MaterialViewModel();
+            var actualResult = await _adminService.UpdateMaterial(viewModel);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateMaterial_ShouldFail_NullModel()
+        {
+            var actualResult = await _adminService.UpdateMaterial(null);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        // ---------------------------------------------> End UpdateMaterial test cases
+
+        // ---------------------------------------------> Begin DeleteMaterial test cases
+
+        [TestMethod]
+        public async Task TestMethod_DeleteMaterial()
+        {
+            MaterialViewModel viewModel = new MaterialViewModel
+            {
+                code = "0123"
+            };
+            var actualResult = await _adminService.DeleteMaterial(viewModel);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_DeleteMaterial_ShouldFail_NoCode()
+        {
+            MaterialViewModel viewModel = new MaterialViewModel();
+            var actualResult = await _adminService.DeleteMaterial(viewModel);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_DeleteMaterial_ShouldFail_NullModel()
+        {
+            var actualResult = await _adminService.DeleteMaterial(null);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        // ---------------------------------------------> End UpdateMaterial test cases
+
+        // ---------------------------------------------> Begin GetAllUnitType test cases
+
+        [TestMethod]
+        public async Task TestMethod_GetAllUnitType()
+        {
+            MaterialViewModel viewModel = new MaterialViewModel
+            {
+                code = "0123"
+            };
+            var actualResult = await _adminService.DeleteMaterial(viewModel);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        // ---------------------------------------------> End GetAllUnitType test cases
+
+        // ---------------------------------------------> Begin SearchUnitType test cases
+
+        [TestMethod]
+        public async Task TestMethod_SearchUnitType()
+        {
+            var actualResult = await _adminService.SearchUnitType("0123");
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_SearchUnitType_ShouldFail_NoCode()
+        {
+            var actualResult = await _adminService.SearchUnitType(null);
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        // ---------------------------------------------> End SearchUnitType test cases
+
+        // ---------------------------------------------> Begin GetUnitTypeByCode test cases
+
+        [TestMethod]
+        public async Task TestMethod_GetUnitTypeByCode()
+        {
+            var actualResult = await _adminService.GetUnitTypeByCode("0123");
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetUnitTypeByCode_ShouldFail_NoCode()
+        {
+            var actualResult = await _adminService.GetUnitTypeByCode(null);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        // ---------------------------------------------> End GetUnitTypeByCode test cases
+
+        // ---------------------------------------------> Begin CreateNewUnitType test cases
+
+        [TestMethod]
+        public async Task TestMethod_CreateNewUnitType()
+        {
+            UnitTypeViewModel viewModel = new UnitTypeViewModel
+            {
+                code = "0123"
+            };
+            var actualResult = await _adminService.CreateNewUnitType(viewModel);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateNewUnitType_ShouldFail_NoCode()
+        {
+            UnitTypeViewModel viewModel = new UnitTypeViewModel();
+            var actualResult = await _adminService.CreateNewUnitType(viewModel);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateNewUnitType_ShouldFail_NullModel()
+        {
+            var actualResult = await _adminService.CreateNewUnitType(null);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        // ---------------------------------------------> End CreateNewUnitType test cases
     }
 }
