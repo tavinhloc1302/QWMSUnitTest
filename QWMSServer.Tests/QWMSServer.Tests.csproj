@@ -99,8 +99,11 @@
   <ItemGroup>
     <Compile Include="Dummy\CarrierVendorRepositoryTest.cs" />
     <Compile Include="Dummy\CompanyRepositoryTest.cs" />
+    <Compile Include="Dummy\CustomerWarehouseRepositoryTest.cs" />
     <Compile Include="Dummy\CustomerRepositoryTest.cs" />
     <Compile Include="Dummy\DataRecords.cs" />
+    <Compile Include="Dummy\DeliveryOrderTypeRepositoryTest.cs" />
+    <Compile Include="Dummy\SaleOrderRepositoryTest.cs" />
     <Compile Include="Dummy\DriverRepositoryTest.cs" />
     <Compile Include="Dummy\EmployeeGroupRepositoryTest.cs" />
     <Compile Include="Dummy\EmployeeRoleRepositoryTest.cs" />
@@ -109,6 +112,7 @@
     <Compile Include="Dummy\EmployeeRepositoryTest.cs" />
     <Compile Include="Dummy\LoadingBayRepositoryTest.cs" />
     <Compile Include="Dummy\MaterialRepositoryTest.cs" />
+    <Compile Include="Dummy\DeliveryOrderRepositoryTest.cs" />
     <Compile Include="Dummy\OrderTypeRepositoryTest.cs" />
     <Compile Include="Dummy\OrderRepositoryTest.cs" />
     <Compile Include="Dummy\PlantRepositoryTest.cs" />

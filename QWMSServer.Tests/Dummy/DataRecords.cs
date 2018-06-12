@@ -10,6 +10,37 @@ namespace QWMSServer.Tests.Dummy
 {
     public static class DataRecords
     {
+        public static CarrierVendor CARRIER_VENDOR_NORMAL = new CarrierVendor()
+        {
+            ID = 1,
+            addressEn = "Address in English",
+            addressVi = "Address in Vietnamese",
+            code = "0123",
+            contactPerson = "Galvin Nguyen",
+            department = "Sky",
+            isDelete = false,
+            nameEn = "Sky Rider 1",
+            nameVi = "Sky Rider 1",
+            shortName = "SR1",
+            taxCode = "0123",
+            telNo = "0123456789"
+        };
+        public static CarrierVendor CARRIER_VENDOR_NORMAL_2 = new CarrierVendor()
+        {
+            ID = 2,
+            addressEn = "Address in English",
+            addressVi = "Address in Vietnamese",
+            code = "3210",
+            contactPerson = "Galvin Nguyen",
+            department = "Sky",
+            isDelete = false,
+            nameEn = "Sky Rider 2",
+            nameVi = "Sky Rider 2",
+            shortName = "SR2",
+            taxCode = "0123",
+            telNo = "98765432100123456789"
+        };
+
         public static LoadingBay LOADING_BAY_NORMAL = new LoadingBay()
         { ID = 1, code = "1111", nameVi = "Bay 1 VI", nameEn = "Bay 1", warehouseID = null, warehouse = null, isDelete = false, };
         public static LoadingBay LOADING_BAY_NORMAL_2 = new LoadingBay()
@@ -101,6 +132,19 @@ namespace QWMSServer.Tests.Dummy
         { ID = 2, code = "2345", orderTypeID = ORDER_TYPE_PURCHASE.ID, orderType = ORDER_TYPE_PURCHASE, grossWeight = 20, gatePassID = GATE_PASS_NORMAL.ID, gatePass = GATE_PASS_NORMAL, plantID = null, plant = null, doID = null, deliveryOrder = null, poID = null, purchaseOrder = null, isDelete = false, };
         public static Order ORDER_NORMAL_TYPE_OTHER = new Order()
         { ID = 3, code = "3456", orderTypeID = ORDER_TYPE_OTHER.ID, orderType = ORDER_TYPE_OTHER, grossWeight = 30, gatePassID = GATE_PASS_NORMAL.ID, gatePass = GATE_PASS_NORMAL, plantID = null, plant = null, doID = null, deliveryOrder = null, poID = null, purchaseOrder = null, isDelete = false, };
+
+        public static Customer CUSTOMER_NORMAL = new Customer()
+        { ID = 1, code = "1111", nameVi = "KH 1", nameEn = "Cus 1", shortName = "K 1", invoiceAddressVi = "Ho Chi Minh", invoiceAddressEn = "HCMC", taxCode = "Tax 1", contactPerson = "Contact 1", telNo = "0908832000", faxNo = "11111111", email = "cus1@yopmail.com", isDelete = false };
+        public static Customer CUSTOMER_DELETED = new Customer()
+        { ID = 2, code = "2222", nameVi = "KH 2", nameEn = "Cus 2", shortName = "K 2", invoiceAddressVi = "Ho Chi Minh", invoiceAddressEn = "HCMC", taxCode = "Tax 2", contactPerson = "Contact 2", telNo = "0908832000", faxNo = "22222222", email = "cus2@yopmail.com", isDelete = true };
+
+        public static DeliveryOrderType DELIVERY_ORDER_TYPE_NORMAL = new DeliveryOrderType()
+        { ID = 1, code = "1111", description = "Normal", isDelete = false };
+        public static DeliveryOrderType DELIVERY_ORDER_TYPE_DELETED = new DeliveryOrderType()
+        { ID = 2, code = "2222", description = "Deleted", isDelete = true };
+
+        //public static DeliveryOrderType DELIVERY_ORDER_NORMAL = new DeliveryOrder()
+        //{ ID = 1, code = "1111", doNumber = "DO Number 1", createDate = DateTime.Now, soNumber = "SO Number 1", customerID = CUSTOMER_NORMAL.ID, customer = CUSTOMER_NORMAL, carrierVendorID = 1, carrierVendor = 1, remark = 1, sloc = 1, doTypeID = 1, deliveryOrderType = 1, customerWarehouseID = 1, isDelete = 1, customerWarehouse = 1 };
 
         static DataRecords()
         {
