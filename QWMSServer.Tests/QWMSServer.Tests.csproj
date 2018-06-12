@@ -103,6 +103,7 @@
     <Compile Include="Dummy\DataRecords.cs" />
     <Compile Include="Dummy\DriverRepositoryTest.cs" />
     <Compile Include="Dummy\EmployeeGroupRepositoryTest.cs" />
+    <Compile Include="Dummy\EmployeeRoleRepositoryTest.cs" />
     <Compile Include="Dummy\GatePassRepositoryTest.cs" />
     <Compile Include="Dummy\LaneRepositoryTest.cs" />
     <Compile Include="Dummy\EmployeeRepositoryTest.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="Dummy\RFIDCardRepositoryTest.cs" />
     <Compile Include="Dummy\StateRecordRepositoryTest.cs" />
     <Compile Include="Dummy\StateRepositoryTest.cs" />
+    <Compile Include="Dummy\TokenRepositoryTest.cs" />
     <Compile Include="Dummy\TruckRepositoryTest.cs" />
     <Compile Include="Dummy\LoadingTypeRepositoryTest.cs" />
     <Compile Include="Dummy\TruckTypeRepositoryTest.cs" />

@@ -1,6 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using QWMSServer.Data.Infrastructures;
+using QWMSServer.Data.Repository;
 using QWMSServer.Data.Services;
 using QWMSServer.Model.ViewModels;
+using QWMSServer.Tests.Dummy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +15,21 @@ namespace QWMSServer.Tests.ServiceTest
     [TestClass]
     public class AuthServiceTest
     {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ITokenRepository _tokenRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IEmployeeRepository _employeeRepository;
         private readonly IAuthService _authService;
+
+        public AuthServiceTest()
+        {
+            _unitOfWork = new UnitOfWorkTest();
+            _tokenRepository = new TokenRepositoryTest();
+            _userRepository = new UserRepositoryTest();
+            _employeeRepository = new EmployeeRepositoryTest();
+            _authService = new AuthService(_unitOfWork, _tokenRepository, _userRepository, _employeeRepository);
+        }
+
 
         [TestMethod]
         public async Task TestMethod_GetUserPermission()
