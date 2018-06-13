@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using QWMSServer.Data.Repository;
+﻿using QWMSServer.Data.Repository;
 using QWMSServer.Model.DatabaseModels;
+
+using System.Collections.Generic;
 
 namespace QWMSServer.Tests.Dummy
 {
