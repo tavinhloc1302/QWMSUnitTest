@@ -11,6 +11,7 @@ using System;
 using System.Linq;
 using QWMSServer.Model.DatabaseModels;
 using QWMSServer.Data.Common;
+using System.Collections.Generic;
 
 namespace QWMSServer.Tests.ServiceTest
 {
@@ -21,29 +22,29 @@ namespace QWMSServer.Tests.ServiceTest
         public static String CANNOT_BE_MATCHED_CODE = "__!@#__";
 
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IGatePassRepository _gatePassRepository;
-        private readonly IStateRepository _stateRepository;
-        private readonly ILaneRepository _laneRepository;
-        private readonly ITruckRepository _truckRepository;
-        private readonly IQueueListRepository _queueListRepository;
-        private readonly IRFIDCardRepository _RFIDCardRepository;
-        private readonly IEmployeeRepository _employeepository;
-        private readonly ISaleOrderRepository _saleOrderRepository;
-        private readonly IDeliveryOrderRepository _deliveryOrderRepository;
-        private readonly IOrderRepository _orderRepository;
-        private readonly ICarrierVendorRepository _carrierVendorRepository;
-        private readonly ICustomerRepository _customerRepository;
-        private readonly IDeliveryOrderTypeRepository _deliveryOrderTypeRepository;
-        private readonly ICustomerWarehouseRepository _customerWarehouseRepository;
-        private readonly IOrderMaterialRepository _orderMaterialRepository;
-        private readonly IMaterialRepository _materialRepository;
-        private readonly IDriverRepository _driverRepository;
-        private readonly IUnitTypeRepository _unitTypeRepository;
-        private readonly ILoadingBayRepository _loadingBayRepository;
+        private readonly GatePassRepositoryTest _gatePassRepository;
+        private readonly StateRepositoryTest _stateRepository;
+        private readonly LaneRepositoryTest _laneRepository;
+        private readonly TruckRepositoryTest _truckRepository;
+        private readonly QueueListRepositoryTest _queueListRepository;
+        private readonly RFIDCardRepositoryTest _RFIDCardRepository;
+        private readonly EmployeeRepositoryTest _employeepository;
+        private readonly SaleOrderRepositoryTest _saleOrderRepository;
+        private readonly DeliveryOrderRepositoryTest _deliveryOrderRepository;
+        private readonly OrderRepositoryTest _orderRepository;
+        private readonly CarrierVendorRepositoryTest _carrierVendorRepository;
+        private readonly CustomerRepositoryTest _customerRepository;
+        private readonly DeliveryOrderTypeRepositoryTest _deliveryOrderTypeRepository;
+        private readonly CustomerWarehouseRepositoryTest _customerWarehouseRepository;
+        private readonly OrderMaterialRepositoryTest _orderMaterialRepository;
+        private readonly MaterialRepositoryTest _materialRepository;
+        private readonly DriverRepositoryTest _driverRepository;
+        private readonly UnitTypeRepositoryTest _unitTypeRepository;
+        private readonly LoadingBayRepositoryTest _loadingBayRepository;
         private readonly ICommonService _commonService;
-        private readonly IPurchaseOrderRepository _purchaseOrderRepository;
-        private readonly IPurchaseOrderTypeRepository _purchaseOrderTypeRepository;
-        private readonly IPlantRepository _plantRepository;
+        private readonly PurchaseOrderRepositoryTest _purchaseOrderRepository;
+        private readonly PurchaseOrderTypeRepositoryTest _purchaseOrderTypeRepository;
+        private readonly PlantRepositoryTest _plantRepository;
 
         private readonly QueueService _queueService;
 
@@ -60,22 +61,22 @@ namespace QWMSServer.Tests.ServiceTest
             _queueListRepository = new QueueListRepositoryTest();
             _RFIDCardRepository = new RFIDCardRepositoryTest();
             _employeepository = new EmployeeRepositoryTest();
-            //_saleOrderRepository = new SaleOrderRepositoryTest();
-            //_deliveryOrderRepository = new DeliveryOrderRepositoryTest();
+            _saleOrderRepository = new SaleOrderRepositoryTest();
+            _deliveryOrderRepository = new DeliveryOrderRepositoryTest();
             _orderRepository = new OrderRepositoryTest();
             _carrierVendorRepository = new CarrierVendorRepositoryTest();
             _customerRepository = new CustomerRepositoryTest();
-            //_deliveryOrderTypeRepository = new DeliveryOrderTypeRepositoryTest();
-            //_customerWarehouseRepository = new CustomerWarehouseRepositoryTest();
-            //_orderMaterialRepository = new OrderMaterialRepositoryTest();
-            //_materialRepository = new MaterialRepositoryTest();
+            _deliveryOrderTypeRepository = new DeliveryOrderTypeRepositoryTest();
+            _customerWarehouseRepository = new CustomerWarehouseRepositoryTest();
+            _orderMaterialRepository = new OrderMaterialRepositoryTest();
+            _materialRepository = new MaterialRepositoryTest();
             _driverRepository = new DriverRepositoryTest();
             //_unitTypeRepository = new UnitTypeRepositoryTest();
             _loadingBayRepository = new LoadingBayRepositoryTest();
             //_commonService = new CommonServiceTest();
             //_purchaseOrderRepository = new PurchaseOrderRepositoryTest();
             //_purchaseOrderTypeRepository = new PurchaseOrderTypeRepositoryTest();
-            //_plantRepository = new PlantRepositoryTest();
+            _plantRepository = new PlantRepositoryTest();
             _queueService = new QueueService(
                _unitOfWork, _gatePassRepository, _stateRepository, _laneRepository,
                _truckRepository, _queueListRepository, _RFIDCardRepository,
@@ -404,39 +405,196 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsTrue(response.booleanResponse);
         }
 
-        //[TestMethod]
-        //public async Task TestMethod_ImportDO_Ok()
-        //{
-        //    var response = await _queueService.ImportDO();
-        //    Assert.IsTrue(response.booleanResponse);
-        //}
+        private List<DOViewModel> GetSampleDoList()
+        {
+            return new List<DOViewModel>() {
+                new DOViewModel() {
+                    dayCreate = "01/01/2018",
+                    dOCode = "DO1111",
+                    dOItemCode = "DOITEM1111",
+                    materialCode = "MAR1111",
+                    materialName = "Mar 1111",
+                    quanlity = "11",
+                    unit = "piece",
+                    sOCode = "SO Number 1",
+                    customerCode = "CUS1111",
+                    customerName = "Cus 1111",
+                    shipToCode = "SHIPTO1111",
+                    warehouseName = "Ware 1111",
+                    deliveryAddress = "Addr 1111",
+                    carrierCode = "CARI1111",
+                    carrierName = "Cari 11111",
+                    plant = "plant 11111",
+                    sLoc = "sloc 1111",
+                    remark = "remark 1111",
+                }
+            };
+        }
+
+        [TestMethod]
+        public async Task TestMethod_ImportDO_Ok()
+        {
+            UnitOfWorkTest.FLAG_SAVE = 1;
+            SaleOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            OrderRepositoryTest.FLAG_GET_ASYNC_2 = 1;
+            OrderMaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            MaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            MaterialRepositoryTest.FLAG_ADD = 0;
+
+            var DoList = GetSampleDoList();
+            var response = await _queueService.ImportDO(DoList);
+            Assert.AreEqual(0, response.errorCode);
+
+            UnitOfWorkTest.FLAG_SAVE = 0;
+            SaleOrderRepositoryTest.ResetDummyFlags();
+            DeliveryOrderRepositoryTest.ResetDummyFlags();
+            OrderRepositoryTest.ResetDummyFlags();
+            OrderMaterialRepositoryTest.ResetDummyFlags();
+            MaterialRepositoryTest.ResetDummyFlags();
+            MaterialRepositoryTest.ResetDummyFlags();
+        }
+
+        [TestMethod]
+        public async Task TestMethod_ImportDO_SONullAndSaveException()
+        {
+            UnitOfWorkTest.FLAG_SAVE = -1;
+            SaleOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            OrderMaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            MaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            MaterialRepositoryTest.FLAG_ADD = 0;
+
+            var DoList = GetSampleDoList();
+            var response = await _queueService.ImportDO(DoList);
+            Assert.AreNotEqual(0, response.errorCode);
+
+            UnitOfWorkTest.FLAG_SAVE = 0;
+            SaleOrderRepositoryTest.ResetDummyFlags();
+            DeliveryOrderRepositoryTest.ResetDummyFlags();
+            OrderRepositoryTest.ResetDummyFlags();
+            OrderMaterialRepositoryTest.ResetDummyFlags();
+            MaterialRepositoryTest.ResetDummyFlags();
+            MaterialRepositoryTest.ResetDummyFlags();
+        }
+
+        [TestMethod]
+        public async Task TestMethod_ImportDO_DONull()
+        {
+            UnitOfWorkTest.FLAG_SAVE = 1;
+            SaleOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            OrderMaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            MaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            MaterialRepositoryTest.FLAG_ADD = 0;
+
+            var DoList = GetSampleDoList();
+            var response = await _queueService.ImportDO(DoList);
+            Assert.AreNotEqual(0, response.errorCode);
+
+            UnitOfWorkTest.FLAG_SAVE = 0;
+            SaleOrderRepositoryTest.ResetDummyFlags();
+            CarrierVendorRepositoryTest.ResetDummyFlags();
+            DeliveryOrderTypeRepositoryTest.ResetDummyFlags();
+            CustomerWarehouseRepositoryTest.ResetDummyFlags();
+            CustomerRepositoryTest.ResetDummyFlags();
+            DeliveryOrderRepositoryTest.ResetDummyFlags();
+            OrderRepositoryTest.ResetDummyFlags();
+            OrderMaterialRepositoryTest.ResetDummyFlags();
+            MaterialRepositoryTest.ResetDummyFlags();
+            MaterialRepositoryTest.ResetDummyFlags();
+        }
+
+        [TestMethod]
+        public async Task TestMethod_ImportDO_DONullAndOrderNull()
+        {
+            UnitOfWorkTest.FLAG_SAVE = 1;
+            SaleOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderTypeRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            PlantRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC_2 = 1;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            OrderMaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            MaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            MaterialRepositoryTest.FLAG_ADD = 0;
+
+            var DoList = GetSampleDoList();
+            var response = await _queueService.ImportDO(DoList);
+            Assert.AreNotEqual(0, response.errorCode);
+
+            UnitOfWorkTest.FLAG_SAVE = 0;
+            SaleOrderRepositoryTest.ResetDummyFlags();
+            CarrierVendorRepositoryTest.ResetDummyFlags();
+            DeliveryOrderTypeRepositoryTest.ResetDummyFlags();
+            CustomerWarehouseRepositoryTest.ResetDummyFlags();
+            PlantRepositoryTest.ResetDummyFlags();
+            CustomerRepositoryTest.ResetDummyFlags();
+            DeliveryOrderRepositoryTest.ResetDummyFlags();
+            OrderRepositoryTest.ResetDummyFlags();
+            OrderMaterialRepositoryTest.ResetDummyFlags();
+            MaterialRepositoryTest.ResetDummyFlags();
+            MaterialRepositoryTest.ResetDummyFlags();
+        }
+
+        [TestMethod]
+        public async Task TestMethod_ImportPO_Ok()
+        {
+            var PoList = new List<POViewModel>() {
+                new POViewModel() {
+                    pOCode = "1111",
+                    pOItemCode = "item 1111",
+                    materialCode = "MAR1111",
+                    materialName = "Mar 1111",
+                    quanlity = "11",
+                    unit = "piece",
+                    vendorCode = "VEN1111",
+                    vendorName = "Ven 1111",
+                    billCode = "BILL1111",
+                    plant = "plant 1111",
+                    sLoc = "sloc 1111",
+                    remark = "remark 1111",
+                }
+            };
+
+            var response = await _queueService.ImportPO(PoList);
+            Assert.IsTrue(response.booleanResponse);
+        }
 
         [TestMethod]
         public async Task TestMethod_GetAllLoadingBay_NotFound()
         {
-            LoadingBayRepositoryTest.FLAG_ADD = 0;
+            LoadingBayRepositoryTest.FLAG_GET_ASYNC= 0;
             var response = await _queueService.GetAllLoadingBay();
-            Assert.AreNotEqual(0, response.errorCode);
+            Assert.AreEqual(0, response.errorCode);
+
+            LoadingBayRepositoryTest.FLAG_GET_ASYNC = 0;
         }
 
         [TestMethod]
         public async Task TestMethod_GetAllLoadingBay_Ok()
         {
-            LoadingBayRepositoryTest.FLAG_ADD = 1;
+            LoadingBayRepositoryTest.FLAG_GET_ASYNC = 1;
             var response = await _queueService.GetAllLoadingBay();
-            LoadingBayRepositoryTest.FLAG_ADD = 0;
-
             Assert.IsNotNull(response.responseDatas);
+
+            LoadingBayRepositoryTest.FLAG_GET_ASYNC = 0;
         }
 
         [TestMethod]
         public async Task TestMethod_GetAllLoadingBay_Exception()
         {
-            LoadingBayRepositoryTest.FLAG_ADD = -1;
+            LoadingBayRepositoryTest.FLAG_GET_ASYNC = -1;
             var response = await _queueService.GetAllLoadingBay();
-            LoadingBayRepositoryTest.FLAG_ADD = 0;
+            Assert.AreNotEqual(0, response.errorCode);
 
-            Assert.IsNotNull(response.responseDatas);
+            LoadingBayRepositoryTest.FLAG_GET_ASYNC = 0;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace QWMSServer.Tests.Dummy
             return new List<DeliveryOrder>() {
             };
         }
-
+        
         public override async Task<DeliveryOrder> GetAsync(Expression<Func<DeliveryOrder, bool>> where)
         {
             var sampleObject = new DeliveryOrder()
@@ -38,16 +38,7 @@ namespace QWMSServer.Tests.Dummy
                 isDelete = false,
             };
 
-            switch (FLAG_GET_ASYNC)
-            {
-                case 1:
-                    sampleObject.isDelete = true;
-                    break;
-                default:
-                    throw new InvalidOperationException();
-            }
-
-            return sampleObject;
+            return this.SimpleGetPatcher(sampleObject);
         }
     }
 }

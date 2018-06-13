@@ -5,13 +5,32 @@ namespace QWMSServer.Tests.Utils
 {
     public static class ObjectUtils
     {
+        public static T GetProperty<T>(Type type, String name)
+        {
+            var prop = type.GetProperty(name, typeof(T));
+            if (prop != null)
+                return (T)prop.GetValue(null);
+
+            var field = type.GetField(name);
+            if (field != null)
+                return (T)field.GetValue(null);
+
+            throw new FieldAccessException("Object does not has field " + name);
+        }
+
         public static T GetProperty<T>(Object obj, String name)
         {
-            var prop = obj.GetType().GetProperty(name, typeof(T));
-            if (prop == null)
-                return default(T);
+            var objType = obj.GetType();
 
-            return (T)prop.GetValue(obj);
+            var prop = objType.GetProperty(name, typeof(T));
+            if (prop != null)
+                return (T)prop.GetValue(obj);
+
+            var field = objType.GetField(name);
+            if (field != null)
+                return (T)field.GetValue(obj);
+
+            throw new FieldAccessException("Object does not has field " + name);
         }
 
         public static T SetProperty<T>(Object obj, String name, T value)

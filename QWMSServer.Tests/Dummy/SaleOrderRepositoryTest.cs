@@ -27,7 +27,12 @@ namespace QWMSServer.Tests.Dummy
 
             switch (FLAG_GET_ASYNC)
             {
+                case 0:
+                    sampleObject = null;
+                    break;
                 case 1:
+                    break;
+                case 2:
                     sampleObject.isDelete = true;
                     break;
                 default:
