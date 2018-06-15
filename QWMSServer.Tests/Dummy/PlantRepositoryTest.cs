@@ -1,7 +1,9 @@
 ﻿using QWMSServer.Data.Repository;
 using QWMSServer.Model.DatabaseModels;
-
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace QWMSServer.Tests.Dummy
 {
@@ -16,14 +18,7 @@ namespace QWMSServer.Tests.Dummy
                     isDelete = false,
                     nameEn = "Sky Rider 1",
                     nameVi = "Sky Rider 1",
-                    company = new Company
-                    {
-                        code = "0123",
-                        ID = 1,
-                        isDelete = false,
-                        nameEn = "Company 1",
-                        nameVi = "Company 1"
-                    }
+                    company = DataRecords.COMPANY_NORMAL
                 },
                 new Plant() {
                     code = "3210",
@@ -31,15 +26,21 @@ namespace QWMSServer.Tests.Dummy
                     isDelete = false,
                     nameEn = "Sky Rider 2",
                     nameVi = "Sky Rider 2",
-                    company = new Company
-                    {
-                        code = "0123",
-                        ID = 1,
-                        isDelete = false,
-                        nameEn = "Company 1",
-                        nameVi = "Company 1"
-                    }
+                    company = DataRecords.COMPANY_NORMAL_2
                 }
+            };
+        }
+
+        public override async Task<Plant> GetAsync(Expression<Func<Plant, bool>> where)
+        {
+            return new Plant()
+            {
+                code = "0123",
+                ID = 1,
+                isDelete = false,
+                nameEn = "Sky Rider 1",
+                nameVi = "Sky Rider 1",
+                company = DataRecords.COMPANY_NORMAL
             };
         }
     }

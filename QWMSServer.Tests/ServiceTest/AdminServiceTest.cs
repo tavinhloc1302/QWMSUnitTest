@@ -104,8 +104,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_CreateNewCustomer()
         {
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
             CustomerViewModel customerView = new CustomerViewModel() { code = "0123" };
             var actualResult = await _adminService.CreateNewCustomer(customerView);
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -131,8 +133,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_CreateNewDriver()
         {
+            DriverRepositoryTest.FLAG_GET_ASYNC = 1;
             DriverViewModel driverView = new DriverViewModel() { code = "0123" };
             var actualResult = await _adminService.CreateNewDriver(driverView);
+            DriverRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -499,7 +503,7 @@ namespace QWMSServer.Tests.ServiceTest
         }
 
         [TestMethod]
-        public async Task TestMethod_CreateNewMaterial_NoCode()
+        public async Task TestMethod_CreateNewMaterial_NoCode_ShouldFail()
         {
             MaterialViewModel viewModel = new MaterialViewModel();
             var actualResult = await _adminService.CreateNewMaterial(viewModel);
@@ -510,7 +514,7 @@ namespace QWMSServer.Tests.ServiceTest
         public async Task TestMethod_CreateNewMaterial_NullModel()
         {
             var actualResult = await _adminService.CreateNewMaterial(null);
-            Assert.IsNotNull(actualResult.responseData);
+            Assert.IsNull(actualResult.responseData);
         }
 
         // ---------------------------------------------> End CreateNewMaterial test cases
@@ -981,7 +985,7 @@ namespace QWMSServer.Tests.ServiceTest
         }
 
         [TestMethod]
-        public async Task TestMethod_CreateNewLoadingType_NoCode()
+        public async Task TestMethod_CreateNewLoadingType_NoCode_ShouldFail()
         {
             LoadingTypeViewModel viewModel = new LoadingTypeViewModel();
             var actualResult = await _adminService.CreateNewLoadingType(viewModel);
@@ -992,7 +996,7 @@ namespace QWMSServer.Tests.ServiceTest
         public async Task TestMethod_CreateNewLoadingType_NoModel()
         {
             var actualResult = await _adminService.CreateNewLoadingType(null);
-            Assert.IsNotNull(actualResult.responseData);
+            Assert.IsNull(actualResult.responseData);
         }
 
         [TestMethod]
@@ -1096,16 +1100,20 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_CreateNewEmployee_NoCode()
         {
+            EmployeeRepositoryTest.FLAG_GET_ASYNC = 1;
             EmployeeViewModel viewModel = new EmployeeViewModel();
             var actualResult = await _adminService.CreateNewEmployee(viewModel);
+            EmployeeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
         public async Task TestMethod_CreateNewEmployee_NoModel()
         {
+            EmployeeRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.CreateNewEmployee(null);
-            Assert.IsNotNull(actualResult.responseData);
+            EmployeeRepositoryTest.FLAG_GET_ASYNC = 0;
+            Assert.IsNull(actualResult.responseData);
         }
 
         [TestMethod]
@@ -1209,8 +1217,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_CreateNewEmployeeGroup_NoCode()
         {
+            EmployeeGroupRepositoryTest.FLAG_GET_ASYNC = 1;
             EmployeeGroupViewModel viewModel = new EmployeeGroupViewModel();
             var actualResult = await _adminService.CreateNewEmployeeGroup(viewModel);
+            EmployeeGroupRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -1218,7 +1228,7 @@ namespace QWMSServer.Tests.ServiceTest
         public async Task TestMethod_CreateNewEmployeeGroup_NoModel()
         {
             var actualResult = await _adminService.CreateNewEmployeeGroup(null);
-            Assert.IsNotNull(actualResult.responseData);
+            Assert.IsNull(actualResult.responseData);
         }
 
         [TestMethod]
@@ -1435,8 +1445,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_CreateNewEmployeeRole_NoCode()
         {
+            EmployeeRoleRepositoryTest.FLAG_GET_ASYNC = 1;
             EmployeeRoleViewModel viewModel = new EmployeeRoleViewModel();
             var actualResult = await _adminService.CreateNewEmployeeRole(viewModel);
+            EmployeeRoleRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -1444,7 +1456,7 @@ namespace QWMSServer.Tests.ServiceTest
         public async Task TestMethod_CreateNewEmployeeRole_NoModel()
         {
             var actualResult = await _adminService.CreateNewEmployeeRole(null);
-            Assert.IsNotNull(actualResult.responseData);
+            Assert.IsNull(actualResult.responseData);
         }
 
         [TestMethod]
@@ -1876,19 +1888,23 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_CreateNewLoadingBay()
         {
+            LoadingBayRepositoryTest.FLAG_GET_ASYNC = 1;
             LoadingBayViewModel viewModel = new LoadingBayViewModel
             {
                 code = "0123"
             };
             var actualResult = await _adminService.CreateNewLoadingBay(viewModel);
+            LoadingBayRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
         public async Task TestMethod_CreateNewLoadingBay_NoCode()
         {
+            LoadingBayRepositoryTest.FLAG_GET_ASYNC = 1;
             LoadingBayViewModel viewModel = new LoadingBayViewModel();
             var actualResult = await _adminService.CreateNewLoadingBay(viewModel);
+            LoadingBayRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -1896,7 +1912,7 @@ namespace QWMSServer.Tests.ServiceTest
         public async Task TestMethod_CreateNewLoadingBay_NoModel()
         {
             var actualResult = await _adminService.CreateNewLoadingBay(null);
-            Assert.IsNotNull(actualResult.responseData);
+            Assert.IsNull(actualResult.responseData);
         }
 
         [TestMethod]
@@ -2009,7 +2025,7 @@ namespace QWMSServer.Tests.ServiceTest
         public async Task TestMethod_CreateNewLane_NoModel()
         {
             var actualResult = await _adminService.CreateNewLane(null);
-            Assert.IsNotNull(actualResult.responseData);
+            Assert.IsNull(actualResult.responseData);
         }
 
         [TestMethod]

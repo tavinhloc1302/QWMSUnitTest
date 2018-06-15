@@ -1,7 +1,9 @@
 ﻿using QWMSServer.Data.Repository;
 using QWMSServer.Model.DatabaseModels;
-
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace QWMSServer.Tests.Dummy
 {
@@ -15,6 +17,11 @@ namespace QWMSServer.Tests.Dummy
                 DataRecords.TRUCK_TYPE_PUMP,
                 DataRecords.TRUCK_TYPE_TRUCK_CONTAINER,
             };
+        }
+
+        public override async Task<TruckType> GetAsync(Expression<Func<TruckType, bool>> where)
+        {
+            return DataRecords.TRUCK_TYPE_TRUCK;
         }
     }
 }

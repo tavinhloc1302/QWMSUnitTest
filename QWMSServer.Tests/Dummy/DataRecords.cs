@@ -39,6 +39,24 @@ namespace QWMSServer.Tests.Dummy
             telNo = "98765432100123456789"
         };
 
+        public static Company COMPANY_NORMAL = new Company()
+        {
+            code = "0123",
+            ID = 1,
+            isDelete = false,
+            nameEn = "Sky Rider 1",
+            nameVi = "Sky Rider 1",
+
+        };
+        public static Company COMPANY_NORMAL_2 = new Company()
+        {
+            code = "3210",
+            ID = 2,
+            isDelete = false,
+            nameEn = "Sky Rider 2",
+            nameVi = "Sky Rider 2",
+        };
+
         public static LoadingBay LOADING_BAY_NORMAL = new LoadingBay()
         { ID = 1, code = "1111", nameVi = "Bay 1 VI", nameEn = "Bay 1", warehouseID = null, warehouse = null, isDelete = false, };
         public static LoadingBay LOADING_BAY_NORMAL_2 = new LoadingBay()

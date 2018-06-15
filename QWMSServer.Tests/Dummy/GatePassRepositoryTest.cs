@@ -1,7 +1,9 @@
 ﻿using QWMSServer.Data.Repository;
 using QWMSServer.Model.DatabaseModels;
-
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace QWMSServer.Tests.Dummy
 {
@@ -18,6 +20,11 @@ namespace QWMSServer.Tests.Dummy
                 DataRecords.GATE_PASS_1ST_ORDER_PURCHASE,
                 DataRecords.GATE_PASS_1ST_ORDER_TYPE_OTHER,
             };
+        }
+
+        public override async Task<GatePass> GetAsync(Expression<Func<GatePass, bool>> where)
+        {
+            return DataRecords.GATE_PASS_NORMAL;
         }
     }
 }

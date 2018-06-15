@@ -30,5 +30,16 @@ namespace QWMSServer.Tests.Dummy
                 }
             };
         }
+
+        public override async Task<UnitType> GetAsync(Expression<Func<UnitType, bool>> where)
+        {
+            return new UnitType
+            {
+                code = "0123",
+                description = "Unittype 1",
+                ID = 1,
+                isDelete = false
+            };
+        }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using QWMSServer.Data.Repository;
 using QWMSServer.Model.DatabaseModels;
-
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace QWMSServer.Tests.Dummy
 {
@@ -28,6 +30,20 @@ namespace QWMSServer.Tests.Dummy
                     loadingBays = new List<LoadingBay>(),
                     plantID = 1
                 }
+            };
+        }
+
+        public override async Task<Warehouse> GetAsync(Expression<Func<Warehouse, bool>> where)
+        {
+            return new Warehouse()
+            {
+                code = "0123",
+                ID = 1,
+                isDelete = false,
+                nameEn = "Sky Rider 1",
+                nameVi = "Sky Rider 1",
+                loadingBays = new List<LoadingBay>(),
+                plantID = 1
             };
         }
     }
