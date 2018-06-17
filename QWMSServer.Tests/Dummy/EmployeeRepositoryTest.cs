@@ -15,7 +15,7 @@ namespace QWMSServer.Tests.Dummy
         {
             return new List<Employee>() {
                 DataRecords.EMPLOYEE_NORMAL,
-                DataRecords.EMPLOYEE_DELTED,
+                DataRecords.EMPLOYEE_DELETED,
             };
         }
 
@@ -29,8 +29,10 @@ namespace QWMSServer.Tests.Dummy
                     result = null;
                     break;
                 case 0: // OK
-                default:
                     result = this.SimpleGetPatcher(DataRecords.EMPLOYEE_NORMAL);
+                    break;
+                default:
+                    result = this.SimpleGetPatcher(DataRecords.EMPLOYEE_DELETED);
                     break;
             }
             return result;

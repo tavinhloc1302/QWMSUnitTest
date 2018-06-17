@@ -819,23 +819,29 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_CreateNewTruck()
         {
+            TruckRepositoryTest.FLAG_GET_ASYNC = 1;
+            LoadingTypeRepositoryTest.FLAG_GET_ASYNC = 1;
             CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
+            TruckTypeRepositoryTest.FLAG_GET_ASYNC = 1;
             TruckViewModel viewModel = new TruckViewModel
             {
                 code = "0123"
             };
             var actualResult = await _adminService.CreateNewTruck(viewModel);
+            TruckRepositoryTest.FLAG_GET_ASYNC = 0;
+            LoadingTypeRepositoryTest.FLAG_GET_ASYNC = 0;
             CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 0;
+            TruckTypeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
         public async Task TestMethod_CreateNewTruck_NoCode()
         {
-            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
+            TruckRepositoryTest.FLAG_GET_ASYNC = 1;
             TruckViewModel viewModel = new TruckViewModel();
             var actualResult = await _adminService.CreateNewTruck(viewModel);
-            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 0;
+            TruckRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -1164,11 +1170,13 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_CreateNewEmployee()
         {
+            EmployeeRepositoryTest.FLAG_GET_ASYNC = 1;
             EmployeeViewModel viewModel = new EmployeeViewModel
             {
                 code = "0123"
             };
             var actualResult = await _adminService.CreateNewEmployee(viewModel);
+            EmployeeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -1302,11 +1310,13 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_CreateNewEmployeeGroup()
         {
+            EmployeeGroupRepositoryTest.FLAG_GET_ASYNC = 1;
             EmployeeGroupViewModel viewModel = new EmployeeGroupViewModel
             {
                 code = "0123"
             };
             var actualResult = await _adminService.CreateNewEmployeeGroup(viewModel);
+            EmployeeGroupRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -1547,11 +1557,13 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_CreateNewEmployeeRole()
         {
+            EmployeeRoleRepositoryTest.FLAG_GET_ASYNC = 1;
             EmployeeRoleViewModel viewModel = new EmployeeRoleViewModel
             {
                 Code = "0123"
             };
             var actualResult = await _adminService.CreateNewEmployeeRole(viewModel);
+            EmployeeRoleRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -1679,19 +1691,27 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_CreateNewPlant()
         {
+            CompanyRepositoryTest.FLAG_GET_ASYNC = 1;
+            PlantRepositoryTest.FLAG_GET_ASYNC = 1;
             PlantViewModel viewModel = new PlantViewModel
             {
                 code = "0123"
             };
             var actualResult = await _adminService.CreateNewPlant(viewModel);
+            PlantRepositoryTest.FLAG_GET_ASYNC = 0;
+            CompanyRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
         public async Task TestMethod_CreateNewPlant_NoCode()
         {
+            CompanyRepositoryTest.FLAG_GET_ASYNC = 1;
+            PlantRepositoryTest.FLAG_GET_ASYNC = 1;
             PlantViewModel viewModel = new PlantViewModel();
             var actualResult = await _adminService.CreateNewPlant(viewModel);
+            PlantRepositoryTest.FLAG_GET_ASYNC = 0;
+            CompanyRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -1792,20 +1812,24 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_CreateNewCompany()
         {
+            CompanyRepositoryTest.FLAG_GET_ASYNC = 1;
             CompanyViewModel viewModel = new CompanyViewModel
             {
                 code = "0123"
             };
             var actualResult = await _adminService.CreateNewCompany(viewModel);
+            CompanyRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
         public async Task TestMethod_CreateNewCompany_NoCode()
         {
+            CompanyRepositoryTest.FLAG_GET_ASYNC = 1;
             CompanyViewModel viewModel = new CompanyViewModel();
             var actualResult = await _adminService.CreateNewCompany(viewModel);
             Assert.IsNotNull(actualResult.responseData);
+            CompanyRepositoryTest.FLAG_GET_ASYNC = 0;
         }
 
         [TestMethod]
@@ -1844,21 +1868,36 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_DeleteCompany()
         {
+            CompanyRepositoryTest.FLAG_GET_ASYNC = 1;
             CompanyViewModel viewModel = new CompanyViewModel
             {
                 ID = 1
             };
             var actualResult = await _adminService.DeleteCompany(viewModel);
+            CompanyRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseDatas);
         }
 
         [TestMethod]
         public async Task TestMethod_DeleteCompany_NoID()
         {
-            CompanyRepositoryTest.FLAG_DELETE_NO_ID = 1;
+            CompanyRepositoryTest.FLAG_DELETE = 1;
             CompanyViewModel viewModel = new CompanyViewModel();
             var actualResult = await _adminService.DeleteCompany(viewModel);
-            CompanyRepositoryTest.FLAG_DELETE_NO_ID = 0;
+            CompanyRepositoryTest.FLAG_DELETE = 0;
+            Assert.IsNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_DeleteCompany_WrongID()
+        {
+            CompanyRepositoryTest.FLAG_DELETE = 2;
+            CompanyViewModel viewModel = new CompanyViewModel()
+            {
+                ID = 0
+            };
+            var actualResult = await _adminService.DeleteCompany(viewModel);
+            CompanyRepositoryTest.FLAG_DELETE = 0;
             Assert.IsNull(actualResult.responseDatas);
         }
 
@@ -2138,19 +2177,23 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_CreateNewLane()
         {
+            LaneRepositoryTest.FLAG_GET_ASYNC = 1;
             LaneViewModel viewModel = new LaneViewModel
             {
                 code = "0123"
             };
             var actualResult = await _adminService.CreateNewLane(viewModel);
+            LaneRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
         public async Task TestMethod_CreateNewLane_NoCode()
         {
+            LaneRepositoryTest.FLAG_GET_ASYNC = 1;
             LaneViewModel viewModel = new LaneViewModel();
             var actualResult = await _adminService.CreateNewLane(viewModel);
+            LaneRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 

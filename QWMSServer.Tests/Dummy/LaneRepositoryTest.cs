@@ -29,8 +29,10 @@ namespace QWMSServer.Tests.Dummy
                     result = null;
                     break;
                 case 0: // OK
-                default:
                     result = this.SimpleGetPatcher(DataRecords.LANE_DELETED);
+                    break;
+                default: // NO DELETE
+                    result = this.SimpleGetPatcher(DataRecords.LANE_NORMAL);
                     break;
             }
             return result;

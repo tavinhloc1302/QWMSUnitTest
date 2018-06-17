@@ -26,7 +26,9 @@ namespace QWMSServer.Tests.Dummy
                 case 2: // Wrong ID
                     result = null;
                     break;
-                case 0: // OK
+                case 0:
+                    result = this.SimpleGetPatcher(DataRecords.EMPLOYEE_GROUP_NORMAL);
+                    break;
                 default:
                     result = this.SimpleGetPatcher(DataRecords.EMPLOYEE_GROUP_DELETED);
                     break;

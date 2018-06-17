@@ -31,7 +31,9 @@ namespace QWMSServer.Tests.Dummy
                     result = null;
                     break;
                 case 0: // OK
-                default:
+                    result = this.SimpleGetPatcher(DataRecords.CARRIER_VENDOR_NORMAL_2);
+                    break;
+                default: // NO DELETE
                     result = this.SimpleGetPatcher(DataRecords.CARRIER_VENDOR_NORMAL);
                     break;
             }

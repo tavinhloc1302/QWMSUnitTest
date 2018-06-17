@@ -30,7 +30,9 @@ namespace QWMSServer.Tests.Dummy
                     result = null;
                     break;
                 case 0: // OK
-                default:
+                    result = this.SimpleGetPatcher(DataRecords.CUSTOMER_DELETED);
+                    break;
+                default: // NO DELETE
                     result = this.SimpleGetPatcher(DataRecords.CUSTOMER_NORMAL);
                     break;
             }

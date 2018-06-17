@@ -30,6 +30,8 @@ namespace QWMSServer.Tests.Dummy
                     result = null;
                     break;
                 case 0: // OK
+                    result = this.SimpleGetPatcher(DataRecords.EMPLOYEE_ROLE_NORMAL);
+                    break;
                 default:
                     result = this.SimpleGetPatcher(DataRecords.EMPLOYEE_ROLE_DELETED);
                     break;

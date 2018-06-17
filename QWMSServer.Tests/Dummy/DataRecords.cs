@@ -62,7 +62,7 @@ namespace QWMSServer.Tests.Dummy
             Code = "0123",
             employees = new List<Employee>() {
                         EMPLOYEE_NORMAL,
-                        EMPLOYEE_DELTED
+                        EMPLOYEE_DELETED
                     },
             password = "password",
             username = "skyrider1",
@@ -125,7 +125,52 @@ namespace QWMSServer.Tests.Dummy
             isDelete = false
         };
 
-public static LoadingBay LOADING_BAY_NORMAL = new LoadingBay()
+        public static Plant PLANT_NORMAL = new Plant()
+        {
+            code = "0123",
+            ID = 1,
+            isDelete = false,
+            nameEn = "Sky Rider 1",
+            nameVi = "Sky Rider 1",
+            company = DataRecords.COMPANY_NORMAL
+        };
+        public static Plant PLANT_DELETED = new Plant()
+        {
+            code = "3210",
+            ID = 2,
+            isDelete = true,
+            nameEn = "Sky Rider 2",
+            nameVi = "Sky Rider 2",
+            company = DataRecords.COMPANY_NORMAL_2
+        };
+
+        public static Material MATERIAL_DELETED = new Material()
+        {
+            code = "0123",
+            ID = 1,
+            isDelete = false,
+            grossWeight = 1,
+            materialNameEn = "Material 1",
+            materialNameVi = "Material 1",
+            netWeight = 1,
+            unit = UNITTYPE_NORMAL_2,
+            unitID = 1
+        };
+
+        public static Material MATERIAL_NORMAL = new Material()
+        {
+            code = "3210",
+            ID = 2,
+            isDelete = false,
+            grossWeight = 1,
+            materialNameEn = "Material 2",
+            materialNameVi = "Material 2",
+            netWeight = 1,
+            unit = UNITTYPE_NORMAL_1,
+            unitID = 1
+        };
+
+        public static LoadingBay LOADING_BAY_NORMAL = new LoadingBay()
         { ID = 1, code = "1111", nameVi = "Bay 1 VI", nameEn = "Bay 1", warehouseID = null, warehouse = null, isDelete = false, };
         public static LoadingBay LOADING_BAY_NORMAL_2 = new LoadingBay()
         { ID = 2, code = "2222", nameVi = "Bay 2 VI", nameEn = "Bay 2", warehouseID = null, warehouse = null, isDelete = false, };
@@ -159,7 +204,7 @@ public static LoadingBay LOADING_BAY_NORMAL = new LoadingBay()
 
         public static Employee EMPLOYEE_NORMAL = new Employee()
         { ID = 1, code = "0123", isDelete = false, firstName = "Van Hoang", lastName = "Dinh", rfidCard = RFID_CARD_NORMAL, RFIDCardID = RFID_CARD_NORMAL.ID, userID = null, user = null, };
-        public static Employee EMPLOYEE_DELTED = new Employee()
+        public static Employee EMPLOYEE_DELETED = new Employee()
         { ID = 1, code = "1234", isDelete = true, firstName = "Van Dang", lastName = "Huynh", rfidCard = RFID_CARD_NORMAL, RFIDCardID = RFID_CARD_NORMAL.ID, userID = null, user = null, };
 
         public static LoadingType LOADING_TYPE_NORMAL = new LoadingType()
