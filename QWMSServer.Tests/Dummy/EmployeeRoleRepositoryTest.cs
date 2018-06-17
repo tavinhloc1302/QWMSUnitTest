@@ -9,36 +9,32 @@ namespace QWMSServer.Tests.Dummy
 {
     public class EmployeeRoleRepositoryTest : RepositoryBaseTest<EmployeeRole>, IEmployeeRoleRepository
     {
+        public static int FLAG_DELETE = 0;
+
         public override IList<EmployeeRole> GetObjectList()
         {
             return new List<EmployeeRole>()
             {
-                new EmployeeRole
-                {
-                    Code = "0123",
-                    description = "Employee Role 1",
-                    ID = 1,
-                    isDelete = false
-                },
-                new EmployeeRole
-                {
-                    Code = "3210",
-                    description = "Employee Role 2",
-                    ID = 2,
-                    isDelete = false
-                }
+                DataRecords.EMPLOYEE_ROLE_NORMAL,
+                DataRecords.EMPLOYEE_ROLE_DELETED
             };
         }
 
         public override async Task<EmployeeRole> GetAsync(Expression<Func<EmployeeRole, bool>> where)
         {
-            return new EmployeeRole
+            var result = DataRecords.EMPLOYEE_ROLE_NORMAL;
+            switch (FLAG_DELETE)
             {
-                Code = "0123",
-                description = "Employee Role 1",
-                ID = 1,
-                isDelete = false
-            };
+                case 1: // No ID
+                case 2: // Wrong ID
+                    result = null;
+                    break;
+                case 0: // OK
+                default:
+                    result = this.SimpleGetPatcher(DataRecords.EMPLOYEE_ROLE_DELETED);
+                    break;
+            }
+            return result;
         }
     }
 }

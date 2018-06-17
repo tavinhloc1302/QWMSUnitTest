@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace QWMSServer.Tests.Dummy
 {
-    class LaneRepositoryTest : RepositoryBaseTest<Lane>, ILaneRepository
+    public class LaneRepositoryTest : RepositoryBaseTest<Lane>, ILaneRepository
     {
+        public static int FLAG_DELETE = 0;
+
         public override IList<Lane> GetObjectList()
         {
             return new List<Lane>() {
@@ -19,7 +21,19 @@ namespace QWMSServer.Tests.Dummy
 
         public override async Task<Lane> GetAsync(Expression<Func<Lane, bool>> where)
         {
-            return DataRecords.LANE_NORMAL;
+            var result = DataRecords.LANE_NORMAL;
+            switch (FLAG_DELETE)
+            {
+                case 1: // No ID
+                case 2: // Wrong ID
+                    result = null;
+                    break;
+                case 0: // OK
+                default:
+                    result = this.SimpleGetPatcher(DataRecords.LANE_DELETED);
+                    break;
+            }
+            return result;
         }
     }
 }

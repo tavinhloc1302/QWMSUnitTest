@@ -9,6 +9,8 @@ namespace QWMSServer.Tests.Dummy
 {
     public class EmployeeRepositoryTest : RepositoryBaseTest<Employee>, IEmployeeRepository
     {
+        public static int FLAG_DELETE = 0;
+
         public override IList<Employee> GetObjectList()
         {
             return new List<Employee>() {
@@ -19,16 +21,19 @@ namespace QWMSServer.Tests.Dummy
 
         public override async Task<Employee> GetAsync(Expression<Func<Employee, bool>> where)
         {
-            return new Employee()
+            var result = DataRecords.EMPLOYEE_NORMAL;
+            switch (FLAG_DELETE)
             {
-                ID = 1,
-                code = "0123",
-                isDelete = false,
-                firstName = "Van Hoang",
-                lastName = "Dinh",
-                userID = null,
-                user = null
-            };
+                case 1: // No ID
+                case 2: // Wrong ID
+                    result = null;
+                    break;
+                case 0: // OK
+                default:
+                    result = this.SimpleGetPatcher(DataRecords.EMPLOYEE_NORMAL);
+                    break;
+            }
+            return result;
         }
     }
 }

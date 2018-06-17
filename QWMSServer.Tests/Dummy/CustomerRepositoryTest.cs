@@ -10,6 +10,8 @@ namespace QWMSServer.Tests.Dummy
 {
     public class CustomerRepositoryTest : RepositoryBaseTest<Customer>, ICustomerRepository
     {
+        public static int FLAG_DELETE = 0;
+
         public override IList<Customer> GetObjectList()
         {
             return new List<Customer>() {
@@ -20,24 +22,19 @@ namespace QWMSServer.Tests.Dummy
 
         public override async Task<Customer> GetAsync(Expression<Func<Customer, bool>> where)
         {
-            var sampleObject = new Customer()
+            var result = DataRecords.CUSTOMER_NORMAL;
+            switch (FLAG_DELETE)
             {
-                ID = 1,
-                code = "1111",
-                nameVi = "KH 1",
-                nameEn = "Cus 1",
-                shortName = "K 1",
-                invoiceAddressVi = "Ho Chi Minh",
-                invoiceAddressEn = "HCMC",
-                taxCode = "Tax 1",
-                contactPerson = "Contact 1",
-                telNo = "0908832000",
-                faxNo = "11111111",
-                email = "cus1@yopmail.com",
-                isDelete = false
-            };
-
-            return this.SimpleGetPatcher(sampleObject);
+                case 1: // No ID
+                case 2: // Wrong ID
+                    result = null;
+                    break;
+                case 0: // OK
+                default:
+                    result = this.SimpleGetPatcher(DataRecords.CUSTOMER_NORMAL);
+                    break;
+            }
+            return result;
         }
     }
 }

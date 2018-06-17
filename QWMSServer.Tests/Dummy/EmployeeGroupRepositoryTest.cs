@@ -9,32 +9,29 @@ namespace QWMSServer.Tests.Dummy
 {
     public class EmployeeGroupRepositoryTest : RepositoryBaseTest<EmployeeGroup>, IEmployeeGroupRepository
     {
+        public static int FLAG_DELETE = 0;
         public override IList<EmployeeGroup> GetObjectList()
         {
             return new List<EmployeeGroup>() {
-                new EmployeeGroup() {
-                    code = "0123",
-                    ID = 1,
-                    isDelete = false,
-                    description = "Group 1"
-                },
-                new EmployeeGroup() {
-                    code = "3210",
-                    ID = 2,
-                    isDelete = false,
-                    description = "Group 2"
-                }
+                DataRecords.EMPLOYEE_GROUP_NORMAL,
+                DataRecords.EMPLOYEE_GROUP_DELETED
             };
         }
         public override async Task<EmployeeGroup> GetAsync(Expression<Func<EmployeeGroup, bool>> where)
         {
-            return new EmployeeGroup()
+            var result = DataRecords.EMPLOYEE_GROUP_NORMAL;
+            switch (FLAG_DELETE)
             {
-                code = "0123",
-                ID = 1,
-                isDelete = false,
-                description = "Group 1"
-            };
+                case 1: // No ID
+                case 2: // Wrong ID
+                    result = null;
+                    break;
+                case 0: // OK
+                default:
+                    result = this.SimpleGetPatcher(DataRecords.EMPLOYEE_GROUP_DELETED);
+                    break;
+            }
+            return result;
         }
     }
 }

@@ -57,7 +57,75 @@ namespace QWMSServer.Tests.Dummy
             nameVi = "Sky Rider 2",
         };
 
-        public static LoadingBay LOADING_BAY_NORMAL = new LoadingBay()
+        public static User USER_NORMAL_1 = new User()
+        {
+            Code = "0123",
+            employees = new List<Employee>() {
+                        EMPLOYEE_NORMAL,
+                        EMPLOYEE_DELTED
+                    },
+            password = "password",
+            username = "skyrider1",
+            ID = 1,
+            isDelete = false
+        };
+        public static User USER_NORMAL_2 = new User()
+        {
+            Code = "3210",
+            employees = new List<Employee>(),
+            password = "password",
+            username = "skyrider2",
+            ID = 2,
+            isDelete = false
+        };
+
+        public static UnitType UNITTYPE_NORMAL_1 = new UnitType
+        {
+            code = "0123",
+            description = "Unittype 1",
+            ID = 1,
+            isDelete = false
+        };
+        public static UnitType UNITTYPE_NORMAL_2 = new UnitType
+        {
+            code = "0123",
+            description = "Unittype 1",
+            ID = 1,
+            isDelete = false
+        };
+
+        public static EmployeeGroup EMPLOYEE_GROUP_NORMAL = new EmployeeGroup()
+        {
+            code = "0123",
+            ID = 1,
+            isDelete = false,
+            description = "Group 1"
+        };
+
+        public static EmployeeGroup EMPLOYEE_GROUP_DELETED = new EmployeeGroup()
+        {
+            code = "3210",
+            ID = 2,
+            isDelete = true,
+            description = "Group 2"
+        };
+
+        public static EmployeeRole EMPLOYEE_ROLE_NORMAL = new EmployeeRole
+        {
+            Code = "0123",
+            description = "Employee Role 1",
+            ID = 1,
+            isDelete = false
+        };
+        public static EmployeeRole EMPLOYEE_ROLE_DELETED = new EmployeeRole
+        {
+            Code = "3210",
+            description = "Employee Role 2",
+            ID = 2,
+            isDelete = false
+        };
+
+public static LoadingBay LOADING_BAY_NORMAL = new LoadingBay()
         { ID = 1, code = "1111", nameVi = "Bay 1 VI", nameEn = "Bay 1", warehouseID = null, warehouse = null, isDelete = false, };
         public static LoadingBay LOADING_BAY_NORMAL_2 = new LoadingBay()
         { ID = 2, code = "2222", nameVi = "Bay 2 VI", nameEn = "Bay 2", warehouseID = null, warehouse = null, isDelete = false, };

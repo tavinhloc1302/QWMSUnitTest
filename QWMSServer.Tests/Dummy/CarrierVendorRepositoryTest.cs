@@ -10,6 +10,7 @@ namespace QWMSServer.Tests.Dummy
 {
     public class CarrierVendorRepositoryTest : RepositoryBaseTest<CarrierVendor>, ICarrierVendorRepository
     {
+        public static int FLAG_DELETE = 0;
         public override IList<CarrierVendor> GetObjectList()
         {
             return new List<CarrierVendor>() {
@@ -21,23 +22,21 @@ namespace QWMSServer.Tests.Dummy
 
         public override async Task<CarrierVendor> GetAsync(Expression<Func<CarrierVendor, bool>> where)
         {
-            var sampleObject = new CarrierVendor()
-            {
-                ID = 1,
-                addressEn = "Address in English",
-                addressVi = "Address in Vietnamese",
-                code = "0123",
-                contactPerson = "Galvin Nguyen",
-                department = "Sky",
-                isDelete = false,
-                nameEn = "Sky Rider 1",
-                nameVi = "Sky Rider 1",
-                shortName = "SR1",
-                taxCode = "0123",
-                telNo = "0123456789"
-            };
+            var result = DataRecords.CARRIER_VENDOR_NORMAL;
 
-            return this.SimpleGetPatcher(sampleObject);
+            switch (FLAG_DELETE)
+            {
+                case 1: // No ID
+                case 2: // Wrong ID
+                    result = null;
+                    break;
+                case 0: // OK
+                default:
+                    result = this.SimpleGetPatcher(DataRecords.CARRIER_VENDOR_NORMAL);
+                    break;
+            }
+
+            return result;
         }
     }
 }
