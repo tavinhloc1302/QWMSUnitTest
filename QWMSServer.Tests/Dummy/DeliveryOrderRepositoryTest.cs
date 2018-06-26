@@ -1,6 +1,6 @@
 ﻿using QWMSServer.Data.Repository;
 using QWMSServer.Model.DatabaseModels;
-
+using QWMSServer.Tests.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -12,10 +12,11 @@ namespace QWMSServer.Tests.Dummy
     {
         public override IList<DeliveryOrder> GetObjectList()
         {
-            return new List<DeliveryOrder>() {
+            return new List<DeliveryOrder>()
+            {
             };
         }
-        
+
         public override async Task<DeliveryOrder> GetAsync(Expression<Func<DeliveryOrder, bool>> where)
         {
             var sampleObject = new DeliveryOrder()
@@ -38,7 +39,24 @@ namespace QWMSServer.Tests.Dummy
                 isDelete = false,
             };
 
-            return this.SimpleGetPatcher(sampleObject);
+            switch (GetFlagGet())
+            {
+                case 0:
+                    sampleObject = null;
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    sampleObject.isDelete = true;
+                    break;
+                case 11:
+                    sampleObject.soNumber = "__!@#__";
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
+
+            return sampleObject;
         }
     }
 }

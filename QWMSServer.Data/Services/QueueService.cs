@@ -330,16 +330,18 @@ namespace QWMSServer.Data.Services
 
         public int findTruckGroup(GatePass gatePass)
         {
-            if(gatePass.orders.First().orderTypeID == Constant.DELIVERYORDER)
+            if (gatePass.orders.First().orderTypeID == Constant.DELIVERYORDER)
             {
-                if(gatePass.truckTyeID == Constant.PUMP)
+                if (gatePass.truckTyeID == Constant.PUMP)
                 {
                     return Constant.TRUCKGROUP2X;
-                }else
+                }
+                else
                 {
                     return Constant.TRUCKGROUP1X;
                 }
-            }else if(gatePass.orders.First().orderTypeID == Constant.PURCHASEORDER)
+            }
+            else if (gatePass.orders.First().orderTypeID == Constant.PURCHASEORDER)
             {
                 return Constant.TRUCKGROUP3X;
             }
@@ -829,7 +831,7 @@ namespace QWMSServer.Data.Services
                         responseViewModel.errorText = "Không có Material#: " + materialCode_material + " trong cơ sở dữ liệu";
                         return responseViewModel;
                     }
-                    
+
 
                     _orderMaterialRepository.Add(orderMaterial);
                     await this.SaveChangesAsync();
@@ -910,7 +912,7 @@ namespace QWMSServer.Data.Services
                                 {
                                     tempDO.customer = tempCustomer;
                                     listTemp.Add(tempO);
-                                }  
+                                }
                             }
                         }
                     }

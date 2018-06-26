@@ -544,6 +544,213 @@ namespace QWMSServer.Tests.ServiceTest
         }
 
         [TestMethod]
+        public async Task TestMethod_ImportDO_NoCarrier()
+        {
+            UnitOfWorkTest.FLAG_SAVE = 1;
+            SaleOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 0;
+            //OrderRepositoryTest.FLAG_GET_ASYNC_2 = 1;
+            //OrderMaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            //MaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            //MaterialRepositoryTest.FLAG_ADD = 0;
+
+            var DoList = GetSampleDoList();
+            var response = await _queueService.ImportDO(DoList);
+            Assert.AreNotEqual(0, response.errorCode);
+
+            UnitOfWorkTest.FLAG_SAVE = 0;
+            SaleOrderRepositoryTest.ResetDummyFlags();
+            DeliveryOrderRepositoryTest.ResetDummyFlags();
+            OrderRepositoryTest.ResetDummyFlags();
+        }
+
+        [TestMethod]
+        public async Task TestMethod_ImportDO_NoCustomer()
+        {
+            UnitOfWorkTest.FLAG_SAVE = 1;
+            SaleOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 0;
+            //OrderRepositoryTest.FLAG_GET_ASYNC_2 = 1;
+            //OrderMaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            //MaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            //MaterialRepositoryTest.FLAG_ADD = 0;
+
+            var DoList = GetSampleDoList();
+            var response = await _queueService.ImportDO(DoList);
+            Assert.AreNotEqual(0, response.errorCode);
+
+            UnitOfWorkTest.FLAG_SAVE = 0;
+            SaleOrderRepositoryTest.ResetDummyFlags();
+            DeliveryOrderRepositoryTest.ResetDummyFlags();
+            OrderRepositoryTest.ResetDummyFlags();
+            CarrierVendorRepositoryTest.ResetDummyFlags();
+            CustomerRepositoryTest.ResetDummyFlags();
+        }
+
+        [TestMethod]
+        public async Task TestMethod_ImportDO_NoDeliOrderType()
+        {
+            UnitOfWorkTest.FLAG_SAVE = 1;
+            SaleOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderTypeRepositoryTest.FLAG_GET_ASYNC = 0;
+            //OrderRepositoryTest.FLAG_GET_ASYNC_2 = 1;
+            //OrderMaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            //MaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            //MaterialRepositoryTest.FLAG_ADD = 0;
+
+            var DoList = GetSampleDoList();
+            var response = await _queueService.ImportDO(DoList);
+            Assert.AreNotEqual(0, response.errorCode);
+
+            UnitOfWorkTest.FLAG_SAVE = 0;
+            SaleOrderRepositoryTest.ResetDummyFlags();
+            DeliveryOrderRepositoryTest.ResetDummyFlags();
+            OrderRepositoryTest.ResetDummyFlags();
+            CarrierVendorRepositoryTest.ResetDummyFlags();
+            CustomerRepositoryTest.ResetDummyFlags();
+            DeliveryOrderTypeRepositoryTest.ResetDummyFlags();
+        }
+
+        [TestMethod]
+        public async Task TestMethod_ImportDO_NoCustomerWarehouse()
+        {
+            UnitOfWorkTest.FLAG_SAVE = 1;
+            SaleOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderTypeRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 0;
+            //OrderRepositoryTest.FLAG_GET_ASYNC_2 = 1;
+            //OrderMaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            //MaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            //MaterialRepositoryTest.FLAG_ADD = 0;
+
+            var DoList = GetSampleDoList();
+            var response = await _queueService.ImportDO(DoList);
+            Assert.AreNotEqual(0, response.errorCode);
+
+            UnitOfWorkTest.FLAG_SAVE = 0;
+            SaleOrderRepositoryTest.ResetDummyFlags();
+            DeliveryOrderRepositoryTest.ResetDummyFlags();
+            OrderRepositoryTest.ResetDummyFlags();
+            CarrierVendorRepositoryTest.ResetDummyFlags();
+            CustomerRepositoryTest.ResetDummyFlags();
+            DeliveryOrderTypeRepositoryTest.ResetDummyFlags();
+            CustomerWarehouseRepositoryTest.ResetDummyFlags();
+        }
+
+        [TestMethod]
+        public async Task TestMethod_ImportDO_CreateDeliOrderFailed()
+        {
+            UnitOfWorkTest.FLAG_SAVE = 1;
+            SaleOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderTypeRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC_2 = 0;
+            //OrderRepositoryTest.FLAG_GET_ASYNC_2 = 1;
+            //OrderMaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            //MaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            //MaterialRepositoryTest.FLAG_ADD = 0;
+
+            var DoList = GetSampleDoList();
+            var response = await _queueService.ImportDO(DoList);
+            Assert.AreNotEqual(0, response.errorCode);
+
+            UnitOfWorkTest.FLAG_SAVE = 0;
+            SaleOrderRepositoryTest.ResetDummyFlags();
+            DeliveryOrderRepositoryTest.ResetDummyFlags();
+            OrderRepositoryTest.ResetDummyFlags();
+            CarrierVendorRepositoryTest.ResetDummyFlags();
+            CustomerRepositoryTest.ResetDummyFlags();
+            DeliveryOrderTypeRepositoryTest.ResetDummyFlags();
+            CustomerWarehouseRepositoryTest.ResetDummyFlags();
+        }
+
+        [TestMethod]
+        public async Task TestMethod_ImportDO_NoPlant()
+        {
+            UnitOfWorkTest.FLAG_SAVE = 1;
+            SaleOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderTypeRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC_2 = 1;
+            PlantRepositoryTest.FLAG_GET_ASYNC = 0;
+            //OrderRepositoryTest.FLAG_GET_ASYNC_2 = 1;
+            //OrderMaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            //MaterialRepositoryTest.FLAG_GET_ASYNC = 1;
+            //MaterialRepositoryTest.FLAG_ADD = 0;
+
+            var DoList = GetSampleDoList();
+            var response = await _queueService.ImportDO(DoList);
+            Assert.AreNotEqual(0, response.errorCode);
+
+            UnitOfWorkTest.FLAG_SAVE = 0;
+            SaleOrderRepositoryTest.ResetDummyFlags();
+            DeliveryOrderRepositoryTest.ResetDummyFlags();
+            OrderRepositoryTest.ResetDummyFlags();
+            CarrierVendorRepositoryTest.ResetDummyFlags();
+            CustomerRepositoryTest.ResetDummyFlags();
+            DeliveryOrderTypeRepositoryTest.ResetDummyFlags();
+            CustomerWarehouseRepositoryTest.ResetDummyFlags();
+            PlantRepositoryTest.ResetDummyFlags();
+        }
+
+        [TestMethod]
+        public async Task TestMethod_ImportDO_InvalidSOCode()
+        {
+            UnitOfWorkTest.FLAG_SAVE = 1;
+            SaleOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 11;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 1;
+
+            var DoList = GetSampleDoList();
+            var response = await _queueService.ImportDO(DoList);
+            Assert.AreNotEqual(0, response.errorCode);
+
+            UnitOfWorkTest.FLAG_SAVE = 0;
+            SaleOrderRepositoryTest.ResetDummyFlags();
+            DeliveryOrderRepositoryTest.ResetDummyFlags();
+            OrderRepositoryTest.ResetDummyFlags();
+        }
+
+        [TestMethod]
+        public async Task TestMethod_ImportDO_InvalidOrder()
+        {
+            UnitOfWorkTest.FLAG_SAVE = 1;
+            SaleOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 0;
+
+            var DoList = GetSampleDoList();
+            var response = await _queueService.ImportDO(DoList);
+            Assert.AreNotEqual(0, response.errorCode);
+
+            UnitOfWorkTest.FLAG_SAVE = 0;
+            SaleOrderRepositoryTest.ResetDummyFlags();
+            DeliveryOrderRepositoryTest.ResetDummyFlags();
+            OrderRepositoryTest.ResetDummyFlags();
+        }
+
+        [TestMethod]
         public async Task TestMethod_ImportPO_Ok()
         {
             var PoList = new List<POViewModel>() {
