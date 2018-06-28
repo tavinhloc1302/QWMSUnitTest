@@ -9,42 +9,35 @@ namespace QWMSServer.Tests.Dummy
 {
     public class WarehouseRepositoryTest : RepositoryBaseTest<Warehouse>, IWarehouseRepository
     {
+        public static int FLAG_DELETE = 0;
+
         public override IList<Warehouse> GetObjectList()
         {
             return new List<Warehouse>() {
-                new Warehouse() {
-                    code = "0123",
-                    ID = 1,
-                    isDelete = false,
-                    nameEn = "Sky Rider 1",
-                    nameVi = "Sky Rider 1",
-                    loadingBays = new List<LoadingBay>(),
-                    plantID = 1
-                },
-                new Warehouse() {
-                    code = "0123",
-                    ID = 1,
-                    isDelete = false,
-                    nameEn = "Sky Rider 1",
-                    nameVi = "Sky Rider 1",
-                    loadingBays = new List<LoadingBay>(),
-                    plantID = 1
-                }
+                DataRecords.WAREHOUSE_DELETED,
+                DataRecords.WAREHOUSE_NORMAL
             };
         }
 
         public override async Task<Warehouse> GetAsync(Expression<Func<Warehouse, bool>> where)
         {
-            return new Warehouse()
+            var result = DataRecords.WAREHOUSE_NORMAL;
+
+            switch (FLAG_DELETE)
             {
-                code = "0123",
-                ID = 1,
-                isDelete = false,
-                nameEn = "Sky Rider 1",
-                nameVi = "Sky Rider 1",
-                loadingBays = new List<LoadingBay>(),
-                plantID = 1
-            };
+                case 1: // No ID
+                case 2: // Wrong ID
+                    result = null;
+                    break;
+                case 0: // OK
+                    result = this.SimpleGetPatcher(DataRecords.WAREHOUSE_NORMAL);
+                    break;
+                default: // NO DELETE
+                    result = this.SimpleGetPatcher(DataRecords.WAREHOUSE_DELETED);
+                    break;
+            }
+
+            return result;
         }
     }
 }

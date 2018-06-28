@@ -23,6 +23,7 @@ namespace QWMSServer.Tests.Dummy
             taxCode = "0123",
             telNo = "0123456789"
         };
+
         public static CarrierVendor CARRIER_VENDOR_NORMAL_2 = new CarrierVendor()
         {
             ID = 2,
@@ -168,6 +169,29 @@ namespace QWMSServer.Tests.Dummy
             netWeight = 1,
             unit = UNITTYPE_NORMAL_1,
             unitID = 1
+        };
+
+        public static Warehouse WAREHOUSE_NORMAL = new Warehouse()
+        {
+            code = "0123",
+            ID = 1,
+            isDelete = false,
+            nameEn = "Sky Rider 1",
+            nameVi = "Sky Rider 1",
+            loadingBays = new List<LoadingBay> { LOADING_BAY_NORMAL },
+            plantID = 1
+        };
+        public static Warehouse WAREHOUSE_DELETED = new Warehouse()
+        {
+            code = "0123",
+            ID = 1,
+            isDelete = true,
+            nameEn = "Sky Rider 1",
+            nameVi = "Sky Rider 1",
+            loadingBays = new List < LoadingBay > {
+                LOADING_BAY_DELETED
+            },
+            plantID = 1
         };
 
         public static LoadingBay LOADING_BAY_NORMAL = new LoadingBay()

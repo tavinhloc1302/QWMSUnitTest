@@ -10,6 +10,7 @@ namespace QWMSServer.Tests.Dummy
 {
     public class LoadingBayRepositoryTest : RepositoryBaseTest<LoadingBay>, ILoadingBayRepository
     {
+        public static int FLAG_DELETE = 0;
         public override IList<LoadingBay> GetObjectList()
         {
             return new List<LoadingBay>() {
@@ -21,31 +22,23 @@ namespace QWMSServer.Tests.Dummy
 
         public override async Task<LoadingBay> GetAsync(Expression<Func<LoadingBay, bool>> where)
         {
-            var sampleObject = new LoadingBay()
-            {
-                ID = 1,
-                code = "1111",
-                nameVi = "Bai dau 1",
-                nameEn = "Bay 1",
-                warehouseID = null,
-                warehouse = null,
-                isDelete = false,
+            var result = DataRecords.LOADING_BAY_NORMAL;
 
-            };
-
-            switch (FLAG_GET_ASYNC)
+            switch (FLAG_DELETE)
             {
-                case 0:
-                    sampleObject = null;
+                case 1: // No ID
+                case 2: // Wrong ID
+                    result = null;
                     break;
-                case 1:
-                    sampleObject.isDelete = true;
+                case 0: // OK
+                    result = this.SimpleGetPatcher(DataRecords.LOADING_BAY_DELETED);
                     break;
-                default:
-                    throw new InvalidOperationException();
+                default: // NO DELETE
+                    result = this.SimpleGetPatcher(DataRecords.LOADING_BAY_NORMAL);
+                    break;
             }
 
-            return sampleObject;
+            return result;
         }
     }
 }

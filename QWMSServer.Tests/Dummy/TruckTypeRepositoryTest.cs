@@ -9,6 +9,8 @@ namespace QWMSServer.Tests.Dummy
 {
     public class TruckTypeRepositoryTest : RepositoryBaseTest<TruckType>, ITruckTypeRepository
     {
+        public static int FLAG_DELETE = 0;
+
         public override IList<TruckType> GetObjectList()
         {
             return new List<TruckType>() {
@@ -21,7 +23,23 @@ namespace QWMSServer.Tests.Dummy
 
         public override async Task<TruckType> GetAsync(Expression<Func<TruckType, bool>> where)
         {
-            return DataRecords.TRUCK_TYPE_TRUCK;
+            var result = DataRecords.TRUCK_TYPE_TRUCK;
+
+            switch (FLAG_DELETE)
+            {
+                case 1: // No ID
+                case 2: // Wrong ID
+                    result = null;
+                    break;
+                case 0: // OK
+                    result = this.SimpleGetPatcher(DataRecords.TRUCK_TYPE_TRUCK);
+                    break;
+                default: // NO DELETE
+                    result = this.SimpleGetPatcher(DataRecords.TRUCK_TYPE_TRUCK);
+                    break;
+            }
+
+            return result;
         }
     }
 }
