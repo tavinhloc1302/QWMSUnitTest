@@ -1950,7 +1950,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_SearchCompany()
         {
+            CompanyRepositoryTest.FLAG_GET_ASYNC = 1;
+
             var actualResult = await _adminService.SearchCompany("0123");
+            CompanyRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
