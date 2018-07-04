@@ -50,8 +50,8 @@ namespace QWMSServer.Tests.ServiceTest
         {
             LoginViewModel viewModel = new LoginViewModel
             {
-                Email = "silencieux.le@gmail.com",
-                Password = "213123123",
+                Email = "skyrider1",
+                Password = "password",
                 UserAgent = "Chrome",
                 UserHostAddress = "1.1.1.1"
             };

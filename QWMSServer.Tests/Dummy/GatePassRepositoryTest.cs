@@ -24,7 +24,7 @@ namespace QWMSServer.Tests.Dummy
 
         public override async Task<GatePass> GetAsync(Expression<Func<GatePass, bool>> where)
         {
-            return DataRecords.GATE_PASS_NORMAL;
+            return SimpleGetPatcher(DataRecords.GATE_PASS_NORMAL);
         }
     }
 }

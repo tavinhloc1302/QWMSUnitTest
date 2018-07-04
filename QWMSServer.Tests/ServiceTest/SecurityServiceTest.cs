@@ -6,6 +6,7 @@ using QWMSServer.Model.ViewModels;
 using QWMSServer.Tests.Dummy;
 using System.Threading.Tasks;
 using AutoMapper;
+using QWMSServer.Data.Common;
 
 namespace QWMSServer.Tests.ServiceTest
 {
@@ -36,10 +37,66 @@ namespace QWMSServer.Tests.ServiceTest
         // ---------------------------------------------> Begin GetTrucks test cases
 
         [TestMethod]
-        public async Task TestMethod_GetTrucks_NullParam()
+        public async Task TestMethod_GetTrucks_NoParam()
         {
+            QueueListRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _securityServices.GetTrucks(null);
-            Assert.IsNotNull(actualResult);
+            QueueListRepositoryTest.FLAG_GET_ASYNC = 0;
+            Assert.AreEqual(ResponseCode.ERR_SEC_NOT_SUPPORT_CONDITION, actualResult.errorCode);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetTrucks_All()
+        {
+            QueueListRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _securityServices.GetTrucks(SecurityServices.TRUCK_CONDITION_ALL);
+            QueueListRepositoryTest.FLAG_GET_ASYNC = 0;
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetTrucks_Calling()
+        {
+            QueueListRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _securityServices.GetTrucks(SecurityServices.TRUCK_CONDITION_CALLING);
+            QueueListRepositoryTest.FLAG_GET_ASYNC = 0;
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetTrucks_WaitingCall()
+        {
+            QueueListRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _securityServices.GetTrucks(SecurityServices.TRUCK_CONDITION_WAITING_CALL);
+            QueueListRepositoryTest.FLAG_GET_ASYNC = 0;
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetTrucks_1XXX_WaitingCall()
+        {
+            QueueListRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _securityServices.GetTrucks(SecurityServices.TRUCK_CONDITION_1XXX_WAITING_CALL);
+            QueueListRepositoryTest.FLAG_GET_ASYNC = 0;
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetTrucks_2XXX_WaitingCall()
+        {
+            QueueListRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _securityServices.GetTrucks(SecurityServices.TRUCK_CONDITION_2XXX_WAITING_CALL);
+            QueueListRepositoryTest.FLAG_GET_ASYNC = 0;
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetTrucks_3XXX_WaitingCall()
+        {
+            QueueListRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _securityServices.GetTrucks(SecurityServices.TRUCK_CONDITION_3XXX_WAITING_CALL);
+            QueueListRepositoryTest.FLAG_GET_ASYNC = 0;
+            Assert.IsNotNull(actualResult.responseDatas);
         }
 
         // ---------------------------------------------> End GetTrucks test cases
@@ -49,15 +106,30 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_GetGatePassByRFID()
         {
-            var actualResult = await _securityServices.GetGatePassByRFID("0123456789");
-            Assert.IsNotNull(actualResult);
+            RFIDCardRepositoryTest.FLAG_GET_ASYNC = 1;
+            GatePassRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _securityServices.GetGatePassByRFID("0123");
+            RFIDCardRepositoryTest.FLAG_GET_ASYNC = 0;
+            GatePassRepositoryTest.FLAG_GET_ASYNC = 0;
+            Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
-        public async Task TestMethod_GetGatePassByRFID_ShouldFail_NoCode()
+        public async Task TestMethod_GetGatePassByRFID_NoGatePass()
         {
+            RFIDCardRepositoryTest.FLAG_GET_ASYNC = 1;
+            GatePassRepositoryTest.FLAG_GET_ASYNC = 0;
+            var actualResult = await _securityServices.GetGatePassByRFID("0123");
+            RFIDCardRepositoryTest.FLAG_GET_ASYNC = 0;
+            Assert.AreEqual(ResponseCode.ERR_SEC_NOT_FOUND_GATEPASS, actualResult.errorCode);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetGatePassByRFID_NoParam()
+        {
+            RFIDCardRepositoryTest.FLAG_GET_ASYNC = 0;
             var actualResult = await _securityServices.GetGatePassByRFID(null);
-            Assert.IsNotNull(actualResult);
+            Assert.AreEqual(ResponseCode.ERR_SEC_NOT_FOUND_RFID, actualResult.errorCode);
         }
 
         // ---------------------------------------------> End GetGatePassByRFID test cases
@@ -93,16 +165,17 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_ConfirmSecurityCheck_ShouldFail_NoCode()
         {
+            GatePassRepositoryTest.FLAG_GET_ASYNC = 0;
             SecurityUpdateStateViewModel gatePassView = new SecurityUpdateStateViewModel();
             var actualResult = await _securityServices.ConfirmSecurityCheck(gatePassView);
-            Assert.IsNull(actualResult.responseData);
+            Assert.AreEqual(ResponseCode.ERR_SEC_NOT_FOUND_GATEPASS, actualResult.errorCode);
         }
 
         [TestMethod]
-        public async Task TestMethod_ConfirmSecurityCheck_ShouldFail_NullModel()
+        public async Task TestMethod_ConfirmSecurityCheck_ShouldFail_NoModel()
         {
             var actualResult = await _securityServices.ConfirmSecurityCheck(null);
-            Assert.IsNull(actualResult.responseData);
+            Assert.AreEqual(ResponseCode.ERR_SEC_WRONG_BODY_REQUEST_FORMAT, actualResult.errorCode);
         }
 
         // ---------------------------------------------> End ConfirmSecurityCheck test cases
