@@ -1,5 +1,6 @@
 ﻿using QWMSServer.Data.Repository;
 using QWMSServer.Model.DatabaseModels;
+using QWMSServer.Tests.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,8 @@ namespace QWMSServer.Tests.Dummy
 {
     public class OrderMaterialRepositoryTest : RepositoryBaseTest<OrderMaterial>, IOrderMaterialRepository
     {
+        public static string OBJ_CODE_IMPORT_DO_DUPLICATE = "DO1111_DOITEM1111";
+
         public override IList<OrderMaterial> GetObjectList()
         {
             return new List<OrderMaterial>() {
@@ -21,7 +24,7 @@ namespace QWMSServer.Tests.Dummy
 
         public override async Task<OrderMaterial> GetAsync(Expression<Func<OrderMaterial, bool>> where)
         {
-            var sampleObject = new OrderMaterial()
+            var obj = new OrderMaterial()
             {
                 code = "1111",
                 orderID = 1,
@@ -34,17 +37,25 @@ namespace QWMSServer.Tests.Dummy
                 order = null,
                 material = null,
             };
-
-            switch (FLAG_GET_ASYNC)
+            
+            switch (GetFlagGet())
             {
+                case 0:
+                    obj = null;
+                    break;
                 case 1:
-                    sampleObject.isDelete = true;
+                    break;
+                case 2:
+                    ObjectUtils.SetProperty(obj, "isDelete", true);
+                    break;
+                case 10:
+                    obj.code = OBJ_CODE_IMPORT_DO_DUPLICATE;
                     break;
                 default:
                     throw new InvalidOperationException();
             }
 
-            return sampleObject;
+            return obj;
         }
     }
 }

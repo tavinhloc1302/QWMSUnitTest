@@ -285,6 +285,8 @@ namespace QWMSServer.Tests.Dummy
         { ID = 2, code = "2345", orderTypeID = ORDER_TYPE_PURCHASE.ID, orderType = ORDER_TYPE_PURCHASE, grossWeight = 20, gatePassID = GATE_PASS_NORMAL.ID, gatePass = GATE_PASS_NORMAL, plantID = null, plant = null, doID = null, deliveryOrder = null, poID = null, purchaseOrder = null, isDelete = false, };
         public static Order ORDER_NORMAL_TYPE_OTHER = new Order()
         { ID = 3, code = "3456", orderTypeID = ORDER_TYPE_OTHER.ID, orderType = ORDER_TYPE_OTHER, grossWeight = 30, gatePassID = GATE_PASS_NORMAL.ID, gatePass = GATE_PASS_NORMAL, plantID = null, plant = null, doID = null, deliveryOrder = null, poID = null, purchaseOrder = null, isDelete = false, };
+        public static Order ORDER_NORMAL_INTERNAL= new Order()
+        { ID = 4, code = "4567", orderTypeID = ORDER_TYPE_INTERNAL.ID, orderType = ORDER_TYPE_INTERNAL, grossWeight = 40, gatePassID = GATE_PASS_NORMAL.ID, gatePass = GATE_PASS_NORMAL, plantID = null, plant = null, doID = null, deliveryOrder = null, poID = null, purchaseOrder = null, isDelete = false, };
 
         public static Customer CUSTOMER_NORMAL = new Customer()
         { ID = 1, code = "1111", nameVi = "KH 1", nameEn = "Cus 1", shortName = "K 1", invoiceAddressVi = "Ho Chi Minh", invoiceAddressEn = "HCMC", taxCode = "Tax 1", contactPerson = "Contact 1", telNo = "0908832000", faxNo = "11111111", email = "cus1@yopmail.com", isDelete = false };

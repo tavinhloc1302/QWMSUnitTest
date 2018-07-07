@@ -626,7 +626,7 @@ namespace QWMSServer.Data.Services
                     {
                         // If have, compare DOItem have in checkOderCode_OrderMaterial. list or not
 
-                        for (int j = 0; i < checkOderCode_OrderMaterial.Count(); j++)
+                        for (int j = 0; j < checkOderCode_OrderMaterial.Count(); j++)
                         {
                             if ((listDO.ElementAt(i).dOCode + "_" + listDO.ElementAt(i).dOItemCode) == checkOderCode_OrderMaterial.ElementAt(j).code)
                             {
