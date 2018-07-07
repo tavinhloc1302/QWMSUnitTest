@@ -1,5 +1,5 @@
 ﻿using QWMSServer.Data.Infrastructures;
-
+using QWMSServer.Tests.Utils;
 using System;
 using System.Threading.Tasks;
 
@@ -11,10 +11,18 @@ namespace QWMSServer.Tests.Dummy
         // 1: true
         // Other: Exception
         public static int FLAG_SAVE = 1;
+        public static int COUNT_FLAG_SAVE = 1;
+        public static int FLAG_SAVE_2 = 1;
 
         public UnitOfWorkTest()
         {
 
+        }
+
+        public static void ResetDummyFlags()
+        {
+            FLAG_SAVE = 1;
+            FLAG_SAVE_2 = 1;
         }
 
         public System.Data.Entity.DbContextTransaction BeginTransaction()
@@ -29,7 +37,7 @@ namespace QWMSServer.Tests.Dummy
 
         public bool SaveChanges()
         {
-            switch (FLAG_SAVE)
+            switch (GetFlagGet())
             {
                 case 0:
                     return false;
@@ -38,6 +46,18 @@ namespace QWMSServer.Tests.Dummy
                 default:
                     throw new InvalidOperationException();
             }
+        }
+
+        public int GetFlagGet()
+        {
+            if (COUNT_FLAG_SAVE > 1)
+            {
+                var nextPropName = "FLAG_SAVE_" + COUNT_FLAG_SAVE.ToString();
+                return ObjectUtils.GetProperty<int>(typeof(UnitOfWorkTest), nextPropName);
+            }
+
+            ++COUNT_FLAG_SAVE;
+            return FLAG_SAVE;
         }
 
         public Task<bool> SaveChangesAsync()

@@ -29,6 +29,10 @@ namespace QWMSServer.Tests.Dummy
         public static int COUNT_GET_ASYNC = 1;
         public static int FLAG_GET_ASYNC_2 = 0;
 
+        // 0: Exception
+        // 1: Normal
+        public static int FLAG_UPDATE = 0;
+
         public RepositoryBaseTest()
         {
             this._ObjectList = this.GetObjectList();
@@ -56,9 +60,12 @@ namespace QWMSServer.Tests.Dummy
         public static void ResetDummyFlags()
         {
             FLAG_ADD = 0;
+
             FLAG_GET_ASYNC = 0;
             COUNT_GET_ASYNC = 1;
             FLAG_GET_ASYNC_2 = 0;
+
+            FLAG_UPDATE = 0;
         }
 
         public int GetFlagGet()
@@ -178,24 +185,30 @@ namespace QWMSServer.Tests.Dummy
 
         public async void Update(TEntity entity)
         {
-            var found = false;
-            var listIndex = 0;
-            for (; listIndex < this.ObjectList.Count; listIndex++)
-            {
-                var curEntity = this.ObjectList[listIndex];
-                if (ObjectUtils.GetProperty<int>(curEntity, "ID") == ObjectUtils.GetProperty<int>(entity, "ID"))
-                {
-                    found = true;
-                    break;
-                }
-            }
+            //var found = false;
+            //var listIndex = 0;
+            //for (; listIndex < this.ObjectList.Count; listIndex++)
+            //{
+            //    var curEntity = this.ObjectList[listIndex];
+            //    if (ObjectUtils.GetProperty<int>(curEntity, "ID") == ObjectUtils.GetProperty<int>(entity, "ID"))
+            //    {
+            //        found = true;
+            //        break;
+            //    }
+            //}
 
-            if (!found)
-            {
-                throw new KeyNotFoundException("No matching entity to update.");
-            }
+            //if (!found)
+            //{
+            //    throw new KeyNotFoundException("No matching entity to update.");
+            //}
 
-            this.ObjectList[listIndex] = entity;
+            //this.ObjectList[listIndex] = entity;
+
+            switch (FLAG_UPDATE)
+            {
+                case 1: return;
+                default: throw new InvalidOperationException();
+            }
         }
     }
 }
