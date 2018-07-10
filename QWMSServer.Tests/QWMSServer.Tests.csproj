@@ -138,6 +138,7 @@
     <Compile Include="ServiceTest\AuthServiceTest.cs" />
     <Compile Include="ServiceTest\QueueServiceTest.cs" />
     <Compile Include="ServiceTest\SecurityServiceTest.cs" />
+    <Compile Include="ServiceTest\WarehouseServiceTest.cs" />
     <Compile Include="Utils\ObjectUtils.cs" />
   </ItemGroup>
   <ItemGroup>
