@@ -34,19 +34,19 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("weighBridgeID")]
         public int weighBridgeID { get; set; }
 
-        [StringLength(50)]
+        [StringLength(255)]
         [Column("frontCameraCapturePath")]
         public string frontCameraCapturePath { get; set; }
 
-        [StringLength(50)]
+        [StringLength(255)]
         [Column("gearCameraCapturePath")]
         public string gearCameraCapturePath { get; set; }
 
-        [StringLength(50)]
+        [StringLength(255)]
         [Column("cabinCameraCapturePath")]
         public string cabinCameraCapturePath { get; set; }
 
-        [StringLength(50)]
+        [StringLength(255)]
         [Column("containerCameraCapturePath")]
         public string containerCameraCapturePath { get; set; }
 
@@ -58,6 +58,24 @@ namespace QWMSServer.Model.DatabaseModels
 
         [Column("isDelete")]
         public bool isDelete { get; set; }
+
+        [Column("isSuccess")]
+        public bool? isSuccess { get; set; }
+
+        [StringLength(50)]
+        [Column("note")]
+        public string note { get; set; }
+
+        [StringLength(50)]
+        [Column("PCIP")]
+        public string PCIP { get; set; }
+
+        [Column("isOverWeight")]
+        public bool? isOverWeight { get; set; }
+
+        [Column("comment")]
+        [StringLength(255)]
+        public string comment { get; set; }
 
         [ForeignKey("weightEmployeeID")]
         public Employee employee { get; set; }

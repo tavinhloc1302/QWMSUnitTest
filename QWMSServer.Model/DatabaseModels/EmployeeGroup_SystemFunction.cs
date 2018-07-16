@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 
 namespace QWMSServer.Model.DatabaseModels
 {
 	[Table("t_employeegroup_systemfunction")]
-	public class EmployeeGroup_SystemFunction
+    [DataContract(IsReference = true)]
+    public class EmployeeGroup_SystemFunction
 	{
 		public EmployeeGroup_SystemFunction ()
 		{

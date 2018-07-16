@@ -18,16 +18,18 @@ namespace QWMSServer.Data.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly ITokenRepository _tokenRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IAdminService _adminService;
         private readonly IEmployeeRepository _employeeRepository;
         private const string _alg = "HmacSHA256";
         private const string _salt = "hl2lBkZTMrTcWlZwDPiK";
 
-        public AuthService(IUnitOfWork unitOfWork, ITokenRepository tokenRepository, IUserRepository userRepository, IEmployeeRepository employeeRepository)
+        public AuthService(IUnitOfWork unitOfWork, ITokenRepository tokenRepository, IUserRepository userRepository, IEmployeeRepository employeeRepository, IAdminService adminService)
         {
             _unitOfWork = unitOfWork;
             _tokenRepository = tokenRepository;
             _userRepository = userRepository;
             _employeeRepository = employeeRepository;
+            _adminService = adminService;
         }
 
         public TokenViewModel GenerateToken(int userID, string username, string password, string ip, string userAgent, long ticks)
@@ -96,19 +98,15 @@ namespace QWMSServer.Data.Services
             }
             else
             {
-                var employee = user.employees.FirstOrDefault();
-                foreach (var group in employee.groupMaps)
+                foreach (var function in user.employee.employeeGroup.functionMaps)
                 {
-                    foreach (var function in group.employeeGroup.functionMaps)
+                    try
                     {
-                        try
-                        {
-                            systemFunctionViewModels.Add(function.systemFunction.Code, Mapper.Map<SystemFunction, SystemFunctionViewModel>(function.systemFunction));
-                        }
-                        catch (Exception)
-                        {
-                            continue;
-                        }
+                        systemFunctionViewModels.Add(function.systemFunction.Code, Mapper.Map<SystemFunction, SystemFunctionViewModel>(function.systemFunction));
+                    }
+                    catch (Exception)
+                    {
+                        continue;
                     }
                 }
                 response = ResponseConstructor<SystemFunctionViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, systemFunctionViewModels.Values.ToList());
@@ -118,29 +116,89 @@ namespace QWMSServer.Data.Services
 
         public async Task<ResponseViewModel<UserViewModel>> Login(LoginViewModel loginViewModel)
         {
+            var constrains = await _adminService.GetAllConstrain();
+            var maxLoginTimes = constrains.responseDatas.Where(cs => cs.name == ConstrainName.PASS_LOGIN_TIMES).ToList().FirstOrDefault().value;
+            var expireddays = constrains.responseDatas.Where(cs => cs.name == ConstrainName.PASS_EXPIRED).ToList().FirstOrDefault().value;
             ResponseViewModel<UserViewModel> response = new ResponseViewModel<UserViewModel>();
-            var user = await _userRepository.GetAsync(u => u.username == loginViewModel.Email && u.isDelete == false, QueryIncludes.USERFULLINCLUDES);
-            if (user == null)
+            // Check number of online user
+            var count = await _userRepository.GetManyAsync(u => u.isActive == true && u.isDelete == false, null);
+            if(count.Count() >= Constant.MAX_LOGIN_USER)
             {
-                return response = ResponseConstructor<UserViewModel>.ConstructData(ResponseCode.ERR_USER_NOT_EXSIT, null);
+                return response = ResponseConstructor<UserViewModel>.ConstructData(ResponseCode.ERR_MAX_LOGIN_SUPPORT, ResponseText.ERR_MAX_LOGIN, null);
             }
 
-            if (user.password != Crypt.ToSha256(loginViewModel.Password))
+            var user = await _userRepository.GetAsync(u => u.username == loginViewModel.Email && u.isDelete == false, QueryIncludes.USERFULLINCLUDES);
+            // Check if user exist
+            if (user == null)
             {
-                return response = ResponseConstructor<UserViewModel>.ConstructData(ResponseCode.ERR_INVALID_LOGIN, null);
+                return response = ResponseConstructor<UserViewModel>.ConstructData(ResponseCode.ERR_USER_NOT_EXSIT, ResponseText.ERR_INVALID_USER_NAME, null);
             }
+
+            if(user.isBlock == true)
+            {
+                return response = ResponseConstructor<UserViewModel>.ConstructData(ResponseCode.ERR_INVALID_LOGIN, ResponseText.ERR_BLOCKED_USER_EXCEED_LOGIN, null);
+            }
+
+            // Check if password is valid
+            //var userPassword = user.userPasswords.Where(p => p.isUsing == true).FirstOrDefault();
+            var haspass = Crypt.ToSha256(loginViewModel.Password);
+            if (user.password != haspass)
+            {
+                user.loginTimes += 1;
+                if (user.loginTimes > maxLoginTimes)
+                {
+                    user.isBlock = true;
+                    _userRepository.Update(user);
+                    await _unitOfWork.SaveChangesAsync();
+                    return response = ResponseConstructor<UserViewModel>.ConstructData(ResponseCode.ERR_INVALID_LOGIN, ResponseText.ERR_BLOCKED_USER_EXCEED_LOGIN, null);
+                }
+                _userRepository.Update(user);
+                await _unitOfWork.SaveChangesAsync();
+                return response = ResponseConstructor<UserViewModel>.ConstructData(ResponseCode.ERR_INVALID_LOGIN, ResponseText.ERR_INVALID_PASSWORD, null);
+            }
+
+            if(DateTime.Now.Subtract(user.userPasswords.Last().createDate).TotalDays > expireddays)
+            {
+                user.isBlock = true;
+                _userRepository.Update(user);
+                await _unitOfWork.SaveChangesAsync();
+                return response = ResponseConstructor<UserViewModel>.ConstructData(ResponseCode.ERR_INVALID_LOGIN, ResponseText.ERR_BLOCKED_USER_EXCEED_EXPIRE, null);
+            }else if (expireddays - DateTime.Now.Subtract(user.userPasswords.Last().createDate).TotalDays < 7)
+            {
+                response.errorCode = ResponseCode.PASSWORD_CHANGE_REQUIRE;
+                response.errorText = ResponseText.PASSWORD_CHANGE_REQUIRE;
+            }
+            else
+            {
+                response.errorCode = ResponseCode.SUCCESS;
+            }
+
+            user.loginTimes = 0;
+            user.isActive = true;
+            user.loginTime = DateTime.Now;
+            _userRepository.Update(user);
+            await _unitOfWork.SaveChangesAsync();
+
+            _tokenRepository.Delete(tk => tk.UserId == user.ID);
+            _unitOfWork.SaveChanges();
 
             var token = this.GenerateToken(user.ID, user.username, user.password, loginViewModel.UserHostAddress,
                                             loginViewModel.UserAgent, DateTime.Now.Ticks);
             UserViewModel viewModel = Mapper.Map<User, UserViewModel>(user);
             viewModel.token = token;
-            response = ResponseConstructor<UserViewModel>.ConstructData(ResponseCode.SUCCESS, viewModel);
+            response.responseData = viewModel;
+            //response = ResponseConstructor<UserViewModel>.ConstructData(ResponseCode.SUCCESS, viewModel);
 
             return response;
         }
 
-        public bool Logout(string tokenString)
+        public async Task<bool> Logout(string tokenString)
         {
+            var curToken = _tokenRepository.Get(tk => tk.TokenString.Equals(tokenString));
+            var curUser = await _userRepository.GetAsync(u => u.ID == curToken.UserId);
+            curUser.isActive = false;
+            _userRepository.Update(curUser);
+            await _unitOfWork.SaveChangesAsync();
             return this.RemoveToken(tokenString);
         }
 

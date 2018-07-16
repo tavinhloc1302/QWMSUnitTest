@@ -20,6 +20,8 @@ namespace QWMSServer.Data.Services
 
         Task<ResponseViewModel<GatePassViewModel>> GetGatePassByDriverID(int ID);
 
+        Task<ResponseViewModel<GatePassViewModel>> GetGatePassByDriverIDNo(string driverIDNo);
+
         Task<ResponseViewModel<GatePassViewModel>> GetGatePassByPlateNumber(string PlateNumber);
 
         Task<ResponseViewModel<GatePassViewModel>> UpdateGatePass(GatePassViewModel gatePassViewModel);
@@ -44,8 +46,14 @@ namespace QWMSServer.Data.Services
 
         Task<ResponseViewModel<CreateGatePassViewModel>> CreateGatepassWithPO(CreateGatePassViewModel createGatePassViewModel);
 
+        Task<ResponseViewModel<CreateGatePassViewModel>> CreateGatepassSP(CreateGatePassViewModel createGatePassViewModel);
+
         Task<ResponseViewModel<LoadingBayViewModel>> GetAllLoadingBay();
 
         Task<ResponseViewModel<LoadingBayViewModel>> GetLoadingBayByTruck(string truckCode);
+
+        Task<ResponseViewModel<GatePassViewModel>> SearchGatePass(string searchText);
+
+        Task<ResponseViewModel<GatePassViewModel>> DeleteGatePass(int ID);
     }
 }

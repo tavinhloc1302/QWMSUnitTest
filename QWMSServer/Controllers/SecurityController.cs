@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
 using System.Web.Http;
 using System.Threading.Tasks;
 using QWMSServer.Data.Services;
 using QWMSServer.Model.ViewModels;
 using System.Net.Http;
 using System.Net;
-using System.Web.Hosting;
-using System.IO;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Net.Http.Headers;
 using QWMSServer.Filter;
 
 namespace QWMSServer.Controllers
@@ -26,7 +18,7 @@ namespace QWMSServer.Controllers
             _securityServices = securityServicecs;
         }
 
-        //[AuthenticateRequire]
+        [AuthenticateRequire]
         [HttpGet]
         [Route("Get/Trucks/{truckCondition}", Name = "GetTrucks")]
         public async Task<ResponseViewModel<QueueListViewModel>> GetTrucks(string truckCondition)
@@ -34,6 +26,7 @@ namespace QWMSServer.Controllers
             return await _securityServices.GetTrucks(truckCondition);
         }
 
+        [AuthenticateRequire]
         [HttpGet]
         [Route("Get/GatePass/{rfidNo}", Name = "GetGatePassByRFID")]
         public async Task<ResponseViewModel<GatePassViewModel>> GetGatePassByRFID(string rfidNo)
@@ -41,6 +34,7 @@ namespace QWMSServer.Controllers
             return await _securityServices.GetGatePassByRFID(rfidNo);
         }
 
+        [AuthenticateRequire]
         [HttpGet]
         [Route("Get/RegisterSecurityCheck/{rfidNo}", Name = "RegisterSecurityCheck")]
         public async Task<ResponseViewModel<GatePassViewModel>> RegisterSecurityCheck(string rfidNo)
@@ -48,6 +42,7 @@ namespace QWMSServer.Controllers
             return await _securityServices.RegisterSecurityCheck(rfidNo);
         }
 
+        [AuthenticateRequire]
         [HttpPost]
         [Route("Post/ConfirmSecurityCheck", Name = "ConfirmSecurityCheck")]
         public async Task<ResponseViewModel<GatePassViewModel>> ConfirmSecurityCheck([FromBody] SecurityUpdateStateViewModel updateStateView)
@@ -55,6 +50,7 @@ namespace QWMSServer.Controllers
             return await _securityServices.ConfirmSecurityCheck(updateStateView);
         }
 
+        [AuthenticateRequire]
         [HttpGet]
         [Route("Get/Image")]
         public async Task<HttpResponseMessage> GetImage()
@@ -78,6 +74,14 @@ namespace QWMSServer.Controllers
             }
             
             return resMesg;
+        }
+
+        [AuthenticateRequire]
+        [HttpGet]
+        [Route("GetQueueInfo", Name = "QueueInfo")]
+        public async Task<ResponseViewModel<QueueInfo>> GetQueueInfo()
+        {
+            return await _securityServices.GetQueueInfo();
         }
     }
 }

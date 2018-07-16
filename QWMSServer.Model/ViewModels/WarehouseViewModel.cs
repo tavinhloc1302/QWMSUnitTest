@@ -16,7 +16,7 @@ namespace QWMSServer.Model.ViewModels
 
         public string nameEn { get; set; }
 
-        public int plantID { get; set; }
+        public int? plantID { get; set; }
 
         public bool isDelete { get; set; }
 

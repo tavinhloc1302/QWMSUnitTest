@@ -12,9 +12,18 @@ namespace QWMSServer.Data.Services
     {
         Task<ResponseViewModel<QueueListViewModel>> GetQueueList(); // GetTruckGroup
         Task<ResponseViewModel<QueueListViewModel>> CallNextTruck(int truckGroupID); // 
-        ResponseViewModel<WeightRecordViewModel> AddTruckCamera(string filename, byte[] fileContent); // 
+        Task<ResponseViewModel<QueueListViewModel>> CallNextTruckByGatePassID(int gatePassID);
+        ResponseViewModel<GenericResponseModel> AddTruckCamera(string filename, byte[] fileContent); // 
         Task<ResponseViewModel<WeightRecordViewModel>> UpdateWeightValue(WeightDataViewModel weightDataViewModel); // 
         Task<ResponseViewModel<WeightRecordViewModel>> GetWeightValueByGatePassID(int gatePassID); //
         Task<ResponseViewModel<UpdateLaneStatusViewModel>> UpdateLaneStatus(UpdateLaneStatusViewModel updateLaneStatusViewModel);
+        Task<ResponseViewModel<GatePassViewModel>> GetEmptyGatepass();
+        Task<ResponseViewModel<RFIDCardViewModel>> GetRFIDNotUse();
+        Task<ResponseViewModel<GatePassViewModel>> UpdateGatepass(GatePassViewModel gatepass);
+        Task<ResponseViewModel<WeightRecordViewModel>> GetTruckNetWeightValueByTruckID(int truckID);
+        Task<ResponseViewModel<WeighBridge>> GetWB(string WBCode);
+        Task<ResponseViewModel<WeighBridge>> UpdateWB(WeighBridge WBView);
+        Task<ResponseViewModel<WeighbridgeConfiguration>> GetAllWBConfigs();
+        Task<ResponseViewModel<WeighbridgeConfiguration>> UpdateWBConfig(WeighbridgeConfiguration WBConfigView);
     }
 }

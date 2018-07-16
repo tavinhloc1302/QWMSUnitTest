@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -22,16 +23,15 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("code")]
         public string code { get; set; }
 
-        [StringLength(50)]
-        [Column("doNumber")]
-        public string doNumber { get; set; }
+        //[StringLength(50)]
+        //[Column("doNumber")]
+        //public string doNumber { get; set; }
 
         [Column("createDate")]
         public DateTime createDate { get; set; }
 
-        [StringLength(50)]
-        [Column("soNumber")]
-        public string soNumber { get; set; }
+        [Column("soID")]
+        public int? soID { get; set; }
 
         [Column("customerID")]
         public int? customerID { get; set; }
@@ -56,7 +56,6 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("isDelete")]
         public bool isDelete { get; set; }
 
-
         [ForeignKey("customerWarehouseID")]
         public CustomerWarehouse customerWarehouse { get; set; }
 
@@ -66,7 +65,13 @@ namespace QWMSServer.Model.DatabaseModels
         [ForeignKey("carrierVendorID")]
         public CarrierVendor carrierVendor { get; set; }
 
+        [ForeignKey("soID")]
+        public SaleOrder saleOrder { get; set; }
+
+        public ICollection<Order> order { get; set; }
+
         [ForeignKey("doTypeID")]
         public DeliveryOrderType deliveryOrderType { get; set; }
     }
 }
+

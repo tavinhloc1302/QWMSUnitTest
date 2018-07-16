@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 
 namespace QWMSServer.Model.DatabaseModels
 {
 	[Table("t_system_function")]
-	public class SystemFunction
+    public class SystemFunction
 	{
 		public SystemFunction ()
 		{
@@ -16,6 +17,10 @@ namespace QWMSServer.Model.DatabaseModels
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+
+        public int itemID { get; set; }
+
+        public int parentID { get; set; }
 
         [Index(IsUnique = true)]
         [StringLength(50)]

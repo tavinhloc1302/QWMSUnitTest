@@ -39,6 +39,7 @@ namespace QWMSServer.Data.Services
         private readonly IPurchaseOrderRepository _purchaseOrderRepository;
         private readonly IPurchaseOrderTypeRepository _purchaseOrderTypeRepository;
         private readonly IPlantRepository _plantRepository;
+        private readonly IOrderTypeRepository _orderTypeRepository;
 
         public QueueService(IUnitOfWork unitOfWork, IGatePassRepository gatePassRepository, IStateRepository stateRepository,
                             ILaneRepository laneRepository, ITruckRepository truckRepository, IQueueListRepository queueListRepository,
@@ -58,7 +59,8 @@ namespace QWMSServer.Data.Services
                             ICommonService commonService,
                             IPurchaseOrderRepository purchaseOrderRepository,
                             IPurchaseOrderTypeRepository purchaseOrderTypeRepository,
-                            IPlantRepository plantRepository)
+                            IPlantRepository plantRepository,
+                            IOrderTypeRepository orderTypeRepository)
         {
             _unitOfWork = unitOfWork;
             _gatePassRepository = gatePassRepository;
@@ -84,6 +86,7 @@ namespace QWMSServer.Data.Services
             _purchaseOrderRepository = purchaseOrderRepository;
             _purchaseOrderTypeRepository = purchaseOrderTypeRepository;
             _plantRepository = plantRepository;
+            _orderTypeRepository = orderTypeRepository;
         }
 
         public async Task<bool> SaveChangesAsync()
@@ -96,7 +99,7 @@ namespace QWMSServer.Data.Services
             ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
             try
             {
-                var result = await _gatePassRepository.GetManyAsync(c => true, QueryIncludes.GATEPASSFULLINCLUDES);
+                var result = await _gatePassRepository.GetManyAsync(c => c.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
                 if (result == null)
                     return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không có GatePass trong CSDL", null);
                 return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, Mapper.Map<IEnumerable<GatePass>, IEnumerable<GatePassViewModel>>(result));
@@ -105,6 +108,24 @@ namespace QWMSServer.Data.Services
             catch (Exception)
             {
                 return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không có GatePass trong CSDL", null); ;
+            }
+        }
+
+        public async Task<ResponseViewModel<GatePassViewModel>> SearchGatePass(string searchText)
+        {
+            ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
+            try
+            {
+                var result = await _gatePassRepository.GetManyAsync(c => c.isDelete == false && 
+                (c.customer.code.Contains(searchText) || c.customer.nameVi.Contains(searchText) || c.code.Contains(searchText) || c.truck.plateNumber.Contains(searchText) ), 
+                QueryIncludes.GATEPASSFULLINCLUDES);
+                if (result.Count() == 0)
+                    return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, ResponseText.ERR_SEARCH_FAIL, null);
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, Mapper.Map<IEnumerable<GatePass>, IEnumerable<GatePassViewModel>>(result));
+            }
+            catch (Exception)
+            {
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, ResponseText.ERR_SEARCH_FAIL, null); ;
             }
         }
 
@@ -148,12 +169,12 @@ namespace QWMSServer.Data.Services
             {
                 var result = await _gatePassRepository.GetAsync(g => g.RFIDCard.code.Equals(Code) && g.stateID != 0 && g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
                 if (result == null)
-                    return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không tìm thấy GatePass", null);
+                    return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_NO_OBJECT_FOUND, ResponseText.ERR_SEC_NOT_FOUND_GATEPASS_VI, null);
                 return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.SUCCESS, Mapper.Map<GatePass, GatePassViewModel>(result));
             }
             catch (Exception e)
             {
-                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không tìm thấy GatePass", null);
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_NO_OBJECT_FOUND, ResponseText.ERR_SEC_NOT_FOUND_GATEPASS_VI, null);
             }
         }
 
@@ -183,19 +204,42 @@ namespace QWMSServer.Data.Services
                     GatePass gatePassClient = Mapper.Map<GatePassViewModel, GatePass>(gatePassViewModel);
                     if (gatePassClient != null)
                     {
-                        var result = await _gatePassRepository.GetAsync(g => g.ID == gatePassViewModel.ID && g.stateID != 0 && g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
-                        result.driverID = gatePassClient.driver.ID;
-                        // State Update Sequence
-                        // result.stateID = xxxx;
-                        _gatePassRepository.Update(result);
-                        if (await this.SaveChangesAsync())
+                        var gatePass = await _gatePassRepository.GetAsync(g => g.ID == gatePassViewModel.ID && g.stateID != 0 && g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
+                        // Update new driver
+                        gatePass.driverID = gatePassClient.driver.ID;
+                        // Update new truck
+                        gatePass.truckID = gatePassClient.truck.ID;
+                        // Update orders
+                        foreach (var order in gatePass.orders)
                         {
-                            responseViewModel = await this.GetGatePassByCode(gatePassViewModel.code);
+                            order.gatePassID = null;// remove order of this gatePass
+                            _orderRepository.Update(order);
                         }
-                        else
+                        if(await this.SaveChangesAsync()) 
                         {
-                            responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_DB_FAIL_TO_SAVE, "Lưu đối tượng thất bại", null);
+                            foreach (var clientOrder in gatePassClient.orders)
+                            {
+                                var order = await _orderRepository.GetAsync(o => o.ID == clientOrder.ID);
+                                order.gatePassID = gatePass.ID; // add current gatePass ID
+                                _orderRepository.Update(order);
+                            }
+                            _gatePassRepository.Update(gatePass); // save new order & gatePass
+                            if (await this.SaveChangesAsync()) 
+                            {
+                                gatePass = await _gatePassRepository.GetAsync(g => g.ID == gatePassViewModel.ID && g.stateID != 0 && g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
+                                gatePass.truckGroupID = findTruckGroup(gatePass);
+                                _gatePassRepository.Update(gatePass);
+                                if (await this.SaveChangesAsync())
+                                {
+                                    responseViewModel = await this.GetGatePassByCode(gatePass.code);
+                                }
+                                else
+                                {
+                                    responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_DB_FAIL_TO_SAVE, "Lưu đối tượng thất bại", null);
+                                }
+                            }
                         }
+
                     }
                     else
                     {
@@ -330,18 +374,16 @@ namespace QWMSServer.Data.Services
 
         public int findTruckGroup(GatePass gatePass)
         {
-            if (gatePass.orders.First().orderTypeID == Constant.DELIVERYORDER)
+            if(gatePass.orders.First().orderTypeID == Constant.DELIVERYORDER)
             {
-                if (gatePass.truckTyeID == Constant.PUMP)
+                if(gatePass.truckTyeID == Constant.PUMP)
                 {
                     return Constant.TRUCKGROUP2X;
-                }
-                else
+                }else
                 {
                     return Constant.TRUCKGROUP1X;
                 }
-            }
-            else if (gatePass.orders.First().orderTypeID == Constant.PURCHASEORDER)
+            }else if(gatePass.orders.First().orderTypeID == Constant.PURCHASEORDER)
             {
                 return Constant.TRUCKGROUP3X;
             }
@@ -437,6 +479,22 @@ namespace QWMSServer.Data.Services
             }
         }
 
+        public async Task<ResponseViewModel<GatePassViewModel>> GetGatePassByDriverIDNo(string driverIDNo)
+        {
+            ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
+            try
+            {
+                var result = await _gatePassRepository.GetAsync(g => g.driver.IDNo.Equals(driverIDNo) && g.stateID != 0 && g.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
+                if (result == null)
+                    return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không tìm thấy GatePass", null);
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.SUCCESS, Mapper.Map<GatePass, GatePassViewModel>(result));
+            }
+            catch (Exception)
+            {
+                return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không tìm thấy GatePass", null);
+            }
+        }
+
         public async Task<ResponseViewModel<DOViewModel>> ImportDO(List<DOViewModel> listDO)
         {
             ResponseViewModel<DOViewModel> responseViewModel = new ResponseViewModel<DOViewModel>();
@@ -491,10 +549,10 @@ namespace QWMSServer.Data.Services
                         CultureInfo provider = CultureInfo.InvariantCulture;
 
                         DeliveryOrder deliveryOrder = new DeliveryOrder();
-                        deliveryOrder.doNumber = listDO.ElementAt(i).dOCode;
+                        //deliveryOrder.doNumber = listDO.ElementAt(i).dOCode;
                         deliveryOrder.code = listDO.ElementAt(i).dOCode;
                         deliveryOrder.createDate = DateTime.ParseExact(listDO.ElementAt(i).dayCreate, format, provider);
-                        deliveryOrder.soNumber = listDO.ElementAt(i).sOCode;
+                        deliveryOrder.saleOrder.Code = listDO.ElementAt(i).sOCode;
                         deliveryOrder.remark = listDO.ElementAt(i).remark;
                         deliveryOrder.sloc = listDO.ElementAt(i).sLoc;
                         deliveryOrder.isDelete = false;
@@ -557,7 +615,7 @@ namespace QWMSServer.Data.Services
                         order.code = listDO.ElementAt(i).dOCode;
                         try
                         {
-                            order.deliveryOrder = await _deliveryOrderRepository.GetAsync(ca => ca.doNumber.Equals(deliveryOrder.doNumber));
+                            order.deliveryOrder = await _deliveryOrderRepository.GetAsync(ca => ca.code.Equals(deliveryOrder.code));
                             order.doID = order.deliveryOrder.ID;
                         }
                         catch
@@ -566,7 +624,7 @@ namespace QWMSServer.Data.Services
                             responseViewModel.errorText = "Dữ liệu tại dòng thứ " + (i + 1).ToString() + " không đúng";
                             return responseViewModel;
                         }
-                        order.grossWeight = 0;
+                        order.registGrossWeight = 0;
                         order.isDelete = false;
                         order.orderTypeID = Constant.DELIVERYORDER;
 
@@ -592,7 +650,7 @@ namespace QWMSServer.Data.Services
                     else
                     {
                         //Check SO# in DO
-                        if (checkDOCode_DeliveryOrder.soNumber != valueSOCode)
+                        if (checkDOCode_DeliveryOrder.saleOrder.Code != valueSOCode)
                         {
                             // Data is not sync
                             // Return false
@@ -626,7 +684,7 @@ namespace QWMSServer.Data.Services
                     {
                         // If have, compare DOItem have in checkOderCode_OrderMaterial. list or not
 
-                        for (int j = 0; j < checkOderCode_OrderMaterial.Count(); j++)
+                        for (int j = 0; i < checkOderCode_OrderMaterial.Count(); j++)
                         {
                             if ((listDO.ElementAt(i).dOCode + "_" + listDO.ElementAt(i).dOItemCode) == checkOderCode_OrderMaterial.ElementAt(j).code)
                             {
@@ -644,8 +702,8 @@ namespace QWMSServer.Data.Services
                     orderMaterial.code = listDO.ElementAt(i).dOCode + "_" + listDO.ElementAt(i).dOItemCode;
                     orderMaterial.order = getOrderFromDOCode;
                     orderMaterial.orderID = getOrderFromDOCode.ID;
-                    orderMaterial.grossWeight = 0;
-                    orderMaterial.quantity = listDO.ElementAt(i).quanlity;
+                    //orderMaterial.reht = 0;
+                    orderMaterial.registQuantity = listDO.ElementAt(i).quanlity;
                     orderMaterial.isDelete = false;
                     var materialCode_material = listDO.ElementAt(i).materialCode;
                     try
@@ -764,7 +822,7 @@ namespace QWMSServer.Data.Services
                             return responseViewModel;
                         }
 
-                        order.grossWeight = 0;
+                        //order.grossWeight = 0;
 
                         _orderRepository.Add(order);
                         await this.SaveChangesAsync();
@@ -811,8 +869,8 @@ namespace QWMSServer.Data.Services
                     //OrderMaterial code = DO#+"_"+DOItem#
                     OrderMaterial orderMaterial = new OrderMaterial();
                     orderMaterial.code = listPO.ElementAt(i).pOCode + "_" + listPO.ElementAt(i).pOItemCode;
-                    orderMaterial.grossWeight = 0;
-                    orderMaterial.quantity = listPO.ElementAt(i).quanlity;
+                    //orderMaterial.grossWeight = 0;
+                    orderMaterial.registQuantity = listPO.ElementAt(i).quanlity;
                     //Get orderID by list.ElementAt(i).pOCode
                     //orderMaterial.orderID = list.ElementAt(i).pOCode;
                     var poCode_order = listPO.ElementAt(i).pOCode;
@@ -831,7 +889,7 @@ namespace QWMSServer.Data.Services
                         responseViewModel.errorText = "Không có Material#: " + materialCode_material + " trong cơ sở dữ liệu";
                         return responseViewModel;
                     }
-
+                    
 
                     _orderMaterialRepository.Add(orderMaterial);
                     await this.SaveChangesAsync();
@@ -854,7 +912,7 @@ namespace QWMSServer.Data.Services
             try
             {
                 //Get All Order record with GatepassID == null and doID != null
-                var result = await _orderRepository.GetManyAsync(g => g.gatePassID == null && g.doID != null && g.isDelete == false, null);
+                var result = await _orderRepository.GetManyAsync(g => g.gatePassID == null && g.doID != null && g.isDelete == false, QueryIncludes.ORDERFULLINCUDES);
                 if (result == null)
                 {
                     responseViewModel.errorCode = -1;
@@ -912,7 +970,7 @@ namespace QWMSServer.Data.Services
                                 {
                                     tempDO.customer = tempCustomer;
                                     listTemp.Add(tempO);
-                                }
+                                }  
                             }
                         }
                     }
@@ -1045,7 +1103,7 @@ namespace QWMSServer.Data.Services
                     //If don't have, create GatePass
                     GatePass gatePass = new GatePass();
                     gatePass.code = createGatePassViewModel.gatePassViewModel.code;
-                    gatePass.createDate = createGatePassViewModel.gatePassViewModel.createDate;
+                    gatePass.createDate = (DateTime)createGatePassViewModel.gatePassViewModel.createDate;
                     gatePass.isDelete = false;
                     gatePass.loadingBayID = createGatePassViewModel.gatePassViewModel.loadingBayID;
                     gatePass.enterTime = DateTime.Now;
@@ -1143,7 +1201,7 @@ namespace QWMSServer.Data.Services
                     //If don't have, create GatePass
                     GatePass gatePass = new GatePass();
                     gatePass.code = createGatePassViewModel.gatePassViewModel.code;
-                    gatePass.createDate = createGatePassViewModel.gatePassViewModel.createDate;
+                    gatePass.createDate = (DateTime)createGatePassViewModel.gatePassViewModel.createDate;
                     gatePass.isDelete = false;
                     gatePass.loadingBayID = createGatePassViewModel.gatePassViewModel.loadingBayID;
                     gatePass.enterTime = DateTime.Now;
@@ -1219,6 +1277,119 @@ namespace QWMSServer.Data.Services
                 //responseViewModel.errorCode = -1;
                 //responseViewModel.errorText = "Lỗi chưa xác định";
                 //return responseViewModel;
+            }
+        }
+
+        public async Task<ResponseViewModel<CreateGatePassViewModel>> CreateGatepassSP(CreateGatePassViewModel createGatePassViewModel)
+        {
+            ResponseViewModel<CreateGatePassViewModel> responseViewModel = new ResponseViewModel<CreateGatePassViewModel>();
+            try
+            {
+                //Search GatePass_Code in DB 
+                var result = await _gatePassRepository.GetAsync(g => g.code.Equals(createGatePassViewModel.gatePassViewModel.code) && g.isDelete == false, null);
+                if (result != null)
+                {
+                    //If have return false
+                    responseViewModel.errorCode = -1;
+                    responseViewModel.errorText = "Mã Gatepass đã có trong cơ sở dữ liệu";
+                    return responseViewModel;
+                }
+                else
+                {
+                    //If don't have, create GatePass
+                    GatePass gatePass = new GatePass();
+                    gatePass.code = createGatePassViewModel.gatePassViewModel.code;
+                    gatePass.createDate = (DateTime)createGatePassViewModel.gatePassViewModel.createDate;
+                    gatePass.isDelete = false;
+                    gatePass.loadingBayID = createGatePassViewModel.gatePassViewModel.loadingBayID;
+                    gatePass.enterTime = DateTime.Now;
+                    gatePass.leaveTime = DateTime.Now;
+                    //gatePass.ID = 1;
+                    if (createGatePassViewModel.gatePassViewModel.driver != null)
+                    {
+                        try
+                        {
+                            //var driverCode = createGatePassViewModel.gatePassViewModel.code;
+                            //var driver = await _driverRepository.GetAsync(g => g.code.Equals(driverCode) && g.isDelete == false, null);
+                            gatePass.driverID = createGatePassViewModel.gatePassViewModel.driver.ID;
+                        }
+                        catch
+                        {
+                            responseViewModel.errorCode = -1;
+                            responseViewModel.errorText = "Không có tài xế được chọn trong cơ sở dữ liệu";
+                            return responseViewModel;
+                        }
+                    }
+
+                    if (createGatePassViewModel.gatePassViewModel.truck != null)
+                    {
+                        try
+                        {
+                            //gatePass.truck = await _truckRepository.GetAsync(g => ((g.ID == createGatePassViewModel.gatePassViewModel.truck.ID) && (g.isDelete == false)), null);
+                            gatePass.truckID = createGatePassViewModel.gatePassViewModel.truck.ID;
+                            gatePass.truckTyeID = createGatePassViewModel.gatePassViewModel.truck.truckTypeID;
+                        }
+                        catch
+                        {
+                            responseViewModel.errorCode = -1;
+                            responseViewModel.errorText = "Không có xe được chọn trong cơ sở dữ liệu";
+                            return responseViewModel;
+                        }
+                    }
+                    if ((createGatePassViewModel.gatePassViewModel.truck == null)
+                        || (createGatePassViewModel.gatePassViewModel.driver == null))
+                    {
+                        gatePass.stateID = 1;
+                    }
+                    else
+                    {
+                        gatePass.stateID = 2;
+                    }
+
+                    _gatePassRepository.Add(gatePass);
+                    await this.SaveChangesAsync();
+                }
+
+                // Add GatePass_ID into listOrder
+                //Get GatePassID with createGatePassViewModel.gatePassViewModel.code
+                var gatepass = await _gatePassRepository.GetAsync(g => g.code.Equals(createGatePassViewModel.gatePassViewModel.code) && g.isDelete == false, null);
+                Order order = new Order();
+                order.code = gatepass.code + "_SP";
+                if (createGatePassViewModel.gatePassViewModel.truck.truckType.description.Equals(Constant.TRASH_CAR))
+                {
+                    //Get ID of truckType "Xe rác"
+                    var orderTemp = await _orderTypeRepository.GetAsync(g => g.description.Equals(Constant.TRASH_CAR) && g.isDelete == false, null);
+                    order.orderTypeID = orderTemp.ID;
+                }  
+                else if (createGatePassViewModel.gatePassViewModel.truck.truckType.description.Equals(Constant.TRUCK_INTERNAL))
+                {
+                    ////Get ID of truckType "Xe nội bộ"
+                    var orderTemp = await _orderTypeRepository.GetAsync(g => g.description.Equals(Constant.TRUCK_INTERNAL) && g.isDelete == false, null);
+                    order.orderTypeID = orderTemp.ID;
+                }
+                else
+                {
+                    responseViewModel.errorCode = -1;
+                    responseViewModel.errorText = "Không phải loại xe đặc biệt";
+                    return responseViewModel;
+                }
+                order.gatePassID = gatepass.ID;
+                _orderRepository.Add(order);
+                await this.SaveChangesAsync();
+
+                //Update TruckGroupID for gatePass
+                var updateGatePass = await _gatePassRepository.GetAsync(g => g.code.Equals(createGatePassViewModel.gatePassViewModel.code) && g.isDelete == false, QueryIncludes.QUEUE_GATEPASS_ORDER_INCLUDES);
+                var getTruckGroupID = findTruckGroup(updateGatePass);
+                //truckGroup 3xxx
+                updateGatePass.truckGroupID = Constant.TRUCKGROUP3X;
+                _gatePassRepository.Update(updateGatePass);
+
+                await this.SaveChangesAsync();
+                return responseViewModel;
+            }
+            catch (Exception e)
+            {
+                throw e;
             }
         }
 
@@ -1316,6 +1487,38 @@ namespace QWMSServer.Data.Services
             {
                 responseViewModel.errorCode = -1;
                 responseViewModel.errorText = "Lỗi chưa xác định";
+                return responseViewModel;
+            }
+        }
+
+        public async Task<ResponseViewModel<GatePassViewModel>> DeleteGatePass(int ID)
+        {
+            ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
+            try
+            {
+                var gatePass = await _gatePassRepository.GetAsync(gt => gt.ID == ID);
+                gatePass.isDelete = true;
+                _gatePassRepository.Update(gatePass);
+                if (await this.SaveChangesAsync())
+                {
+                    responseViewModel.booleanResponse = true;
+                    responseViewModel.errorCode = 0;
+                    responseViewModel.errorText = ResponseText.DELETE_GATEPASS_SUCCESS;
+                    return await this.GetAllGatePass();
+                }
+                else
+                {
+                    responseViewModel.booleanResponse = false;
+                    responseViewModel.errorCode = -1;
+                    responseViewModel.errorText = ResponseText.DELETE_GATEPASS_FAIL;
+                }
+                return responseViewModel;
+            }
+            catch (Exception e)
+            {
+                responseViewModel.booleanResponse = false;
+                responseViewModel.errorCode = -1;
+                responseViewModel.errorText = e.ToString();
                 return responseViewModel;
             }
         }

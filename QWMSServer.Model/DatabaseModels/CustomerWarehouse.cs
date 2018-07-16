@@ -39,7 +39,6 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("customerID")]
         public int? customerID { get; set; }
 
-
         [ForeignKey("customerID")]
         public Customer customer { get; set; }
     }

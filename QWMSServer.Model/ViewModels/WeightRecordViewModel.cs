@@ -34,5 +34,13 @@ namespace QWMSServer.Model.ViewModels
         public WeighBridge weighBridge { get; set; }
 
         public GatePass gatePass { get; set; }
+
+        public bool isSuccess { get; set; }
+
+        public bool isOverWeight { get; set; }
+
+        public string comment { get; set; }
+
+        public string PCIP { get; set; }
     }
 }

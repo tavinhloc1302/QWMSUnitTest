@@ -14,6 +14,8 @@ namespace QWMSServer.Model.ViewModels
 
         public string description { get; set; }
 
+        public string name { get; set; }
+
         public ICollection<GroupFunctionMapViewModel> functionMaps { get; set; }
     }
 }

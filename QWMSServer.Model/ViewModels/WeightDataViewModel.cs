@@ -10,7 +10,7 @@ namespace QWMSServer.Model.ViewModels
     {
         public int gatePassID { get; set; }
 
-        public string fontCameraName { get; set; }
+        public string frontCameraName { get; set; }
 
         public string gearCameraName { get; set; }
 
@@ -26,5 +26,12 @@ namespace QWMSServer.Model.ViewModels
 
         public string employeeRFID { get; set; }
 
+        public bool isSuccess { get; set; }
+
+        public string comment { get; set; }
+
+        public bool isOverWeight { get; set; }
+
+        public string PCIP { get; set; }
     }
 }

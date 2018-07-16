@@ -1,11 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 
 namespace QWMSServer.Model.DatabaseModels
 {
 	[Table("t_user")]
-	public class User
+    public class User
 	{
 		public User ()
 		{
@@ -25,6 +27,15 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("isDelete")]
         public bool isDelete { get; set; }
 
+        [Column("isActive")]
+        public bool? isActive { get; set; }
+
+        [Column("loginTimes")]
+        public int? loginTimes { get; set; }
+
+        [Column("isBlock")]
+        public bool? isBlock { get; set; }
+
         [StringLength(50)]
         [Column("username")]
         public string username { get; set; }
@@ -33,7 +44,15 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("password")]
         public string password { get; set; }
 
-        public ICollection<Employee> employees { get; set; }
+        [Column("employeeID")]
+        public int? employeeID { get; set; }
 
+        [Column("loginTime")]
+        public DateTime? loginTime { get; set; }
+
+        [ForeignKey("employeeID")]
+        public Employee employee { get; set; }
+
+        public virtual ICollection<UserPassword> userPasswords { get; set; }
     }
 }

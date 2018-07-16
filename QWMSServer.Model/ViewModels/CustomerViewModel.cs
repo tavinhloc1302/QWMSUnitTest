@@ -32,7 +32,7 @@ namespace QWMSServer.Model.ViewModels
 
         public string email { get; set; }
 
-        public virtual List<CustomerWarehouseViewModel> customerWarehouses { get; set; }
+        public virtual ICollection<CustomerWarehouseViewModel> customerWarehouses { get; set; }
 
         public bool isDelete { get; set; }
     }

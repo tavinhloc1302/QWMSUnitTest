@@ -15,6 +15,8 @@ namespace QWMSServer.Data.Services
 
         Task<ResponseViewModel<GatePassViewModel>> GetGatePassByRFID(string rfidCode);
 
+        Task<ResponseViewModel<QueueInfo>> GetQueueInfo();
+
         Task<ResponseViewModel<GatePassViewModel>> RegisterSecurityCheck(string rfidCode);
 
         Task<ResponseViewModel<GatePassViewModel>> ConfirmSecurityCheck(SecurityUpdateStateViewModel updateStateView);

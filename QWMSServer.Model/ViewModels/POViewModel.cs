@@ -12,7 +12,7 @@ namespace QWMSServer.Model.ViewModels
         public String pOItemCode;
         public String materialCode;
         public String materialName;
-        public String quanlity;
+        public int quanlity;
         public String unit;
         public String vendorCode;
         public String vendorName;

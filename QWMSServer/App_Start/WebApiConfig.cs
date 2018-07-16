@@ -17,6 +17,7 @@ namespace QWMSServer
             _jsonConfig.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             _jsonConfig.UseDataContractJsonSerializer = false;
             _jsonConfig.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            //_jsonConfig.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.All;
 
             // Web API routes
             config.MapHttpAttributeRoutes();

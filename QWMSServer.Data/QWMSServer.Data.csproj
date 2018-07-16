@@ -94,8 +94,11 @@
       <DependentUpon>IBaseRepository.cs</DependentUpon>
     </Compile>
     <Compile Include="Infrastructures\IBaseRepository.cs" />
-    <Compile Include="Repository\AccessLogRepository.cs">
-      <DependentUpon>IAccessLogRepository.cs</DependentUpon>
+    <Compile Include="Repository\ActivityLogRepository.cs">
+      <DependentUpon>IActivityLogRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\BadgeReaderRepository.cs">
+      <DependentUpon>IBadgeReaderRepository.cs</DependentUpon>
     </Compile>
     <Compile Include="Repository\BarrierRepository.cs">
       <DependentUpon>IBarrierRepository.cs</DependentUpon>
@@ -111,6 +114,9 @@
     </Compile>
     <Compile Include="Repository\COMPortRepository.cs">
       <DependentUpon>ICOMPortRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\ConstrainRepository.cs">
+      <DependentUpon>IConstrainRepository.cs</DependentUpon>
     </Compile>
     <Compile Include="Repository\CustomerRepository.cs">
       <DependentUpon>ICustomerRepository.cs</DependentUpon>
@@ -145,12 +151,14 @@
     <Compile Include="Repository\GatePassRepository.cs">
       <DependentUpon>IGatePassRepository.cs</DependentUpon>
     </Compile>
-    <Compile Include="Repository\IAccessLogRepository.cs" />
+    <Compile Include="Repository\IActivityLogRepository.cs" />
+    <Compile Include="Repository\IBadgeReaderRepository.cs" />
     <Compile Include="Repository\IBarrierRepository.cs" />
     <Compile Include="Repository\ICameraRepository.cs" />
     <Compile Include="Repository\ICarrierVendorRepository.cs" />
     <Compile Include="Repository\ICompanyRepository.cs" />
     <Compile Include="Repository\ICOMPortRepository.cs" />
+    <Compile Include="Repository\IConstrainRepository.cs" />
     <Compile Include="Repository\ICustomerRepository.cs" />
     <Compile Include="Repository\ICustomerWarehouseRepository.cs" />
     <Compile Include="Repository\IDeliveryOrderRepository.cs" />
@@ -173,7 +181,7 @@
     <Compile Include="Repository\IOrderRepository.cs" />
     <Compile Include="Repository\IOrderTypeRepository.cs" />
     <Compile Include="Repository\IPlantRepository.cs" />
-    <Compile Include="Repository\IProductsRepository.cs" />
+    <Compile Include="Repository\IPrintHeaderRepository.cs" />
     <Compile Include="Repository\IPurchaseOrderRepository.cs" />
     <Compile Include="Repository\IPurchaseOrderTypeRepository.cs" />
     <Compile Include="Repository\IQueueListRepository.cs" />
@@ -189,10 +197,12 @@
     <Compile Include="Repository\ITruckRepository.cs" />
     <Compile Include="Repository\ITruckTypeRepository.cs" />
     <Compile Include="Repository\IUnitTypeRepository.cs" />
+    <Compile Include="Repository\IUserPasswordRepository.cs" />
     <Compile Include="Repository\IUserRepository.cs" />
     <Compile Include="Repository\IVoiceRecordRepository.cs" />
     <Compile Include="Repository\IWarehouseTypeRepository.cs" />
     <Compile Include="Repository\IWarehouseRepository.cs" />
+    <Compile Include="Repository\IWeighbridgeConfigurationRepository.cs" />
     <Compile Include="Repository\IWeightBridgeRepository.cs" />
     <Compile Include="Repository\IWeightRecordRepository.cs" />
     <Compile Include="Repository\LaneRepository.cs">
@@ -228,11 +238,11 @@
     <Compile Include="Repository\PlantRepository.cs">
       <DependentUpon>IPlantRepository.cs</DependentUpon>
     </Compile>
-    <Compile Include="Repository\ProductsRepository.cs">
-      <DependentUpon>IProductsRepository.cs</DependentUpon>
-    </Compile>
     <Compile Include="Infrastructures\SyncRepository.cs">
       <DependentUpon>ISyncRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\PrintHeaderRepository.cs">
+      <DependentUpon>IPrintHeaderRepository.cs</DependentUpon>
     </Compile>
     <Compile Include="Repository\PurchaseOrderRepository.cs">
       <DependentUpon>IPurchaseOrderRepository.cs</DependentUpon>
@@ -279,6 +289,9 @@
     <Compile Include="Repository\UnitTypeRepository.cs">
       <DependentUpon>IUnitTypeRepository.cs</DependentUpon>
     </Compile>
+    <Compile Include="Repository\UserPasswordRepository.cs" />
+    <Compile Include="Repository\IUserPCRepository.cs" />
+    <Compile Include="Repository\UserPCRepository.cs" />
     <Compile Include="Repository\UserRepository.cs">
       <DependentUpon>IUserRepository.cs</DependentUpon>
     </Compile>
@@ -290,6 +303,9 @@
     </Compile>
     <Compile Include="Repository\WarehouseTypeRepository.cs">
       <DependentUpon>IWarehouseTypeRepository.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\WeighbridgeConfigurationRepository.cs">
+      <DependentUpon>IWeighbridgeConfigurationRepository.cs</DependentUpon>
     </Compile>
     <Compile Include="Repository\WeightBridgeRepository.cs">
       <DependentUpon>IWeightBridgeRepository.cs</DependentUpon>
@@ -307,15 +323,13 @@
       <DependentUpon>ICommonService.cs</DependentUpon>
     </Compile>
     <Compile Include="Services\IAuthService.cs" />
+    <Compile Include="Services\IReportService.cs" />
+    <Compile Include="Services\ReportService.cs" />
     <Compile Include="Services\ResponseConstructor.cs" />
     <Compile Include="Services\IAdminService.cs" />
     <Compile Include="Services\ICommonService.cs" />
-    <Compile Include="Services\IProductService.cs" />
     <Compile Include="Services\IQueueService.cs" />
     <Compile Include="Services\ISecurityServicecs.cs" />
-    <Compile Include="Services\ProductService.cs">
-      <DependentUpon>IProductService.cs</DependentUpon>
-    </Compile>
     <Compile Include="Services\SecurityServices.cs">
       <DependentUpon>ISecurityServicecs.cs</DependentUpon>
     </Compile>

@@ -12,15 +12,17 @@ namespace QWMSServer.Model.ViewModels
 
         public string code { get; set; }
 
-        public string doNumber { get; set; }
+        //public string doNumber { get; set; }
 
         public DateTime createDate { get; set; }
 
-        public string soNumber { get; set; }
+        public int? soID { get; set; }
 
         public int? customerID { get; set; }
 
         public int? carrierVendorID { get; set; }
+
+        public string plantCode { get; set; }
 
         public string remark { get; set; }
 
@@ -37,6 +39,10 @@ namespace QWMSServer.Model.ViewModels
         public CustomerViewModel customer { get; set; }
 
         public CarrierVendorViewModel carrierVendor { get; set; }
+
+        public SaleOrderViewModel saleOrder { get; set; }
+
+        public ICollection<OrderViewModel> order { get; set; }
 
         public DeliveryOrderTypeViewModel deliveryOrderType { get; set; }
     }

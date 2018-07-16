@@ -14,11 +14,11 @@ namespace QWMSServer.Model.ViewModels
 
         public int orderTypeID { get; set; }
 
-        public float grossWeight { get; set; }
+        public float registGrossWeight { get; set; }
+
+        public float? QCWeightValue { get; set; }
 
         public int gatePassID { get; set; }
-
-        public int warehouseID { get; set; }
 
         public int plantID { get; set; }
 
@@ -30,9 +30,7 @@ namespace QWMSServer.Model.ViewModels
 
         public GatePassViewModel gatePass { get; set; }
 
-        public WarehouseViewModel warehouse { get; set; }
-
-        //public PlantViewModel plant { get; set; }
+        public PlantViewModel plant { get; set; }
 
         public DeliveryOrderViewModel deliveryOrder { get; set; }
 

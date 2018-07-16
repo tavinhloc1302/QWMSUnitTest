@@ -27,19 +27,17 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("materialID")]
         public int? materialID { get; set; }
 
-        [StringLength(50)]
-        [Column("quantity")]
-        public string quantity { get; set; }
+        [Column("QCQuantity")]
+        public int? QCQuantity { get; set; }
 
-        [Column("grossWeight")]
-        public float grossWeight { get; set; }
+        [Column("QCGrossWeight")]
+        public float? QCGrossWeight { get; set; }
 
-        [StringLength(50)]
-        [Column("theoryQuantity")]
-        public string theoryQuantity { get; set; }
+        [Column("registQuantity")]
+        public int? registQuantity { get; set; }
 
-        [Column("theoryGrossWeight")]
-        public float theoryGrossWeight { get; set; }
+        //[Column("theoryGrossWeight")]
+        //public float theoryGrossWeight { get; set; }
 
         [Column("isDelete")]
         public bool isDelete { get; set; }

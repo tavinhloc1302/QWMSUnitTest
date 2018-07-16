@@ -150,6 +150,8 @@ namespace QWMSServer.Data.Services
         /* User management block */
         Task<ResponseViewModel<UserViewModel>> GetAllUser();
 
+        Task<ResponseViewModel<UserViewModel>> GetUserByEmployeeID(int employeeID);
+
         Task<ResponseViewModel<UserViewModel>> SearchUser(string code);
 
         Task<ResponseViewModel<UserViewModel>> GetUserByCode(string code);
@@ -159,6 +161,10 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<UserViewModel>> UpdateUser(UserViewModel userView);
 
         Task<ResponseViewModel<UserViewModel>> DeleteUser(UserViewModel userView);
+
+        Task<string> CreateUserName(string userName);
+
+        Task<ResponseViewModel<UserViewModel>> UpdateUserPassword(UserViewModel userView);
 
         /* Employee Role management block */
         Task<ResponseViewModel<EmployeeRoleViewModel>> GetAllEmployeeRole();
@@ -237,5 +243,85 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<LaneViewModel>> UpdateLane(LaneViewModel laneView);
 
         Task<ResponseViewModel<LaneViewModel>> DeleteLane(LaneViewModel laneView);
+
+
+        /* DO management block */
+        Task<ResponseViewModel<DeliveryOrderViewModel>> GetAllDO();
+
+        Task<ResponseViewModel<DeliveryOrderViewModel>> SearchDO(string code);
+
+        Task<ResponseViewModel<DeliveryOrderViewModel>> GetDOByCode(string code);
+
+        Task<ResponseViewModel<DeliveryOrderViewModel>> CreateNewDO(DeliveryOrderViewModel DOView);
+
+        Task<ResponseViewModel<DeliveryOrderViewModel>> UpdateDO(DeliveryOrderViewModel DOView);
+
+        Task<ResponseViewModel<DeliveryOrderViewModel>> DeleteDO(DeliveryOrderViewModel DOView);
+
+        /* SO management block */
+        Task<ResponseViewModel<SaleOrderViewModel>> GetAllSO();
+
+        /* Constrain */
+        #region
+        Task<ResponseViewModel<Constrain>> GetAllConstrain();
+
+        Task<ResponseViewModel<Constrain>> UpdateConstrain(Constrain ConstrainView);
+
+        Task<ResponseViewModel<Constrain>> GetConstrainByCategory(string category);
+
+        Task<ResponseViewModel<PrintHeader>> UpdatePrintHeader(PrintHeader printHeader);
+        #endregion
+
+        /* Permission */
+        #region
+        Task<ResponseViewModel<SystemFunctionViewModel>> GetAllSystemFunction();
+
+        Task<ResponseViewModel<EmployeeGroupViewModel>> UpdateEmployeeGroupFunction(EmployeeGroupViewModel employeeGroupViewModel);
+        #endregion
+
+        /* Device management */
+        #region
+
+        /* RFID card */
+        #region
+        Task<ResponseViewModel<RFIDCardViewModel>> UpdateRFIDCardStatus(RFIDCardViewModel rFIDCardView);
+
+        Task<ResponseViewModel<RFIDCardViewModel>> CreateNewRFID(RFIDCardViewModel rFIDCardV);
+
+        Task<ResponseViewModel<RFIDCardViewModel>> GetAllRFID();
+
+        Task<ResponseViewModel<RFIDCardViewModel>> SearchRFID(string code);
+        #endregion
+
+        /* Weigh Bridge */
+        #region
+        Task<ResponseViewModel<WeighBridge>> GetAllWB();
+        Task<ResponseViewModel<WeighBridge>> UpdateWeighBridge(WeighBridge weighBridge);
+        #endregion
+
+        /* Camera management block */
+        #region
+        Task<ResponseViewModel<Camera>> GetAllCamera();
+
+        Task<ResponseViewModel<Camera>> CreateNewCamera(Camera CameraView);
+
+        Task<ResponseViewModel<Camera>> UpdateCamera(Camera CameraView);
+
+        Task<ResponseViewModel<Camera>> DeleteCamera(Camera CameraView);
+        #endregion
+
+        /* User PC */
+        #region
+        Task<ResponseViewModel<UserPC>> GetAllUserPC();
+        Task<ResponseViewModel<UserPC>> GetUserPCByIP(string IP);
+        Task<ResponseViewModel<UserPC>> UpdateUserPC(UserPC userPC);
+        #endregion
+
+        /* Badge Reader */
+        #region
+        Task<ResponseViewModel<BadgeReader>> GetBadgeReaderByCode(string code);
+        Task<ResponseViewModel<BadgeReader>> UpdateBadgeReader(BadgeReader badgeReader);
+        #endregion
+        #endregion
     }
 }

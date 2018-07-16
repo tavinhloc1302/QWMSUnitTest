@@ -12,7 +12,7 @@ namespace QWMSServer.Data.Services
         /* Login service */
         Task<ResponseViewModel<SystemFunctionViewModel>> GetUserPermission(int userID);
         Task<ResponseViewModel<UserViewModel>> Login(LoginViewModel loginViewModel);
-        bool Logout(string tokenString);
+        Task<bool> Logout(string tokenString);
         Task<bool> CheckUserPermission(int empID, string empRFIDCode, string APIName);
 
         /* Token Handler */

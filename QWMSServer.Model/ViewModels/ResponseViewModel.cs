@@ -13,5 +13,6 @@ namespace QWMSServer.Model.ViewModels
         public IEnumerable<T> responseDatas { get; set; }
         public T responseData { get; set; }
         public bool booleanResponse { get; set; }
+        public LogViewModel logViewModel { get; set; }
     }
 }

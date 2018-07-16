@@ -213,13 +213,15 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Controllers\DeviceController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\ProductController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SecurityController.cs" />
     <Compile Include="Controllers\QueueController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Controllers\WarehouseController.cs" />
     <Compile Include="Controllers\WeightController.cs" />
+    <Compile Include="Filter\LogRequire.cs" />
     <Compile Include="Filter\AuthenticateRequire.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -228,6 +230,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
+    <Content Include="Content\BIT_Solution_Logo.jpg" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-reboot.css" />
@@ -280,6 +283,15 @@
     <Content Include="Scripts\esm\popper.js.map" />
     <Content Include="Scripts\esm\popper-utils.min.js.map" />
     <Content Include="Scripts\esm\popper-utils.js.map" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
     <None Include="Properties\PublishProfiles\CustomProfile1.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
@@ -300,15 +312,6 @@
     <Content Include="Scripts\umd\popper-utils.min.js" />
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
-    <Content Include="Web.config">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
     <Content Include="Content\Site.css" />
     <Content Include="Views\Web.config" />
@@ -333,6 +336,7 @@
     <Folder Include="Views\Auth\" />
     <Folder Include="Views\Product\" />
     <Folder Include="Views\Queue\" />
+    <Folder Include="Views\Report\" />
     <Folder Include="Views\Security\" />
     <Folder Include="Views\Warehouse\" />
     <Folder Include="Views\Weight\" />
@@ -349,6 +353,10 @@
     <ProjectReference Include="..\QWMSServer.Data\QWMSServer.Data.csproj">
       <Project>{9CC9B294-339B-4AAE-8E62-7DE8F3BEA4EA}</Project>
       <Name>QWMSServer.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QWMSServer.DeviceService\QWMSServer.DeviceService.csproj">
+      <Project>{723cc464-193d-4351-8205-c1db7336c887}</Project>
+      <Name>QWMSServer.DeviceService</Name>
     </ProjectReference>
     <ProjectReference Include="..\QWMSServer.Model\QWMSServer.Model.csproj">
       <Project>{18BB8D00-A33F-4C03-8105-8C04D7642CCB}</Project>

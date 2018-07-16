@@ -1,11 +1,7 @@
 ﻿using QWMSServer.Data.Services;
+using QWMSServer.Filter;
 using QWMSServer.Model.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
 
 namespace QWMSServer.Controllers
@@ -20,34 +16,39 @@ namespace QWMSServer.Controllers
             _warehouseService = warehouseService;
         }
 
+        [AuthenticateRequire]
         [HttpPost]
         [Route("UpdateTruckOnWarehouseCheckIn", Name = "UpdateTruckOnWarehouseCheckIn")]
-        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheckIn(TheoryWeighValueModel theoryWeighValueModel)
+        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheckIn(QCWeighValueModel QCWeighValueModel)
         {
-            return await _warehouseService.UpdateTruckOnWarehouseCheckIn(theoryWeighValueModel);
+            return await _warehouseService.UpdateTruckOnWarehouseCheckIn(QCWeighValueModel);
         }
 
+        [AuthenticateRequire]
         [HttpPost]
         [Route("UpdateTruckOnWarehouseCheckOut", Name = "UpdateTruckOnWarehouseCheckOut")]
-        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheckOut(TheoryWeighValueModel theoryWeighValueModel)
+        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheckOut(QCWeighValueModel QCWeighValueModel)
         {
-            return await _warehouseService.UpdateTruckOnWarehouseCheckOut(theoryWeighValueModel);
+            return await _warehouseService.UpdateTruckOnWarehouseCheckOut(QCWeighValueModel);
         }
 
+        [AuthenticateRequire]
         [HttpPost]
         [Route("UpdateTheoryWeighValue", Name = "UpdateTheoryWeighValue")]
-        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTheoryWeighValue(TheoryWeighValueModel theoryWeighValueModel)
+        public async Task<ResponseViewModel<GenericResponseModel>> UpdateQCWeighValue(QCWeighValueModel QCWeighValueModel)
         {
-            return await _warehouseService.UpdateTheoryWeighValue(theoryWeighValueModel);
+            return await _warehouseService.UpdateQCWeighValue(QCWeighValueModel);
         }
 
+        [AuthenticateRequire]
         [HttpPost]
         [Route("UpdateTruckOnWarehouseCheck", Name = "UpdateTruckOnWarehouseCheck")]
-        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheck(TheoryWeighValueModel theoryWeighValueModel)
+        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheck(QCWeighValueModel theoryWeighValueModel)
         {
             return await _warehouseService.UpdateTruckOnWarehouseCheck(theoryWeighValueModel);
         }
 
+        [AuthenticateRequire]
         [HttpGet]
         [Route("GetLaneForWarehouseManagement/{code}", Name = "GetLaneForWarehouseManagement")]
         public async Task<ResponseViewModel<LaneMgntViewModel>> GetLaneForWarehouseManagement(string code)

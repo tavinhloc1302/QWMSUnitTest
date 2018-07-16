@@ -13,13 +13,13 @@ namespace QWMSServer.Model.ViewModels
 
         public string code { get; set; }
 
-        public DateTime createDate { get; set; }
+        public DateTime? createDate { get; set; }
 
         public string driverCamCapturePath { get; set; }
 
-        public DateTime enterTime { get; set; }
+        public DateTime? enterTime { get; set; }
 
-        public DateTime leaveTime { get; set; }
+        public DateTime? leaveTime { get; set; }
 
         public int RFIDCardID { get; set; }
 
@@ -41,6 +41,21 @@ namespace QWMSServer.Model.ViewModels
 
         public ICollection<QueueListViewModel> queueLists { get; set; }
 
+        public ICollection<WeightRecordViewModel> weightRecords { get; set; }
+
         public int loadingBayID { get; set; }
+
+        public CustomerViewModel customer { get; set; }
+
+        public MaterialViewModel material { get; set; }
+
+        public int weightType { get; set; }
+
+        public WarehouseViewModel warehouse { get; set; }
+
+        public float? tareWeightValue { get; set; }
+
+        public float? netWeightValue { get; set; }
+
     }
 }

@@ -36,10 +36,9 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("isDelete")]
         public bool isDelete { get; set; }
 
-
         [ForeignKey("plantID")]
         public Plant plant { get; set; }
 
-        public virtual ICollection<LoadingBay> loadingBays { get; set; } 
+        public virtual ICollection<LoadingBay> loadingBays { get; set; }
     }
 }

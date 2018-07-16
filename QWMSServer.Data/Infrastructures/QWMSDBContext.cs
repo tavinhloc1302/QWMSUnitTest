@@ -8,8 +8,9 @@ namespace QWMSServer.Data.Infrastructures
     {
         //public virtual DbSet<Products> Products { get; set; }
         //public virtual DbSet<ProductTypes> ProductTypes { get; set; }
-        public virtual DbSet<AccessLog> AccessLog { get; set; }
+        public virtual DbSet<ActivityLog> ActivityLog { get; set; }
         public virtual DbSet<Barrier> Barrier { get; set; }
+        public virtual DbSet<BadgeReader> BadgeReader { get; set; }
         public virtual DbSet<Camera> Camera { get; set; }
         public virtual DbSet<CarrierVendor> Carrier { get; set; }
         public virtual DbSet<Company> Company { get; set; }
@@ -57,6 +58,11 @@ namespace QWMSServer.Data.Infrastructures
         public virtual DbSet<WeightRecord> WeightRecord { get; set; }
         public virtual DbSet<CustomerWarehouse> CustomerWarehouse { get; set; }
         public virtual DbSet<Token> Token { get; set; }
+        public virtual DbSet<PrintHeader> PrintHeader { get; set; }
+        public virtual DbSet<UserPassword> UserPassword { get; set; }
+        public virtual DbSet<Constrain> Constrain { get; set; }
+        public virtual DbSet<UserPC> UserPC { get; set; }
+        public virtual DbSet<WeighbridgeConfiguration> WeighbridgeConfiguration { get; set; }
 
         public QWMSDBContext() : base("name=QWMSDBConnection")
         {

@@ -12,10 +12,9 @@ namespace QWMSServer.Data.Infrastructures
         DbSet<TEntity> Set<TEntity>() where TEntity : class;
         DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
 
-        //DbSet<Products> Products { get; set; }
-        //DbSet<ProductTypes> ProductTypes { get; set; }
-        DbSet<AccessLog> AccessLog { get; set; }
+        DbSet<ActivityLog> ActivityLog { get; set; }
         DbSet<Barrier> Barrier { get; set; }
+        DbSet<BadgeReader> BadgeReader { get; set; }
         DbSet<Camera> Camera { get; set; }
         DbSet<CarrierVendor> Carrier { get; set; }
         DbSet<Company> Company { get; set; }
@@ -63,7 +62,11 @@ namespace QWMSServer.Data.Infrastructures
         DbSet<WeightRecord> WeightRecord { get; set; }
         DbSet<CustomerWarehouse> CustomerWarehouse { get; set; }
         DbSet<Token> Token { get; set; }
-
+        DbSet<Constrain> Constrain { get; set; }
+        DbSet<PrintHeader> PrintHeader { get; set; }
+        DbSet<UserPassword> UserPassword { get; set; }
+        DbSet<UserPC> UserPC { get; set; }
+        DbSet<WeighbridgeConfiguration> WeighbridgeConfiguration { get; set; }
         Task<int> SaveChangesAsync();
 
         int SaveChanges();

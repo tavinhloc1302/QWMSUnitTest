@@ -33,21 +33,58 @@ namespace QWMSServer.Data.Services
             return await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTheoryWeighValue(TheoryWeighValueModel theoryWeighValueModel)
+        public async Task<ResponseViewModel<GenericResponseModel>> UpdateQCWeighValue(QCWeighValueModel QCWeighValueModel)
         {
             ResponseViewModel<GenericResponseModel> response = new ResponseViewModel<GenericResponseModel>();
             try
             {
-                if (await _authService.CheckUserPermission(theoryWeighValueModel.employeeID, theoryWeighValueModel.employeeRFID, "UpdateTheoryWeighValue"))
+                var gatePass = await _gatePassRepository.GetAsync(gt => gt.ID == QCWeighValueModel.gatePassID && gt.isDelete == false);
+                if (gatePass == null)
                 {
-                    var gatePass = await _gatePassRepository.GetAsync(gt => gt.ID == theoryWeighValueModel.gatePassID && gt.isDelete == false);
-                    if (gatePass == null)
+                    response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_QUE_NO_GATEPASS_FOUND, false);
+                }
+                else
+                {
+                    gatePass.orders.ToList()[0].QCWeightValue = QCWeighValueModel.QCWeighValue;
+                    _gatePassRepository.Update(gatePass);
+                    if (await _unitOfWork.SaveChangesAsync())
                     {
-                        response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_QUE_NO_GATEPASS_FOUND, false);
+                        response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.SUCCESS, true);
                     }
                     else
                     {
-                        gatePass.theoryWeightValue = theoryWeighValueModel.theoryWeighValue;
+                        response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
+                    }
+                }
+                return response;
+            }
+            catch (Exception)
+            {
+                return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
+            }
+        }
+
+
+
+        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheckIn(QCWeighValueModel QCWeighValueModel)
+        {
+            ResponseViewModel<GenericResponseModel> response = new ResponseViewModel<GenericResponseModel>();
+            try
+            {
+                var gatePass = await _gatePassRepository.GetAsync(gt => gt.ID == QCWeighValueModel.gatePassID && gt.isDelete == false);
+                if (gatePass == null)
+                {
+                    response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_QUE_NO_GATEPASS_FOUND, false);
+                }
+                else
+                {
+                    if (gatePass.stateID == GatepassState.STATE_FINISH_WEIGHT_IN)
+                    {
+                        gatePass.stateID = GatepassState.STATE_FINISH_WAREHOUSE_CHECK_IN;
+                        var queue = await _queueListRepository.GetAsync(qu => qu.gatePassID == gatePass.ID);
+                        var lane = await _laneRepository.GetAsync(ln => ln.ID == queue.laneID);
+                        lane.usingStatus = LaneStatus.OCCUPIED;
+                        _laneRepository.Update(lane);
                         _gatePassRepository.Update(gatePass);
                         if (await _unitOfWork.SaveChangesAsync())
                         {
@@ -58,12 +95,12 @@ namespace QWMSServer.Data.Services
                             response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
                         }
                     }
+                    else
+                    {
+                        response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_QUE_GATEPASS_WRONG_STATE, false);
+                    }
                 }
-                else
-                {
-                    response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_USER_PERMISSION, false);
-                }
-                return response;
+            return response;
             }
             catch (Exception)
             {
@@ -71,97 +108,39 @@ namespace QWMSServer.Data.Services
             }
         }
 
-
-
-        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheckIn(TheoryWeighValueModel theoryWeighValueModel)
+        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheckOut(QCWeighValueModel QCWeighValueModel)
         {
             ResponseViewModel<GenericResponseModel> response = new ResponseViewModel<GenericResponseModel>();
             try
             {
-                if (await _authService.CheckUserPermission(theoryWeighValueModel.employeeID, theoryWeighValueModel.employeeRFID, "UpdateTruckOnWarehouseCheckIn"))
+                var gatePass = await _gatePassRepository.GetAsync(gt => gt.ID == QCWeighValueModel.gatePassID && gt.isDelete == false);
+                if (gatePass == null)
                 {
-                    var gatePass = await _gatePassRepository.GetAsync(gt => gt.ID == theoryWeighValueModel.gatePassID && gt.isDelete == false);
-                    if (gatePass == null)
+                    response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_QUE_NO_GATEPASS_FOUND, false);
+                }
+                else
+                {
+                    if (gatePass.stateID == GatepassState.STATE_FINISH_WAREHOUSE_CHECK_IN)
                     {
-                        response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_QUE_NO_GATEPASS_FOUND, false);
-                    }
-                    else
-                    {
-                        if (gatePass.stateID == GatepassState.STATE_FINISH_WEIGHT_IN)
+                        gatePass.stateID = GatepassState.STATE_FINISH_WAREHOUSE_CHECK_OUT;
+                        var queue = await _queueListRepository.GetAsync(qu => qu.gatePassID == gatePass.ID);
+                        var lane = await _laneRepository.GetAsync(ln => ln.ID == queue.laneID);
+                        lane.usingStatus = LaneStatus.FREE;
+                        _laneRepository.Update(lane);
+                        _gatePassRepository.Update(gatePass);
+                        if (await _unitOfWork.SaveChangesAsync())
                         {
-                            gatePass.stateID = GatepassState.STATE_FINISH_WAREHOUSE_CHECK_IN;
-                            var queue = await _queueListRepository.GetAsync(qu => qu.gatePassID == gatePass.ID);
-                            var lane = await _laneRepository.GetAsync(ln => ln.ID == queue.laneID);
-                            lane.usingStatus = LaneStatus.OCCUPIED;
-                            _laneRepository.Update(lane);
-                            _gatePassRepository.Update(gatePass);
-                            if (await _unitOfWork.SaveChangesAsync())
-                            {
-                                response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.SUCCESS, true);
-                            }
-                            else
-                            {
-                                response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
-                            }
+                            response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.SUCCESS, true);
                         }
                         else
                         {
-                            response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_QUE_GATEPASS_WRONG_STATE, false);
+                            response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
                         }
-                    }
-                }
-                else
-                {
-                    response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_USER_PERMISSION, false);
-                }
-                return response;
-            }
-            catch (Exception)
-            {
-                return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
-            }
-        }
-
-        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheckOut(TheoryWeighValueModel theoryWeighValueModel)
-        {
-            ResponseViewModel<GenericResponseModel> response = new ResponseViewModel<GenericResponseModel>();
-            try
-            {
-                if (await _authService.CheckUserPermission(theoryWeighValueModel.employeeID, theoryWeighValueModel.employeeRFID, "UpdateTruckOnWarehouseCheckOut"))
-                {
-                    var gatePass = await _gatePassRepository.GetAsync(gt => gt.ID == theoryWeighValueModel.gatePassID && gt.isDelete == false);
-                    if (gatePass == null)
-                    {
-                        response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_QUE_NO_GATEPASS_FOUND, false);
                     }
                     else
                     {
-                        if (gatePass.stateID == GatepassState.STATE_FINISH_WAREHOUSE_CHECK_IN)
-                        {
-                            gatePass.stateID = GatepassState.STATE_FINISH_WAREHOUSE_CHECK_OUT;
-                            var queue = await _queueListRepository.GetAsync(qu => qu.gatePassID == gatePass.ID);
-                            var lane = await _laneRepository.GetAsync(ln => ln.ID == queue.laneID);
-                            lane.usingStatus = LaneStatus.FREE;
-                            _laneRepository.Update(lane);
-                            _gatePassRepository.Update(gatePass);
-                            if (await _unitOfWork.SaveChangesAsync())
-                            {
-                                response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.SUCCESS, true);
-                            }
-                            else
-                            {
-                                response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
-                            }
-                        }
-                        else
-                        {
-                            response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_QUE_GATEPASS_WRONG_STATE, false);
-                        }
+                        response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_QUE_GATEPASS_WRONG_STATE, false);
                     }
-                }
-                else
-                {
-                    response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_USER_PERMISSION, false);
                 }
                 return response;
             }
@@ -171,12 +150,12 @@ namespace QWMSServer.Data.Services
             }
         }
 
-        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheck(TheoryWeighValueModel theoryWeighValueModel)
+        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheck(QCWeighValueModel QCWeighValueModel)
         {
             ResponseViewModel<GenericResponseModel> response = new ResponseViewModel<GenericResponseModel>();
             try
             {
-                var gatePass = await _gatePassRepository.GetAsync(gt => gt.ID == theoryWeighValueModel.gatePassID && gt.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
+                var gatePass = await _gatePassRepository.GetAsync(gt => gt.ID == QCWeighValueModel.gatePassID && gt.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
                 if (gatePass == null)
                 {
                     return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
@@ -186,9 +165,9 @@ namespace QWMSServer.Data.Services
                     switch (gatePass.stateID)
                     {
                         case GatepassState.STATE_FINISH_WEIGHT_IN:
-                            return await this.UpdateTruckOnWarehouseCheckIn(theoryWeighValueModel);
+                            return await this.UpdateTruckOnWarehouseCheckIn(QCWeighValueModel);
                         case GatepassState.STATE_FINISH_WAREHOUSE_CHECK_IN:
-                            return await this.UpdateTruckOnWarehouseCheckOut(theoryWeighValueModel);
+                            return await this.UpdateTruckOnWarehouseCheckOut(QCWeighValueModel);
                         default:
                             return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
                     }

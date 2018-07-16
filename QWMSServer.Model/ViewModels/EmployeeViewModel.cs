@@ -17,8 +17,14 @@ namespace QWMSServer.Model.ViewModels
 
         public string lastName { get; set; }
 
-        public RFIDCardViewModel rfidCard { get; set; }
+        public int? RFIDCardID { get; set; }
 
-        //public ICollection<EmployeeGroupMapView> groupMaps { get; set; }
+        public int? EmployeeGroupID { get; set; }
+
+        public RFIDCard rfidCard { get; set; }
+
+        public ICollection<UserViewModel> users { get; set; }
+
+        public EmployeeGroup employeeGroup { get; set; }
     }
 }

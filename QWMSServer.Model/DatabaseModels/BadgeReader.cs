@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 
 namespace QWMSServer.Model.DatabaseModels
 {
@@ -22,18 +23,31 @@ namespace QWMSServer.Model.DatabaseModels
         public string Code { get; set; }
 
         [StringLength(255)]
+        [Column("name")]
+        public string name { get; set; }
+
+        [StringLength(255)]
         [Column("description")]
         public string description { get; set; }
 
         [Column("isDelete")]
-        public bool isDelete { get; set; }
+        public bool? isDelete { get; set; }
 
         [StringLength(255)]
         [Column("ipAddress")]
         public string ipAddress { get; set; }
 
+        [Column("port")]
+        public int? port { get; set; }
+
         [StringLength(255)]
         [Column("location")]
         public string pcIPAddress { get; set; }
+
+        [Column("UserPCID")]
+        public int? UserPCID { get; set; }
+
+        [ForeignKey("UserPCID")]
+        public UserPC userPC { get; set; }
     }
 }

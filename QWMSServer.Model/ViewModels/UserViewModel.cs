@@ -18,8 +18,14 @@ namespace QWMSServer.Model.ViewModels
 
         public bool isDelete { get; set; }
 
-        public ICollection<EmployeeViewModel> employees { get; set; }
+        public int? employeeID { get; set; }
+
+        public bool? isBlock { get; set; }
+
+        public EmployeeViewModel employee { get; set; }
 
         public TokenViewModel token { get; set; }
+
+        public DateTime loginTime { get; set; }
     }
 }

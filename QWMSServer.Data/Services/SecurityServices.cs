@@ -373,6 +373,23 @@ namespace QWMSServer.Data.Services
             return MIMEContent;
         }
 
+        public async Task<ResponseViewModel<QueueInfo>> GetQueueInfo()
+        {
+            ResponseViewModel<QueueInfo> queueInfo = new ResponseViewModel<QueueInfo>();
+            try
+            {
+                var gatePasses = await _gatePassRepository.GetAllAsync();
+                queueInfo.responseData = new QueueInfo();
+                queueInfo.responseData.truckInPlant = gatePasses.Where(gt => gt.stateID > GatepassState.STATE_FINISH_SECURITY_CHECK_IN).Count();
+                queueInfo.responseData.truckOutPlant = gatePasses.Where(gt => gt.stateID <= GatepassState.STATE_FINISH_SECURITY_CHECK_IN).Count();
+                return queueInfo;
+            }
+            catch (Exception e)
+            {
+                return queueInfo;
+            }
+        }
+
         // Define constant
         public const string TRUCK_CONDITION_CALLING = "Calling";
         public const string TRUCK_CONDITION_WAITING_CALL = "WaittingCall";

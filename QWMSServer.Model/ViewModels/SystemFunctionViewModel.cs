@@ -10,6 +10,10 @@ namespace QWMSServer.Model.ViewModels
     {
         public int ID { get; set; }
 
+        public int itemID { get; set; }
+
+        public int parentID { get; set; }
+
         public string Code { get; set; }
 
         public string functionName { get; set; }

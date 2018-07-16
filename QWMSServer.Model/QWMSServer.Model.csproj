@@ -77,13 +77,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DatabaseModels\AccessLog.cs" />
+    <Compile Include="DatabaseModels\ActivityLog.cs" />
     <Compile Include="DatabaseModels\BadgeReader.cs" />
     <Compile Include="DatabaseModels\Barrier.cs" />
     <Compile Include="DatabaseModels\Camera.cs" />
     <Compile Include="DatabaseModels\CarrierVendor.cs" />
     <Compile Include="DatabaseModels\Company.cs" />
     <Compile Include="DatabaseModels\COMPort.cs" />
+    <Compile Include="DatabaseModels\Constrain.cs" />
     <Compile Include="DatabaseModels\Customer.cs" />
     <Compile Include="DatabaseModels\CustomerWarehouse.cs" />
     <Compile Include="DatabaseModels\DeliveryOrder.cs" />
@@ -106,8 +107,7 @@
     <Compile Include="DatabaseModels\OrderMaterial.cs" />
     <Compile Include="DatabaseModels\OrderType.cs" />
     <Compile Include="DatabaseModels\Plant.cs" />
-    <Compile Include="DatabaseModels\Products.cs" />
-    <Compile Include="DatabaseModels\ProductTypes.cs" />
+    <Compile Include="DatabaseModels\PrintHeader.cs" />
     <Compile Include="DatabaseModels\PurchaseOrder.cs" />
     <Compile Include="DatabaseModels\PurchaseOrderType.cs" />
     <Compile Include="DatabaseModels\QueueList.cs" />
@@ -124,12 +124,16 @@
     <Compile Include="DatabaseModels\TruckType.cs" />
     <Compile Include="DatabaseModels\UnitType.cs" />
     <Compile Include="DatabaseModels\User.cs" />
+    <Compile Include="DatabaseModels\UserPassword.cs" />
+    <Compile Include="DatabaseModels\UserPC.cs" />
     <Compile Include="DatabaseModels\VoiceRecord.cs" />
     <Compile Include="DatabaseModels\WarehouseType.cs" />
     <Compile Include="DatabaseModels\Warehouse.cs" />
     <Compile Include="DatabaseModels\WeighBridge.cs" />
+    <Compile Include="DatabaseModels\WeighbridgeConfiguration.cs" />
     <Compile Include="DatabaseModels\WeightRecord.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\ActivityLogViewModel.cs" />
     <Compile Include="ViewModels\CarrierVendorViewModel.cs" />
     <Compile Include="ViewModels\CompanyViewModel.cs" />
     <Compile Include="ViewModels\CustomerViewModel.cs" />
@@ -138,6 +142,7 @@
     <Compile Include="ViewModels\DeliveryOrderViewModel.cs" />
     <Compile Include="ViewModels\DOViewModel.cs" />
     <Compile Include="ViewModels\DriverViewModel.cs" />
+    <Compile Include="ViewModels\EmployeeActivityModel.cs" />
     <Compile Include="ViewModels\EmployeeGroupMapView.cs" />
     <Compile Include="ViewModels\EmployeeGroupViewModel.cs" />
     <Compile Include="ViewModels\EmployeeRoleViewModel.cs" />
@@ -147,6 +152,12 @@
     <Compile Include="ViewModels\GatePassViewModel.cs" />
     <Compile Include="ViewModels\GenericResponseModel.cs" />
     <Compile Include="ViewModels\GroupFunctionMapViewModel.cs" />
+    <Compile Include="ViewModels\LogViewModel.cs" />
+    <Compile Include="ViewModels\PrintNoItem.cs" />
+    <Compile Include="ViewModels\QueueInfo.cs" />
+    <Compile Include="ViewModels\ReportViewModel.cs" />
+    <Compile Include="ViewModels\SaleOrderViewModel.cs" />
+    <Compile Include="ViewModels\SearchCondition.cs" />
     <Compile Include="ViewModels\UpdateLaneStatusViewModel.cs" />
     <Compile Include="ViewModels\LaneMgntViewModel.cs" />
     <Compile Include="ViewModels\LaneViewModel.cs" />
@@ -167,7 +178,7 @@
     <Compile Include="ViewModels\SecurityUpdateStateViewModel.cs" />
     <Compile Include="ViewModels\StateViewModel.cs" />
     <Compile Include="ViewModels\SystemFunctionViewModel.cs" />
-    <Compile Include="ViewModels\TheoryWeighValueModel.cs" />
+    <Compile Include="ViewModels\QCWeighValueModel.cs" />
     <Compile Include="ViewModels\TokenViewModel.cs" />
     <Compile Include="ViewModels\TruckGroupViewModel.cs" />
     <Compile Include="ViewModels\TruckTypeViewModel.cs" />

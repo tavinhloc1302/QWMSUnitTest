@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 
 namespace QWMSServer.Model.DatabaseModels
 {
 	[Table("t_employee")]
-	public class Employee
+    public class Employee
 	{
 		public Employee ()
 		{
@@ -36,15 +37,22 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("RFIDCardID")]
         public int? RFIDCardID { get; set; }
 
-        [Column("userID")]
-        public int? userID { get; set; }
+        //[Column("userID")]
+        //public int? userID { get; set; }
+
+        [Column("EmployeeGroupID")]
+        public int? EmployeeGroupID { get; set; }
 
         [ForeignKey("RFIDCardID")]
         public RFIDCard rfidCard { get; set; }
 
-        [ForeignKey("userID")]
-        public User user { get; set; }
+        //[ForeignKey("userID")]
+        //public User user { get; set; }
+        public virtual ICollection<User> users { get; set; }
 
-        public ICollection<Employee_EmployeeGroup> groupMaps { get; set; }
+        //public ICollection<Employee_EmployeeGroup> groupMaps { get; set; }
+
+        [ForeignKey("EmployeeGroupID")]
+        public EmployeeGroup employeeGroup { get; set; }
     }
 }

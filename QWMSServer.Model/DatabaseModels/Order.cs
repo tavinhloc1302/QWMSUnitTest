@@ -25,8 +25,11 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("orderTypeID")]
         public int? orderTypeID { get; set; }
 
-        [Column("grossWeight")]
-        public float grossWeight { get; set; }
+        [Column("registGrossWeight")]
+        public float registGrossWeight { get; set; }
+
+        [Column("QCWeightValue")]
+        public float? QCWeightValue { get; set; }
 
         [Column("gatePassID")]
         public int? gatePassID { get; set; }

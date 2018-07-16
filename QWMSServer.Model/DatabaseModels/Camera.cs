@@ -21,16 +21,55 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("Code")]
         public string Code { get; set; }
 
+        [Column("Name")]
+        public string Name { get; set; }
+
+        [Column("Description")]
+        public string Description { get; set; }
+
         [Column("IP")]
         public string IP { get; set; }
 
-        [Column("PCIP")]
-        public string PCIP { get; set; }
+        [Column("Port")]
+        public string Port { get; set; }
+
+        [Column("StreammingProtocol")]
+        public string StreammingProtocol { get; set; }
+
+        [Column("StreammingPath")]
+        public string StreammingPath { get; set; }
+
+        [Column("User")]
+        public string User { get; set; }
+
+        [Column("Pass")]
+        public string Pass { get; set; }
+
+        [Column("ModifyOn")]
+        public string ModifyOn { get; set; }
+
+        [Column("ModifyBy")]
+        public string ModifyBy { get; set; }
 
         [Column("isDelete")]
-        public bool isDelete { get; set; }
+        public bool? isDelete { get; set; }
 
         [Column("status")]
-        public bool status { get; set; }
+        public bool? status { get; set; }
+
+        [Column("isActive")]
+        public bool? isActive { get; set; }
+
+        [Column("location")]
+        public int? location { get; set; }
+
+        [Column("usage")]
+        public int? usage { get; set; }
+
+        [Column("UserPCID")]
+        public int? UserPCID { get; set; }
+
+        [ForeignKey("UserPCID")]
+        public UserPC userPC { get; set; }
     }
 }

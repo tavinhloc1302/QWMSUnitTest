@@ -18,8 +18,7 @@ namespace QWMSServer.Data.Infrastructures
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().InstancePerRequest();
 
             // Repositories
-            builder.RegisterType<ProductsRepository>().As<IProductsRepository>().InstancePerRequest();
-            builder.RegisterType<AccessLogRepository>().As<IAccessLogRepository>().InstancePerRequest();
+            builder.RegisterType<ActivityLogRepository>().As<IActivityLogRepository>().InstancePerRequest();
             builder.RegisterType<BarrierRepository>().As<IBarrierRepository>().InstancePerRequest();
             builder.RegisterType<CameraRepository>().As<ICameraRepository>().InstancePerRequest();
             builder.RegisterType<CarrierVendorRepository>().As<ICarrierVendorRepository>().InstancePerRequest();
@@ -68,9 +67,14 @@ namespace QWMSServer.Data.Infrastructures
             builder.RegisterType<WeightRecordRepository>().As<IWeightRecordRepository>().InstancePerRequest();
             builder.RegisterType<CustomerWarehouseRepository>().As<ICustomerWarehouseRepository>().InstancePerRequest();
             builder.RegisterType<TokenRepository>().As<ITokenRepository>().InstancePerRequest();
+            builder.RegisterType<ConstrainRepository>().As<IConstrainRepository>().InstancePerRequest();
+            builder.RegisterType<PrintHeaderRepository>().As<IPrintHeaderRepository>().InstancePerRequest();
+            builder.RegisterType<UserPasswordRepository>().As<IUserPasswordRepository>().InstancePerRequest();
+            builder.RegisterType<BadgeReaderRepository>().As<IBadgeReaderRepository>().InstancePerRequest();
+            builder.RegisterType<WeighbridgeConfigurationRepository>().As<IWeighbridgeConfigurationRepository>().InstancePerRequest();
+            builder.RegisterType<UserPCRepository>().As<IUserPCRepository>().InstancePerRequest();
 
             // Services
-            builder.RegisterType<ProductService>().As<IProductService>().InstancePerRequest();
             builder.RegisterType<AdminService>().As<IAdminService>().InstancePerRequest();
             builder.RegisterType<SecurityServices>().As<ISecurityServicecs>().InstancePerRequest();
             builder.RegisterType<QueueService>().As<IQueueService>().InstancePerRequest();
@@ -78,6 +82,7 @@ namespace QWMSServer.Data.Infrastructures
             builder.RegisterType<WarehouseService>().As<IWarehouseService>().InstancePerRequest();
             builder.RegisterType<CommonService>().As<ICommonService>().InstancePerRequest();
             builder.RegisterType<AuthService>().As<IAuthService>().InstancePerRequest();
+            builder.RegisterType<ReportService>().As<IReportService>().InstancePerRequest();
         }
     }
 }

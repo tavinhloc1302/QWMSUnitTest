@@ -33,13 +33,10 @@ namespace QWMSServer.Data.Services
             if (employee.ID != empID)
                 return false;
             bool found = false;
-            foreach (var group in employee.groupMaps)
+            foreach (var function in employee.employeeGroup.functionMaps)
             {
-                foreach (var function in group.employeeGroup.functionMaps)
-                {
-                    if (function.systemFunction.API.Equals(APIName))
-                        found = true;
-                }
+                if (function.systemFunction.API.Equals(APIName))
+                    found = true;
             }
             if (found == false)
                 return false;

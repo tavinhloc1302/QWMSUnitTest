@@ -13,7 +13,7 @@ namespace QWMSServer.Model.ViewModels
         public string dOItemCode { get; set; }
         public string materialCode { get; set; }
         public string materialName { get; set; }
-        public string quanlity { get; set; }
+        public int quanlity { get; set; }
         public string unit { get; set; }
         public string sOCode { get; set; }
         public string customerCode { get; set; }

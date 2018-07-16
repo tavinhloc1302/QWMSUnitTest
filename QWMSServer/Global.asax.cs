@@ -1,4 +1,5 @@
 ﻿using QWMSServer.Data.Infrastructures;
+using QWMSServer.DeviceService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace QWMSServer
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             API.App_Start.DependencyConfig.Register();
             AutoMapperConfig.Configure();
+            DeviceConfig.Register();
         }
     }
 }

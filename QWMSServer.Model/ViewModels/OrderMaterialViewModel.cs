@@ -16,13 +16,13 @@ namespace QWMSServer.Model.ViewModels
 
         public int? materialID { get; set; }
 
-        public string quantity { get; set; }
+        public int? QCQuantity { get; set; }
 
-        public float grossWeight { get; set; }
+        public float? QCGrossWeight { get; set; }
 
-        public string theoryQuantity { get; set; }
+        public int? registQuantity { get; set; }
 
-        public float theoryGrossWeight { get; set; }
+        //public float theoryGrossWeight { get; set; }
 
         public bool isDelete { get; set; }
 

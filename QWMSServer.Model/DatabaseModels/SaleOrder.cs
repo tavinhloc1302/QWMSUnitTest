@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -24,5 +25,6 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("isDelete")]
         public bool isDelete { get; set; }
 
+        public virtual ICollection<DeliveryOrder> deliveryOrder { get; set; }
     }
 }

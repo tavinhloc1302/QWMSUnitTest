@@ -42,7 +42,7 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("truckGroupID")]
         public int? truckGroupID { get; set; }
 
-        [StringLength(50)]
+        [StringLength(255)]
         [Column("driverCamCapturePath")]
         public string driverCamCapturePath { get; set; }
 
@@ -64,9 +64,29 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("loadingBayID")]
         public int? loadingBayID { get; set; }
 
-        [Column("theoryWeightValue")]
-        public float? theoryWeightValue { get; set; }
+        //[Column("theoryWeightValue")]
+        //public float? theoryWeightValue { get; set; }
 
+        [Column("customerID")]
+        public int? customerID { get; set; }
+
+        [Column("materialID")]
+        public int? materialID { get; set; }
+
+        [Column("printNo")]
+        public int? printNo { get; set; }
+
+        [Column("printEmployeeID")]
+        public int? printEmployeeID { get; set; }
+
+        [Column("printDate")]
+        public DateTime? printDate { get; set; }
+
+        [Column("warehouseID")]
+        public int? warehouseID { get; set; }
+
+        [Column("weightType")]
+        public int? weightType { get; set; }
 
         [ForeignKey("RFIDCardID")]
         public RFIDCard RFIDCard { get; set; }
@@ -83,11 +103,31 @@ namespace QWMSServer.Model.DatabaseModels
         [ForeignKey("employeeID")]
         public Employee employee { get; set; }
 
+        [ForeignKey("printEmployeeID")]
+        public Employee printEmployee { get; set; }
+
         [ForeignKey("truckGroupID")]
         public TruckGroup truckGroup { get; set; }
+
+        [ForeignKey("materialID")]
+        public Material material { get; set; }
+
+        [ForeignKey("warehouseID")]
+        public Warehouse warehouse { get; set; }
+
+        [ForeignKey("customerID")]
+        public Customer customer { get; set; }
 
         public ICollection<Order> orders { get; set; }
 
         public ICollection<QueueList> queueLists { get; set; }
+
+        public ICollection<WeightRecord> weightRecords { get; set; }
+
+        [Column("tareWeightValue")]
+        public float? tareWeightValue { get; set; }
+
+        [Column("netWeightValue")]
+        public float? netWeightValue { get; set; }
     }
 }
