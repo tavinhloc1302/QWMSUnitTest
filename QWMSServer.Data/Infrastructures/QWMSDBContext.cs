@@ -62,6 +62,7 @@ namespace QWMSServer.Data.Infrastructures
         public virtual DbSet<UserPassword> UserPassword { get; set; }
         public virtual DbSet<Constrain> Constrain { get; set; }
         public virtual DbSet<UserPC> UserPC { get; set; }
+        public virtual DbSet<Controller> Controller { get; set; }
         public virtual DbSet<WeighbridgeConfiguration> WeighbridgeConfiguration { get; set; }
 
         public QWMSDBContext() : base("name=QWMSDBConnection")

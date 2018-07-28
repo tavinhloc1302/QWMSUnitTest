@@ -111,14 +111,58 @@ namespace QWMSServer.Data.Services
             }
         }
 
+        public async Task<ResponseViewModel<OrderViewModel>> GetAllOrder()
+        {
+            ResponseViewModel<OrderViewModel> responseViewModel = new ResponseViewModel<OrderViewModel>();
+            try
+            {
+                var result = await _orderRepository.GetManyAsync(c => c.isDelete == false, QueryIncludes.ORDERFULLINCUDES);
+                if (result == null)
+                    return responseViewModel = ResponseConstructor<OrderViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không có Order trong CSDL", null);
+                return responseViewModel = ResponseConstructor<OrderViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, Mapper.Map<IEnumerable<Order>, IEnumerable<OrderViewModel>>(result));
+            }
+            catch (Exception)
+            {
+                return responseViewModel = ResponseConstructor<OrderViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không có Order trong CSDL", null); ;
+            }
+        }
+
         public async Task<ResponseViewModel<GatePassViewModel>> SearchGatePass(string searchText)
         {
             ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
             try
             {
-                var result = await _gatePassRepository.GetManyAsync(c => c.isDelete == false && 
-                (c.customer.code.Contains(searchText) || c.customer.nameVi.Contains(searchText) || c.code.Contains(searchText) || c.truck.plateNumber.Contains(searchText) ), 
-                QueryIncludes.GATEPASSFULLINCLUDES);
+                var resultgp = await _gatePassRepository.GetManyAsync(c => c.isDelete == false && 
+                                                                    (c.code.Contains(searchText) || c.truck.plateNumber.Contains(searchText)), 
+                                                                     QueryIncludes.GATEPASSFULLINCLUDES);
+                List<GatePass> result = resultgp.ToList();
+                var fullgp = await _gatePassRepository.GetManyAsync(c => c.isDelete == false, QueryIncludes.GATEPASSFULLINCLUDES);
+                foreach (var gp in fullgp)
+                {
+                    foreach (var order in gp.orders)
+                    {
+                        if(order.orderTypeID == Constant.DELIVERYORDER)
+                        {
+                            if (order.code.Contains(searchText) || order.deliveryOrder.customer.code.Contains(searchText) 
+                                || order.deliveryOrder.customer.nameVi.ToLower().Contains(searchText) 
+                                || order.deliveryOrder.customer.shortName.ToLower().Contains(searchText))
+                                result.Add(gp);
+                        }else if(order.orderTypeID == Constant.PURCHASEORDER)
+                        {
+                            if (order.code.Contains(searchText) || order.purchaseOrder.carrierVendor.code.Contains(searchText) 
+                                || order.purchaseOrder.carrierVendor.nameVi.ToLower().Contains(searchText)
+                                || order.purchaseOrder.carrierVendor.shortName.ToLower().Contains(searchText))
+                                result.Add(gp);
+                        }
+                        else if(order.orderTypeID == Constant.INTERNALORDER)
+                        {
+                            if (order.code.Contains(searchText))
+                                result.ToList().Add(gp);
+                        }
+                    }
+                }
+                result = result.Distinct().ToList();
+
                 if (result.Count() == 0)
                     return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, ResponseText.ERR_SEARCH_FAIL, null);
                 return responseViewModel = ResponseConstructor<GatePassViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, Mapper.Map<IEnumerable<GatePass>, IEnumerable<GatePassViewModel>>(result));
@@ -239,7 +283,6 @@ namespace QWMSServer.Data.Services
                                 }
                             }
                         }
-
                     }
                     else
                     {
@@ -269,6 +312,7 @@ namespace QWMSServer.Data.Services
             }
             else
             {
+                Directory.CreateDirectory(Constant.DriverCapturePath);
                 File.WriteAllBytes(filePath, fileContent);
                 response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.SUCCESS, true);
             }
@@ -314,19 +358,24 @@ namespace QWMSServer.Data.Services
             }
         }
 
-        public async Task<ResponseViewModel<GenericResponseModel>> CreateRegisteredQueueItem(int gatePassID, string driverImageName, string employeeRFID, string driverRFID)
+        public async Task<ResponseViewModel<GatePassViewModel>> CreateRegisteredQueueItem(int gatePassID, string driverImageName, string employeeRFID, string driverRFID, int loadingBayID)
         {
-            ResponseViewModel<GenericResponseModel> response = new ResponseViewModel<GenericResponseModel>();
+            ResponseViewModel<GatePassViewModel> response = new ResponseViewModel<GatePassViewModel>();
             try
             {
-                if (driverImageName == null || employeeRFID == null || driverRFID == null)
-                    return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
+                //if (driverImageName == null || employeeRFID == null || driverRFID == null)
+                //    return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
                 Random r = new Random();
                 /* Get GatePass by ID */
                 GatePass gatePass = await _gatePassRepository.GetAsync(gt => gt.ID == gatePassID, QueryIncludes.GATEPASSFULLINCLUDES);
+                gatePass.loadingBayID = loadingBayID;
                 RFIDCard card = await _RFIDCardRepository.GetAsync(ca => ca.code.Equals(driverRFID) && ca.isDelete == false);
                 if (gatePass == null || card == null)
-                    return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
+                {
+                    response = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_SEC_UNKNOW, null);
+                    response.booleanResponse = false;
+                    return response;
+                }
                 /* Create Queue Element */
                 if (gatePass.orders.ToArray()[0].orderTypeID != OrderTypeConst.INTERNALORDER) // Internal truck doesn't need to be queued just change state
                 {
@@ -340,7 +389,7 @@ namespace QWMSServer.Data.Services
                     queue.gatePass = gatePass;
                     queue.queueTime = DateTime.Now;
                     // Assign lane
-                    queue.laneID = await this.assignLane((int)gatePass.loadingBayID, (int)gatePass.truckID);
+                    queue.laneID = await this.assignLane(loadingBayID, (int)gatePass.truckID);
                     // Create order
                     queue.queueOrder = await _queueListRepository.CountAsync(qu => qu.gatePass.truckGroupID == queue.gatePass.truckGroupID) + 1;
                     queue.queueNumber = await _queueListRepository.CountAsync(qu => qu.gatePass.truckGroupID == queue.gatePass.truckGroupID) + 1;
@@ -349,6 +398,18 @@ namespace QWMSServer.Data.Services
                     gatePass.driverCamCapturePath = filePath;
                     gatePass.RFIDCardID = card.ID;
                     gatePass.stateID = GatepassState.STATE_REGISTERED;
+                    // Estimate Time
+                    var queueList = await _queueListRepository.GetManyAsync(qu => qu.laneID == queue.laneID && qu.isDelete == false, QueryIncludes.QUEUELISTFULLINCLUDES);
+                    if(queueList != null && queueList.Count() > 0)
+                    {
+                        gatePass.predictEnterTime = ((DateTime)queueList.Last().gatePass.predictLeaveTime);
+                        gatePass.leaveTime = ((DateTime)gatePass.predictEnterTime).AddMinutes((double)gatePass.truck.KPI);
+                    }
+                    else
+                    {
+                        gatePass.predictEnterTime = queue.queueTime.AddMinutes(5);
+                        gatePass.predictLeaveTime = ((DateTime)gatePass.predictEnterTime).AddMinutes((double)gatePass.truck.KPI);
+                    }
                     // Save queue to db
                     _queueListRepository.Add(queue);
                 }
@@ -359,16 +420,30 @@ namespace QWMSServer.Data.Services
                     gatePass.RFIDCardID = card.ID;
                     gatePass.stateID = GatepassState.STATE_IN_SECURITY_CHECK_IN;
                 }
+                gatePass.truckGroupID = findTruckGroup(gatePass);
+                card.status = 1;
+                _RFIDCardRepository.Update(card);
                 // Save db
                 _gatePassRepository.Update(gatePass);
                 if (await _unitOfWork.SaveChangesAsync())
-                    return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.SUCCESS, true);
+                {
+                    gatePass = await _gatePassRepository.GetAsync(gt => gt.ID == gatePassID, QueryIncludes.GATEPASSFULLINCLUDES);
+                    response = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.SUCCESS, Mapper.Map<GatePass,GatePassViewModel>(gatePass));
+                    response.booleanResponse = true;
+                    return response;
+                }
                 else
-                    return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
+                {
+                    response = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_SEC_UNKNOW, null);
+                    response.booleanResponse = false;
+                    return response;
+                }
             }
             catch (Exception e)
             {
-                return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
+                response = ResponseConstructor<GatePassViewModel>.ConstructData(ResponseCode.ERR_SEC_UNKNOW, null);
+                response.booleanResponse = false;
+                return response;
             }
         }
 
@@ -450,6 +525,15 @@ namespace QWMSServer.Data.Services
                             return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.ERR_SEC_UNKNOW, false);
                         }
                     }
+                    // Update GatePass time
+                    queueList = await _queueListRepository.GetManyAsync(qu => qu.isDelete == false, QueryIncludes.QUEUELISTFULLINCLUDES);
+                    for (int i = 1; i < queueList.Count(); i++)
+                    {
+                        queueList.ToList()[i].gatePass.predictEnterTime = ((DateTime)queueList.ToList()[i-1].gatePass.predictLeaveTime);
+                        queueList.ToList()[i].gatePass.predictLeaveTime = ((DateTime)queueList.ToList()[i].gatePass.predictEnterTime).AddMinutes((double)queueList.ToList()[i].estimateTime);
+                        _queueListRepository.Update(queueList.ToList()[i]);
+                        await _unitOfWork.SaveChangesAsync();
+                    }
                     return response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.SUCCESS, true);
                 }
                 else
@@ -503,14 +587,15 @@ namespace QWMSServer.Data.Services
                 for (int i = 0; i < listDO.Count; i++)
                 {
                     //Check SO# in DB SaleOrder
+                    SaleOrder saleOrder;
                     string valueSOCode = listDO.ElementAt(i).sOCode;
-                    var checkSOCode_SaleOrder = await _saleOrderRepository.GetAsync(c => c.Code.Equals(valueSOCode), null);
+                    var checkSOCode_SaleOrder = await _saleOrderRepository.GetAsync(c => c.Code.Equals(valueSOCode) && c.isDelete == false, null);
                     if (checkSOCode_SaleOrder == null)
                     {
                         // If SO# don't have in DB then create new record with SO#
                         try
                         {
-                            SaleOrder saleOrder = new SaleOrder();
+                            saleOrder = new SaleOrder();
                             saleOrder.Code = valueSOCode;
                             saleOrder.isDelete = false;
                             _saleOrderRepository.Add(saleOrder);
@@ -518,129 +603,159 @@ namespace QWMSServer.Data.Services
                         }
                         catch
                         {
-                            responseViewModel.errorCode = i + 1;
-                            responseViewModel.errorText = "Tạo SO#: " + valueSOCode + " thất bại";
+                            responseViewModel.errorCode = ResponseCode.ERR_IMPORT_CREATE_SO_FAIL;
+                            responseViewModel.errorText = ResponseText.ERR_IMPORT_CREATE_SO_FAIL;
                             return responseViewModel;
                         }
                     }
 
                     //Check DO# in DB DeliveryOrder
                     string valueDOCode = listDO.ElementAt(i).dOCode;
-                    var checkDOCode_DeliveryOrder = await _deliveryOrderRepository.GetAsync(c => c.code.Equals(valueDOCode), null);
+                    var checkDOCode_DeliveryOrder = await _deliveryOrderRepository.GetAsync(c => c.code.Equals(valueDOCode) && c.isDelete == false, null);
                     if (checkDOCode_DeliveryOrder == null)
                     {
                         //DO# in DeliveryOrder and Order have to R1-1
                         //Check DO# in Order table
-                        var checkDOCode_Order = await _orderRepository.GetAsync(c => c.code.Equals(valueDOCode), null);
+                        var checkDOCode_Order = await _orderRepository.GetAsync(c => c.code.Equals(valueDOCode) && c.isDelete == false, null);
                         if (checkDOCode_Order != null)
                         {
                             // Data is not sync
                             // Return false
                             //return 0;
-                            responseViewModel.errorCode = i + 1;
-                            responseViewModel.errorText = "Dữ liệu tại dòng thứ " + (i + 1).ToString() + " không đúng";
+                            responseViewModel.errorCode = ResponseCode.ERR_IMPORT_DATA_NOT_SYNC;
+                            responseViewModel.errorText = ResponseText.ERR_IMPORT_DATA_NOT_SYNC;
                             return responseViewModel;
                         }
 
                         // If DO# don't have in DB then create new record with DO#
                         // Create a new DO record in DeliveryOrder, a new Order record in Orders table
                         // Create a new DO record in DeliveryOrder
-                        string format = "MM/dd/yyyy";
-                        CultureInfo provider = CultureInfo.InvariantCulture;
-
                         DeliveryOrder deliveryOrder = new DeliveryOrder();
                         //deliveryOrder.doNumber = listDO.ElementAt(i).dOCode;
+                        //Set DO code
                         deliveryOrder.code = listDO.ElementAt(i).dOCode;
-                        deliveryOrder.createDate = DateTime.ParseExact(listDO.ElementAt(i).dayCreate, format, provider);
-                        deliveryOrder.saleOrder.Code = listDO.ElementAt(i).sOCode;
+                        //Set Date create
+                        //string format = "MM/dd/yyyy";
+                        //CultureInfo provider = CultureInfo.InvariantCulture;
+                        //deliveryOrder.createDate = DateTime.ParseExact(listDO.ElementAt(i).dayCreate, format, provider);
+                        //Set Sale Order ID
+                        deliveryOrder.saleOrder = await _saleOrderRepository.GetAsync(c => c.Code.Equals(valueSOCode) && c.isDelete == false, null);
+                        deliveryOrder.soID = deliveryOrder.saleOrder.ID;
+                        //Set remark
                         deliveryOrder.remark = listDO.ElementAt(i).remark;
+                        //Set sLoc
                         deliveryOrder.sloc = listDO.ElementAt(i).sLoc;
+                        //Set isDelete
                         deliveryOrder.isDelete = false;
 
+                        //Set carrier ID
                         var carrierCode = listDO.ElementAt(i).carrierCode;
-                        var customerCode = listDO.ElementAt(i).customerCode;
-                        var customerWarehouseName = listDO.ElementAt(i).warehouseName;
-                        try
-                        {
-                            deliveryOrder.carrierVendor = await _carrierVendorRepository.GetAsync(ca => ca.code.Equals(carrierCode));
+                        deliveryOrder.carrierVendor = await _carrierVendorRepository.GetAsync(ca => ca.code.Equals(carrierCode) && ca.isDelete == false);
+                        if (deliveryOrder.carrierVendor != null)
                             deliveryOrder.carrierVendorID = deliveryOrder.carrierVendor.ID;
-                        }
-                        catch
-                        {
-                            responseViewModel.errorCode = i + 1;
-                            responseViewModel.errorText = "Không có carrier#: " + carrierCode + " trong cơ sở dữ liệu";
-                            return responseViewModel;
-                        }
+                        //try
+                        //{
+                        //    deliveryOrder.carrierVendor = await _carrierVendorRepository.GetAsync(ca => ca.code.Equals(carrierCode));
+                        //    deliveryOrder.carrierVendorID = deliveryOrder.carrierVendor.ID;
+                        //}
+                        //catch
+                        //{
+                        //    responseViewModel.errorCode = i + 1;
+                        //    responseViewModel.errorText = "Không có carrier#: " + carrierCode + " trong cơ sở dữ liệu";
+                        //    return responseViewModel;
+                        //}
 
-                        try
-                        {
-                            deliveryOrder.customer = await _customerRepository.GetAsync(ca => ca.code.Equals(customerCode));
+                        //Set customer ID
+                        var customerCode = listDO.ElementAt(i).customerCode;
+                        deliveryOrder.customer = await _customerRepository.GetAsync(ca => ca.code.Equals(customerCode) && ca.isDelete == false);
+                        if (deliveryOrder.customer != null)
                             deliveryOrder.customerID = deliveryOrder.customer.ID;
-                        }
-                        catch
-                        {
-                            responseViewModel.errorCode = i + 1;
-                            responseViewModel.errorText = "Không có customer#: " + customerCode + " trong cơ sở dữ liệu";
-                            return responseViewModel;
-                        }
-                        try
-                        {
-                            deliveryOrder.deliveryOrderType = await _deliveryOrderTypeRepository.GetAsync(ca => ca.code.Equals("DO"));
-                            deliveryOrder.doTypeID = deliveryOrder.deliveryOrderType.ID;
-                        }
-                        catch
-                        {
-                            responseViewModel.errorCode = i + 1;
-                            responseViewModel.errorText = "Không có DOType#: DO trong cơ sở dữ liệu";
-                            return responseViewModel;
-                        }
+                        //try
+                        //{
+                        //    deliveryOrder.customer = await _customerRepository.GetAsync(ca => ca.code.Equals(customerCode));
+                        //    deliveryOrder.customerID = deliveryOrder.customer.ID;
+                        //}
+                        //catch
+                        //{
+                        //    responseViewModel.errorCode = i + 1;
+                        //    responseViewModel.errorText = "Không có customer#: " + customerCode + " trong cơ sở dữ liệu";
+                        //    return responseViewModel;
+                        //}
 
-                        try
-                        {
-                            deliveryOrder.customerWarehouse = await _customerWarehouseRepository.GetAsync(ca => ca.warehouseName.Equals(customerWarehouseName));
-                            deliveryOrder.customerWarehouseID = deliveryOrder.customerWarehouse.ID;
-                        }
-                        catch
-                        {
-                            responseViewModel.errorCode = i + 1;
-                            responseViewModel.errorText = "Không có Nhà kho khách hàng: " + customerWarehouseName + " trong cơ sở dữ liệu";
-                            return responseViewModel;
-                        }
+                        //try
+                        //{
+                        //    deliveryOrder.deliveryOrderType = await _deliveryOrderTypeRepository.GetAsync(ca => ca.code.Equals("DO"));
+                        //    deliveryOrder.doTypeID = deliveryOrder.deliveryOrderType.ID;
+                        //}
+                        //catch
+                        //{
+                        //    responseViewModel.errorCode = i + 1;
+                        //    responseViewModel.errorText = "Không có DOType#: DO trong cơ sở dữ liệu";
+                        //    return responseViewModel;
+                        //}
+
+                        // Set customerWareHouse
+                        var customerWarehouseName = listDO.ElementAt(i).warehouseName;
+                        deliveryOrder.customerWarehouse = await _customerWarehouseRepository.GetAsync(ca => ca.warehouseName.Equals(customerWarehouseName) && ca.isDelete == false);
+                        if (deliveryOrder.customerWarehouse != null) deliveryOrder.customerWarehouseID = deliveryOrder.customerWarehouse.ID;
+                        //try
+                        //{
+                        //    deliveryOrder.customerWarehouse = await _customerWarehouseRepository.GetAsync(ca => ca.warehouseName.Equals(customerWarehouseName));
+                        //    deliveryOrder.customerWarehouseID = deliveryOrder.customerWarehouse.ID;
+                        //}
+                        //catch
+                        //{
+                        //    responseViewModel.errorCode = i + 1;
+                        //    responseViewModel.errorText = "Không có Nhà kho khách hàng: " + customerWarehouseName + " trong cơ sở dữ liệu";
+                        //    return responseViewModel;
+                        //}
 
                         _deliveryOrderRepository.Add(deliveryOrder);
                         await this.SaveChangesAsync();
 
                         // Create a new Order record in Orders table
                         Order order = new Order();
+                        //Set Order code == DO code
                         order.code = listDO.ElementAt(i).dOCode;
+                        //Set doID
                         try
                         {
-                            order.deliveryOrder = await _deliveryOrderRepository.GetAsync(ca => ca.code.Equals(deliveryOrder.code));
+                            order.deliveryOrder = await _deliveryOrderRepository.GetAsync(ca => ca.code.Equals(deliveryOrder.code) && ca.isDelete == false);
                             order.doID = order.deliveryOrder.ID;
                         }
                         catch
                         {
-                            responseViewModel.errorCode = i + 1;
-                            responseViewModel.errorText = "Dữ liệu tại dòng thứ " + (i + 1).ToString() + " không đúng";
+                            responseViewModel.errorCode = ResponseCode.ERR_IMPORT_DATA_NOT_SYNC;
+                            responseViewModel.errorText = ResponseText.ERR_IMPORT_DATA_NOT_SYNC;
                             return responseViewModel;
                         }
+                        //Set registGrossWeight
                         order.registGrossWeight = 0;
                         order.isDelete = false;
+                        //Set orderTypeID
                         order.orderTypeID = Constant.DELIVERYORDER;
 
+                        //Set plantID
                         string valuePlantCode = listDO.ElementAt(i).plant;
-                        try
-                        {
-                            var getPlantID = await _plantRepository.GetAsync(ca => ca.code.Equals(valuePlantCode), null);
-                            order.plant = getPlantID;
+                        order.plant = await _plantRepository.GetAsync(ca => ca.code.Equals(valuePlantCode) && ca.isDelete == false, null);
+                        if (order.plant != null)
                             order.plantID = order.plant.ID;
-                        }
-                        catch
-                        {
-                            responseViewModel.errorCode = i + 1;
-                            responseViewModel.errorText = "Không có Plant#: " + valuePlantCode + " trong cơ sở dữ liệu";
-                            return responseViewModel;
-                        }
+                        //try
+                        //{
+                        //    var getPlantID = await _plantRepository.GetAsync(ca => ca.code.Equals(valuePlantCode), null);
+                        //    order.plant = getPlantID;
+                        //    order.plantID = order.plant.ID;
+                        //}
+                        //catch
+                        //{
+                        //    responseViewModel.errorCode = i + 1;
+                        //    responseViewModel.errorText = "Không có Plant#: " + valuePlantCode + " trong cơ sở dữ liệu";
+                        //    return responseViewModel;
+                        //}
+                        // Set createDate
+                        string format = "MM/dd/yyyy";
+                        CultureInfo provider = CultureInfo.InvariantCulture;
+                        order.createDate = DateTime.ParseExact(listDO.ElementAt(i).dayCreate, format, provider);
 
                         _orderRepository.Add(order);
 
@@ -655,21 +770,21 @@ namespace QWMSServer.Data.Services
                             // Data is not sync
                             // Return false
                             //return 0;
-                            responseViewModel.errorCode = i + 1;
-                            responseViewModel.errorText = "Dữ liệu tại dòng thứ " + (i + 1).ToString() + " không đúng";
+                            responseViewModel.errorCode = ResponseCode.ERR_IMPORT_DATA_NOT_SYNC;
+                            responseViewModel.errorText = ResponseText.ERR_IMPORT_DATA_NOT_SYNC;
                             return responseViewModel;
                         }
 
                         //DO# in DeliveryOrder and Order have to R1-1
                         //Check DO# in Order table
-                        var checkDOCode_Order = await _orderRepository.GetAsync(c => c.code.Equals(valueDOCode), null);
+                        var checkDOCode_Order = await _orderRepository.GetAsync(c => c.code.Equals(valueDOCode) && c.isDelete == false, null);
                         if (checkDOCode_Order == null)
                         {
                             // Data is not sync
                             // Return false
                             //return 0;
-                            responseViewModel.errorCode = i + 1;
-                            responseViewModel.errorText = "Dữ liệu tại dòng thứ " + (i + 1).ToString() + " không đúng";
+                            responseViewModel.errorCode = ResponseCode.ERR_IMPORT_DATA_NOT_SYNC;
+                            responseViewModel.errorText = ResponseText.ERR_IMPORT_DATA_NOT_SYNC;
                             return responseViewModel;
                         }
                     }
@@ -678,8 +793,8 @@ namespace QWMSServer.Data.Services
                     // Check Oders.code in OrderMaterials
                     // Get orderID by  valueDOCode
                     // Get OrderID from DOCode
-                    var getOrderFromDOCode = await _orderRepository.GetAsync(c => c.code.Equals(valueDOCode), null);
-                    var checkOderCode_OrderMaterial = await _orderMaterialRepository.GetManyAsync(c => c.orderID == getOrderFromDOCode.ID, null);
+                    var getOrderFromDOCode = await _orderRepository.GetAsync(c => c.code.Equals(valueDOCode) && c.isDelete == false, null);
+                    var checkOderCode_OrderMaterial = await _orderMaterialRepository.GetManyAsync(c => c.orderID == getOrderFromDOCode.ID && c.isDelete == false, null);
                     if (checkOderCode_OrderMaterial.Count() > 0)
                     {
                         // If have, compare DOItem have in checkOderCode_OrderMaterial. list or not
@@ -688,11 +803,16 @@ namespace QWMSServer.Data.Services
                         {
                             if ((listDO.ElementAt(i).dOCode + "_" + listDO.ElementAt(i).dOItemCode) == checkOderCode_OrderMaterial.ElementAt(j).code)
                             {
-                                responseViewModel.errorCode = i + 1;
-                                responseViewModel.errorText = "DOItem#: " + listDO.ElementAt(i).dOItemCode + " tại dòng:" + (i + 1).ToString() + " đã có trong hệ thống";
+                                responseViewModel.errorCode = ResponseCode.ERR_IMPORT_DATA_HAVED_IN_DB;
+                                responseViewModel.errorText = ResponseText.ERR_IMPORT_DATA_HAVED_IN_DB;
                                 //return 0;
                                 return responseViewModel;
                             }
+                            //calculate totalweight
+                            getOrderFromDOCode.registGrossWeight += (float)checkOderCode_OrderMaterial.ElementAt(j).registGrossWeight;
+                            if (getOrderFromDOCode.registNetWeight == null)
+                                getOrderFromDOCode.registNetWeight = 0;
+                            getOrderFromDOCode.registNetWeight += (float)checkOderCode_OrderMaterial.ElementAt(j).registNetWeight;
                         }
                     }
                     //------
@@ -700,7 +820,7 @@ namespace QWMSServer.Data.Services
                     //OrderMaterial code = DO#+"_"+DOItem#
                     OrderMaterial orderMaterial = new OrderMaterial();
                     orderMaterial.code = listDO.ElementAt(i).dOCode + "_" + listDO.ElementAt(i).dOItemCode;
-                    orderMaterial.order = getOrderFromDOCode;
+                    //orderMaterial.order = getOrderFromDOCode;
                     orderMaterial.orderID = getOrderFromDOCode.ID;
                     //orderMaterial.reht = 0;
                     orderMaterial.registQuantity = listDO.ElementAt(i).quanlity;
@@ -708,27 +828,34 @@ namespace QWMSServer.Data.Services
                     var materialCode_material = listDO.ElementAt(i).materialCode;
                     try
                     {
-                        orderMaterial.material = await _materialRepository.GetAsync(c => c.code.Equals(materialCode_material), null);
+                        orderMaterial.material = await _materialRepository.GetAsync(c => c.code.Equals(materialCode_material) && c.isDelete == false, null);
                         orderMaterial.materialID = orderMaterial.material.ID;
+                        // Calculate regisGrossWeight
+                        orderMaterial.registGrossWeight = orderMaterial.registQuantity * orderMaterial.material.grossWeight;
+                        orderMaterial.registNetWeight = (float)orderMaterial.registQuantity * (float)orderMaterial.material.netWeight;
+                        getOrderFromDOCode.registGrossWeight += (float)orderMaterial.registGrossWeight;
+                        if (getOrderFromDOCode.registNetWeight == null)
+                            getOrderFromDOCode.registNetWeight = 0;
+                        getOrderFromDOCode.registNetWeight += (float)orderMaterial.registNetWeight;
                     }
                     catch
                     {
-                        responseViewModel.errorCode = i + 1;
-                        responseViewModel.errorText = "Không có Material#: " + materialCode_material + " trong cơ sở dữ liệu";
+                        responseViewModel.errorCode = ResponseCode.ERR_IMPORT_DONT_HAVE_MATERIAL_IN_DB;
+                        responseViewModel.errorText = ResponseText.ERR_IMPORT_DONT_HAVE_MATERIAL_IN_DB;
                         return responseViewModel;
                     }
-
+                    _orderRepository.Update(getOrderFromDOCode);
                     _orderMaterialRepository.Add(orderMaterial);
                     await this.SaveChangesAsync();
                 }
                 //return 1;
-                responseViewModel.errorCode = 0;
+                responseViewModel.errorCode = ResponseCode.SUCCESS;
                 return responseViewModel;
             }
             catch
             {
-                responseViewModel.errorCode = -1;
-                responseViewModel.errorText = "Lỗi chưa xác định";
+                responseViewModel.errorCode = ResponseCode.ERR_IMPORT_EXCEPTION;
+                responseViewModel.errorText = ResponseText.ERR_IMPORT_EXCEPTION;
                 return responseViewModel;
             }
         }
@@ -742,19 +869,19 @@ namespace QWMSServer.Data.Services
                 {
                     //Check PO# in DB PurchaseOrder
                     string valuePOCode = listPO.ElementAt(i).pOCode;
-                    var checkPOCode_PurchaseOrder = await _purchaseOrderRepository.GetAsync(c => c.code.Equals(valuePOCode), null);
+                    var checkPOCode_PurchaseOrder = await _purchaseOrderRepository.GetAsync(c => c.code.Equals(valuePOCode) && c.isDelete == false, null);
                     if (checkPOCode_PurchaseOrder == null)
                     {
                         //PO# in PurchaseOrder and Order have to R1-1
                         //Check PO# in Order table
-                        var checkPOCode_Order = await _orderRepository.GetAsync(c => c.code.Equals(valuePOCode), null);
+                        var checkPOCode_Order = await _orderRepository.GetAsync(c => c.code.Equals(valuePOCode) && c.isDelete == false, null);
                         if (checkPOCode_Order != null)
                         {
                             // Data is not sync
                             // Return false
                             //return 0;
-                            responseViewModel.errorCode = i + 1;
-                            responseViewModel.errorText = "Dữ liệu tại dòng thứ " + (i + 1).ToString() + " không đúng";
+                            responseViewModel.errorCode = ResponseCode.ERR_IMPORT_DATA_NOT_SYNC;
+                            responseViewModel.errorText = ResponseText.ERR_IMPORT_DATA_NOT_SYNC;
                             return responseViewModel;
                         }
 
@@ -765,17 +892,17 @@ namespace QWMSServer.Data.Services
                         purchaseOrder.code = listPO.ElementAt(i).pOCode;
                         purchaseOrder.poNumber = listPO.ElementAt(i).pOCode;
 
-                        try
-                        {
-                            purchaseOrder.purchaseOrderType = await _purchaseOrderTypeRepository.GetAsync(ca => ca.Code.Equals("PO"));
-                            purchaseOrder.poTypeID = purchaseOrder.purchaseOrderType.ID;
-                        }
-                        catch
-                        {
-                            responseViewModel.errorCode = i + 1;
-                            responseViewModel.errorText = "Không có POType#: PO trong cơ sở dữ liệu";
-                            return responseViewModel;
-                        }
+                        //try
+                        //{
+                        //    purchaseOrder.purchaseOrderType = await _purchaseOrderTypeRepository.GetAsync(ca => ca.Code.Equals("PO"));
+                        //    purchaseOrder.poTypeID = purchaseOrder.purchaseOrderType.ID;
+                        //}
+                        //catch
+                        //{
+                        //    responseViewModel.errorCode = i + 1;
+                        //    responseViewModel.errorText = "Không có POType#: PO trong cơ sở dữ liệu";
+                        //    return responseViewModel;
+                        //}
 
                         purchaseOrder.sloc = listPO.ElementAt(i).sLoc;
                         purchaseOrder.remark = listPO.ElementAt(i).remark;
@@ -786,16 +913,16 @@ namespace QWMSServer.Data.Services
                         //purchaseOrder.carrierVendor = await _carrierVendorRepository.GetAsync(ca => ca.code.Equals(vendorCode));
                         try
                         {
-                            purchaseOrder.carrierVendor = await _carrierVendorRepository.GetAsync(ca => ca.code.Equals(vendorCode), null);
+                            purchaseOrder.carrierVendor = await _carrierVendorRepository.GetAsync(ca => ca.code.Equals(vendorCode) && ca.isDelete == false, null);
                             purchaseOrder.carrierVendorID = purchaseOrder.carrierVendor.ID;
                         }
                         catch
                         {
-                            responseViewModel.errorCode = i + 1;
-                            responseViewModel.errorText = "Không có Vendor#: " + vendorCode + " trong cơ sở dữ liệu";
+                            responseViewModel.errorCode = ResponseCode.ERR_IMPORT_DONT_HAVE_VENDOR_IN_DB;
+                            responseViewModel.errorText = ResponseText.ERR_IMPORT_DONT_HAVE_VENDOR_IN_DB;
                             return responseViewModel;
                         }
-                        purchaseOrder.createDate = DateTime.Now;
+                        //purchaseOrder.createDate = DateTime.Now;
 
                         _purchaseOrderRepository.Add(purchaseOrder);
                         await this.SaveChangesAsync();
@@ -808,17 +935,19 @@ namespace QWMSServer.Data.Services
                         order.code = order.purchaseOrder.code;
                         order.orderTypeID = Constant.PURCHASEORDER;
                         order.isDelete = false;
+                        // Set createDate
+                        order.createDate = DateTime.Now;
+
                         string valuePlantCode = listPO.ElementAt(i).plant;
                         try
                         {
-                            var getPlantID = await _plantRepository.GetAsync(ca => ca.code.Equals(valuePlantCode), null);
-                            order.plant = getPlantID;
+                            order.plant = await _plantRepository.GetAsync(ca => ca.code.Equals(valuePlantCode) && ca.isDelete == false, null);
                             order.plantID = order.plant.ID;
                         }
                         catch
                         {
-                            responseViewModel.errorCode = i + 1;
-                            responseViewModel.errorText = "Không có Plant#: " + valuePlantCode + " trong cơ sở dữ liệu";
+                            responseViewModel.errorCode = ResponseCode.ERR_IMPORT_DONT_HAVE_PLANT_IN_DB;
+                            responseViewModel.errorText = ResponseText.ERR_IMPORT_DONT_HAVE_PLANT_IN_DB;
                             return responseViewModel;
                         }
 
@@ -831,14 +960,14 @@ namespace QWMSServer.Data.Services
                     {
                         //PO# in DeliveryOrder and Order have to R1-1
                         //Check DO# in Order table
-                        var checkPOCode_Order = await _orderRepository.GetAsync(c => c.code.Equals(valuePOCode), null);
+                        var checkPOCode_Order = await _orderRepository.GetAsync(c => c.code.Equals(valuePOCode) && c.isDelete == false, null);
                         if (checkPOCode_Order == null)
                         {
                             // Data is not sync
                             // Return false
                             //return 0;
-                            responseViewModel.errorCode = i + 1;
-                            responseViewModel.errorText = "Dữ liệu tại dòng thứ " + (i + 1).ToString() + " không đúng";
+                            responseViewModel.errorCode = ResponseCode.ERR_IMPORT_DATA_NOT_SYNC;
+                            responseViewModel.errorText = ResponseText.ERR_IMPORT_DATA_NOT_SYNC;
                             return responseViewModel;
                         }
                     }
@@ -846,8 +975,8 @@ namespace QWMSServer.Data.Services
                     // Check POItem# with Oders.code have in OrderMaterials or not?
                     // Check Oders.code in OrderMaterials
                     // get orderID by valuePOCode
-                    var getOrderID = await _orderRepository.GetAsync(c => c.code.Equals(valuePOCode), null);
-                    var checkOderCode_OrderMaterial = await _orderMaterialRepository.GetManyAsync(c => c.orderID == getOrderID.ID, null);
+                    var getOrderID = await _orderRepository.GetAsync(c => c.code.Equals(valuePOCode) && c.isDelete == false, null);
+                    var checkOderCode_OrderMaterial = await _orderMaterialRepository.GetManyAsync(c => c.orderID == getOrderID.ID && c.isDelete == false, null);
                     if (checkOderCode_OrderMaterial.Count() > 0)
                     {
                         // If have, compare DOItem have in checkOderCode_OrderMaterial. list or not
@@ -856,12 +985,16 @@ namespace QWMSServer.Data.Services
                         {
                             if ((listPO.ElementAt(i).pOCode + "_" + listPO.ElementAt(i).pOItemCode) == checkOderCode_OrderMaterial.ElementAt(j).code)
                             {
-                                responseViewModel.errorCode = i + 1;
-                                responseViewModel.errorText = "Dữ liệu tại dòng thứ " + (i + 1).ToString() + " đã có trong hệ thống";
+                                responseViewModel.errorCode = ResponseCode.ERR_IMPORT_DATA_HAVED_IN_DB;
+                                responseViewModel.errorText = ResponseText.ERR_IMPORT_DATA_HAVED_IN_DB;
                                 //return 0;
                                 return responseViewModel;
                             }
-
+                            //calculate totalweight
+                            getOrderID.registGrossWeight += (float)checkOderCode_OrderMaterial.ElementAt(j).registGrossWeight;
+                            if (getOrderID.registNetWeight == null)
+                                getOrderID.registNetWeight = 0;
+                            getOrderID.registNetWeight += (float)checkOderCode_OrderMaterial.ElementAt(j).registNetWeight;
                         }
                     }
                     //------
@@ -880,28 +1013,35 @@ namespace QWMSServer.Data.Services
                     var materialCode_material = listPO.ElementAt(i).materialCode;
                     try
                     {
-                        orderMaterial.material = await _materialRepository.GetAsync(c => c.code.Equals(materialCode_material), null);
+                        orderMaterial.material = await _materialRepository.GetAsync(c => c.code.Equals(materialCode_material) && c.isDelete == false, null);
                         orderMaterial.materialID = orderMaterial.material.ID;
+                        // Calculate registGrossWeight
+                        orderMaterial.registGrossWeight = orderMaterial.registQuantity * orderMaterial.material.grossWeight;
+                        orderMaterial.registNetWeight = orderMaterial.registQuantity * (float)orderMaterial.material.netWeight;
+                        getOrderID.registGrossWeight += (float)orderMaterial.registGrossWeight;
+                        if (getOrderID.registNetWeight == null)
+                            getOrderID.registNetWeight = 0;
+                        getOrderID.registNetWeight += (float)orderMaterial.registNetWeight;
                     }
                     catch
                     {
-                        responseViewModel.errorCode = i + 1;
-                        responseViewModel.errorText = "Không có Material#: " + materialCode_material + " trong cơ sở dữ liệu";
+                        responseViewModel.errorCode = ResponseCode.ERR_IMPORT_DONT_HAVE_MATERIAL_IN_DB;
+                        responseViewModel.errorText = ResponseText.ERR_IMPORT_DONT_HAVE_MATERIAL_IN_DB;
                         return responseViewModel;
                     }
-                    
 
+                    _orderRepository.Update(getOrderID);
                     _orderMaterialRepository.Add(orderMaterial);
                     await this.SaveChangesAsync();
                 }
                 //return 1;
-                responseViewModel.errorCode = 0;
+                responseViewModel.errorCode = ResponseCode.SUCCESS;
                 return responseViewModel;
             }
             catch
             {
-                responseViewModel.errorCode = -1;
-                responseViewModel.errorText = "Lỗi chưa xác định";
+                responseViewModel.errorCode = ResponseCode.ERR_IMPORT_EXCEPTION;
+                responseViewModel.errorText = ResponseText.ERR_IMPORT_EXCEPTION;
                 return responseViewModel;
             }
         }
@@ -1498,6 +1638,18 @@ namespace QWMSServer.Data.Services
             {
                 var gatePass = await _gatePassRepository.GetAsync(gt => gt.ID == ID);
                 gatePass.isDelete = true;
+                if ((gatePass.RFIDCardID != null) && (gatePass.RFIDCardID > 0))
+                {
+                    var rfid = await _RFIDCardRepository.GetAsync(gt => gt.ID == gatePass.RFIDCardID);
+                    rfid.status = 0;
+                    _RFIDCardRepository.Update(rfid);
+                }
+                foreach (var item in gatePass.orders)
+                {
+                    item.gatePass = null;
+                    item.gatePassID = null;
+                    _orderRepository.Update(item);
+                }
                 _gatePassRepository.Update(gatePass);
                 if (await this.SaveChangesAsync())
                 {
@@ -1520,6 +1672,152 @@ namespace QWMSServer.Data.Services
                 responseViewModel.errorCode = -1;
                 responseViewModel.errorText = e.ToString();
                 return responseViewModel;
+            }
+        }
+
+        public async Task<ResponseViewModel<OrderViewModel>> AddNewOrder(OrderViewModel orderView)
+        {
+            ResponseViewModel<OrderViewModel> responseViewModel = new ResponseViewModel<OrderViewModel>();
+            try
+            {
+                var order = Mapper.Map<OrderViewModel, Order>(orderView);
+                if(orderView.orderTypeID == Constant.DELIVERYORDER)
+                {
+                    var customer = await _customerRepository.GetAsync(cs => cs.ID == order.deliveryOrder.customer.ID);
+                    order.deliveryOrder.customer = customer;
+                    order.deliveryOrder.customerID = customer.ID;
+
+                    var customerWarehouse = await _customerWarehouseRepository.GetAsync(cs => cs.ID == order.deliveryOrder.customerWarehouse.ID);
+                    order.deliveryOrder.customerWarehouse = customerWarehouse;
+                    order.deliveryOrder.code = order.code;
+                    order.deliveryOrder.customerWarehouseID = customerWarehouse.ID;
+                }
+                if(orderView.orderTypeID == Constant.PURCHASEORDER)
+                {
+                    var carrier = await _carrierVendorRepository.GetAsync(cs => cs.ID == order.purchaseOrder.carrierVendor.ID);
+                    order.purchaseOrder.carrierVendor = carrier;
+                    order.purchaseOrder.code = order.code;
+                    order.purchaseOrder.carrierVendorID = carrier.ID;
+                }
+                var orderType = await _orderTypeRepository.GetAsync(cs => cs.ID == order.orderTypeID);
+                order.orderType = orderType;
+                order.orderTypeID = orderType.ID;
+                order.createDate = DateTime.Now;
+                _orderRepository.Add(order);
+                await this.SaveChangesAsync();
+                var result = await _orderRepository.GetManyAsync(c => c.isDelete == false, QueryIncludes.ORDERFULLINCUDES);
+                if (result == null)
+                    return responseViewModel = ResponseConstructor<OrderViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không có Order trong CSDL", null);
+                return responseViewModel = ResponseConstructor<OrderViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, Mapper.Map<IEnumerable<Order>, IEnumerable<OrderViewModel>>(result));
+            }
+            catch (Exception ex)
+            {
+                return responseViewModel = ResponseConstructor<OrderViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không có Order trong CSDL", null); ;
+            }
+        }
+
+        public async Task<ResponseViewModel<OrderViewModel>> DeleteOrder(OrderViewModel orderView)
+        {
+            ResponseViewModel<OrderViewModel> responseViewModel = new ResponseViewModel<OrderViewModel>();
+            try
+            {
+                var order = await _orderRepository.GetAsync(o => o.ID == orderView.ID, QueryIncludes.ORDERFULLINCUDES);
+                foreach (var item in order.orderMaterials.ToList())
+                {
+                    var material = await _materialRepository.GetAsync(m => m.ID == item.ID);
+                    _orderMaterialRepository.Delete(item);
+                }
+                if(order.orderTypeID == Constant.DELIVERYORDER)
+                {
+                    _deliveryOrderRepository.Delete(order.deliveryOrder);
+                }
+                else if(order.orderTypeID == Constant.PURCHASEORDER)
+                {
+                    _purchaseOrderRepository.Delete(order.purchaseOrder);
+                }
+                await this.SaveChangesAsync();
+                _orderRepository.Delete(order);
+                //order.isDelete = true;
+                //order.gatePassID = null;
+                //_orderRepository.Update(order);
+                await this.SaveChangesAsync();
+                var result = await _orderRepository.GetManyAsync(c => c.isDelete == false, QueryIncludes.ORDERFULLINCUDES);
+                if (result == null)
+                    return responseViewModel = ResponseConstructor<OrderViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không có Order trong CSDL", null);
+                return responseViewModel = ResponseConstructor<OrderViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, Mapper.Map<IEnumerable<Order>, IEnumerable<OrderViewModel>>(result));
+            }
+            catch (Exception ex)
+            {
+                return responseViewModel = ResponseConstructor<OrderViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, "Không có Order trong CSDL", null); ;
+            }
+        }
+
+        public async Task<ResponseViewModel<OrderViewModel>> AddOrderMaterial(OrderMaterialViewModel orderMaterialView)
+        {
+            ResponseViewModel<OrderViewModel> responseViewModel = new ResponseViewModel<OrderViewModel>();
+            try
+            {
+                var order = await _orderRepository.GetAsync(o => o.ID == orderMaterialView.order.ID);
+                // Add OrderMaterial
+                var orderMaterial = Mapper.Map<OrderMaterialViewModel, OrderMaterial>(orderMaterialView);
+                orderMaterial.material = await _materialRepository.GetAsync(m => m.ID == orderMaterial.material.ID);
+                orderMaterial.material.ID = orderMaterial.material.ID;
+                orderMaterial.order = order;
+                orderMaterial.orderID = order.ID;
+                orderMaterial.fMaterialName = orderMaterial.material.materialNameVi;
+                _orderMaterialRepository.Add(orderMaterial);
+                await this.SaveChangesAsync();
+
+                order = await _orderRepository.GetAsync(o => o.ID == orderMaterialView.order.ID, QueryIncludes.ORDERFULLINCUDES);
+                order.registGrossWeight = 0;
+                order.registNetWeight = 0;
+                foreach (var item in order.orderMaterials)
+                {
+                    order.registGrossWeight += (float)item.registGrossWeight;
+                    order.registNetWeight += (float)item.registNetWeight;
+                }
+
+                _orderRepository.Update(order);
+                await this.SaveChangesAsync();
+                var result = await _orderRepository.GetManyAsync(c => c.isDelete == false, QueryIncludes.ORDERFULLINCUDES);
+                if (result == null)
+                    return responseViewModel = ResponseConstructor<OrderViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, "Cập nhật lỗi", null);
+                return responseViewModel = ResponseConstructor<OrderViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, Mapper.Map<IEnumerable<Order>, IEnumerable<OrderViewModel>>(result));
+            }
+            catch (Exception ex)
+            {
+                return responseViewModel = ResponseConstructor<OrderViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, "Cập nhật lỗi", null); ;
+            }
+        }
+
+        public async Task<ResponseViewModel<OrderViewModel>> DeleteOrderMaterial(OrderMaterialViewModel orderMaterialView)
+        {
+            ResponseViewModel<OrderViewModel> responseViewModel = new ResponseViewModel<OrderViewModel>();
+            try
+            {
+                // Add OrderMaterial
+                var orderMaterial = await _orderMaterialRepository.GetAsync(om => om.ID == orderMaterialView.ID);
+                _orderMaterialRepository.Delete(orderMaterial);
+                await this.SaveChangesAsync();
+
+                var order = await _orderRepository.GetAsync(o => o.ID == orderMaterialView.orderID, QueryIncludes.ORDERFULLINCUDES);
+                order.registGrossWeight = 0;
+                order.registNetWeight = 0;
+                foreach (var item in order.orderMaterials)
+                {
+                    order.registGrossWeight += (float)item.registGrossWeight;
+                    order.registNetWeight += (float)item.registNetWeight;
+                }
+                _orderRepository.Update(order);
+                await this.SaveChangesAsync();
+                var result = await _orderRepository.GetManyAsync(c => c.isDelete == false, QueryIncludes.ORDERFULLINCUDES);
+                if (result == null)
+                    return responseViewModel = ResponseConstructor<OrderViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, "Cập nhật lỗi", null);
+                return responseViewModel = ResponseConstructor<OrderViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, Mapper.Map<IEnumerable<Order>, IEnumerable<OrderViewModel>>(result));
+            }
+            catch (Exception ex)
+            {
+                return responseViewModel = ResponseConstructor<OrderViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, "Cập nhật lỗi", null); ;
             }
         }
     }

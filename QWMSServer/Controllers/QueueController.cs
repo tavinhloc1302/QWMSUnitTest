@@ -112,12 +112,13 @@ namespace QWMSServer.Controllers
         [AuthenticateRequire]
         [HttpPost]
         [Route("GatePass/CreateRegisteredQueueItem/", Name = "CreateRegisteredQueueItem")]
-        public async Task<ResponseViewModel<GenericResponseModel>> CreateRegisteredQueueItem([FromBody]GatePassRegistFrom gatePassRegistFrom)
+        public async Task<ResponseViewModel<GatePassViewModel>> CreateRegisteredQueueItem([FromBody]GatePassRegistFrom gatePassRegistFrom)
         {
             return await _queueService.CreateRegisteredQueueItem(gatePassRegistFrom.gatePassID, 
                                                                  gatePassRegistFrom.driverImageFileName, 
                                                                  gatePassRegistFrom.employeeRFID, 
-                                                                 gatePassRegistFrom.driverRFID);
+                                                                 gatePassRegistFrom.driverRFID,
+                                                                 gatePassRegistFrom.loadingBayID);
         }
 
         [AuthenticateRequire]
@@ -214,6 +215,46 @@ namespace QWMSServer.Controllers
         public async Task<ResponseViewModel<GatePassViewModel>> DeleteGatePass(int id)
         {
             return await _queueService.DeleteGatePass(id);
+        }
+
+        [AuthenticateRequire]
+        [HttpGet]
+        [Route("GetAllOrder", Name = "GetAllOrder")]
+        public async Task<ResponseViewModel<OrderViewModel>> GetAllOrder()
+        {
+            return await _queueService.GetAllOrder();
+        }
+        
+        [AuthenticateRequire]
+        [HttpPost]
+        [Route("AddNewOrder", Name = "AddNewOrder")]
+        public async Task<ResponseViewModel<OrderViewModel>> AddNewOrder(OrderViewModel orderView)
+        {
+            return await _queueService.AddNewOrder(orderView);
+        }
+        
+        [AuthenticateRequire]
+        [HttpPost]
+        [Route("DeleteOrder", Name = "DeleteOrder")]
+        public async Task<ResponseViewModel<OrderViewModel>> DeleteOrder(OrderViewModel orderView)
+        {
+            return await _queueService.DeleteOrder(orderView);
+        }
+        
+        [AuthenticateRequire]
+        [HttpPost]
+        [Route("AddOrderMaterial", Name = "AddOrderMaterial")]
+        public async Task<ResponseViewModel<OrderViewModel>> AddOrderMaterial(OrderMaterialViewModel orderMaterialView)
+        {
+            return await _queueService.AddOrderMaterial(orderMaterialView);
+        }
+        
+        [AuthenticateRequire]
+        [HttpPost]
+        [Route("DeleteOrderMaterial", Name = "DeleteOrderMaterial")]
+        public async Task<ResponseViewModel<OrderViewModel>> DeleteOrderMaterial(OrderMaterialViewModel orderMaterialView)
+        {
+            return await _queueService.DeleteOrderMaterial(orderMaterialView);
         }
     }
 }

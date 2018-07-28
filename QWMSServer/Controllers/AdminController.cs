@@ -23,6 +23,7 @@ namespace QWMSServer.Controllers
         }
 
         /* Customer API */
+        #region
         //[AuthenticateRequire]
         [HttpGet]
         [Route("Customer/GetAll", Name ="CustomerGetAll")]
@@ -62,9 +63,61 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeleteCustomer(customerView);
         }
+        #endregion
 
+        /* Customer Warehouse API */
+        #region
+        //[AuthenticateRequire]
+        [HttpGet]
+        [Route("CustomerWarehouse/GetAll", Name = "CustomerWarehouseGetAll")]
+        public async Task<ResponseViewModel<CustomerWarehouseViewModel>> GetAllCustomerWarehouse()
+        {
+            return await _adminService.GetAllCustomerWarehouse();
+        }
+
+        [AuthenticateRequire]
+        [HttpGet]
+        [Route("CustomerWarehouse/SearchByCode/code={code}", Name = "CustomerWarehouseSearchByCode")]
+        public async Task<ResponseViewModel<CustomerWarehouseViewModel>> SearchCustomerWarehouse(string code)
+        {
+            return await _adminService.SearchCustomerWarehouse(code);
+        }
+
+        [AuthenticateRequire]
+        [HttpGet]
+        [Route("CustomerWarehouse/GetByCustomerID/ID={customerID}", Name = "CustomerWarehouseGetByCustomerID")]
+        public async Task<ResponseViewModel<CustomerWarehouseViewModel>> GetCustomerWarehouseByCustomerID(int customerID)
+        {
+            return await _adminService.GetCustomerWarehouseByCustomerID(customerID);
+        }
+
+        [AuthenticateRequire]
+        [HttpPost]
+        [Route("CustomerWarehouse/Add", Name = "CustomerWarehouseAddNew")]
+        public async Task<ResponseViewModel<CustomerWarehouseViewModel>> CreateNewCustomerWarehouse([FromBody]CustomerWarehouseViewModel customerWarehouseView)
+        {
+            return await _adminService.CreateNewCustomerWarehouse(customerWarehouseView);
+        }
+
+        [AuthenticateRequire]
+        [HttpPost]
+        [Route("CustomerWarehouse/Update", Name = "CustomerWarehouseUpdate")]
+        public async Task<ResponseViewModel<CustomerWarehouseViewModel>> UpdateCustomerWarehouse([FromBody]CustomerWarehouseViewModel customerWarehouseView)
+        {
+            return await _adminService.UpdateCustomerWarehouse(customerWarehouseView);
+        }
+
+        [AuthenticateRequire]
+        [HttpPost]
+        [Route("CustomerWarehouse/Delete", Name = "CustomerWarehouseDelte")]
+        public async Task<ResponseViewModel<CustomerWarehouseViewModel>> DeleteCustomerWarehouse([FromBody]CustomerWarehouseViewModel customerWarehouseView)
+        {
+            return await _adminService.DeleteCustomerWarehouse(customerWarehouseView);
+        }
+        #endregion
 
         /* Driver API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("Driver/GetAll", Name = "DriverGetAll")]
@@ -104,8 +157,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeleteDriver(driverView);
         }
+        #endregion
 
         /* Carrier API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("Carrier/GetAll", Name = "CarrierGetAll")]
@@ -145,8 +200,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeleteCarrier(carrierView);
         }
-		
+        #endregion
+
         /* Material API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("Material/GetAll", Name = "MaterialGetAll")]
@@ -186,8 +243,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeleteMaterial(materialView);
         }
+        #endregion
 
         /* UnitType API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("UnitType/GetAll", Name = "UnitTypeGetAll")]
@@ -227,8 +286,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeleteUnitType(unitTypeView);
         }
+        #endregion
 
         /* Truck API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("Truck/GetAll", Name = "TruckGetAll")]
@@ -276,8 +337,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeleteTruck(truckView);
         }
+        #endregion
 
         /* Truck Type API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("TruckType/GetAll", Name = "TruckTypeGetAll")]
@@ -317,8 +380,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeleteTruckType(truckTypeView);
         }
+        #endregion
 
         /* Loading Type API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("LoadingType/GetAll", Name = "LoadingTypeGetAll")]
@@ -358,8 +423,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeleteLoadingType(loadingTypeView);
         }
+        #endregion
 
         /* Employee API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("Employee/GetAll", Name = "EmployeeGetAll")]
@@ -399,8 +466,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeleteEmployee(employeeView);
         }
+        #endregion
 
         /* Employee Group API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("EmployeeGroup/GetAll", Name = "EmployeeGroupGetAll")]
@@ -440,8 +509,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeleteEmployeeGroup(employeeGroupView);
         }
+        #endregion
 
         /* User API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("User/GetAll", Name = "UserGetAll")]
@@ -505,8 +576,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.UpdateUserPassword(userView);
         }
-        
+        #endregion
+
         /* Employee Role API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("EmployeeRole/GetAll", Name = "EmployeeRoleGetAll")]
@@ -546,8 +619,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeleteEmployeeRole(employeeRoleView);
         }
+        #endregion
 
         /* Plant API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("Plant/GetAll", Name = "PlantGetAll")]
@@ -587,8 +662,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeletePlant(plantView);
         }
+        #endregion
 
         /* Company API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("Company/GetAll", Name = "CompanyGetAll")]
@@ -628,8 +705,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeleteCompany(companyView);
         }
+        #endregion
 
         /* Warehouse API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("Warehouse/GetAll", Name = "WarehouseGetAll")]
@@ -677,8 +756,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeleteWarehouse(warehouseView);
         }
+        #endregion
 
         /* Loading Bay API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("LoadingBay/GetAll", Name = "LoadingBayGetAll")]
@@ -726,8 +807,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.GetLoadingBayByCode(code);
         }
+        #endregion
 
         /* Lane API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("Lane/GetAll", Name = "LaneGetAll")]
@@ -767,9 +850,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeleteLane(laneView);
 		}
-
+        #endregion
 
         /* Device_Camera API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("Camera/GetAll", Name = "CameraGetAll")]
@@ -801,8 +885,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeleteCamera(CameraView);
         }
+        #endregion
 
         /* Constrain API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("Constrain/GetAll", Name = "ConstrainGetAll")]
@@ -834,9 +920,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.UpdatePrintHeader(printHeader);
         }
-
+        #endregion
 
         /* DO API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("DO/GetAll", Name = "DOGetAll")]
@@ -876,8 +963,10 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.DeleteDO(DOView);
         }
+        #endregion
 
         /* SO API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("SO/GetAll", Name = "SOGetAll")]
@@ -894,7 +983,17 @@ namespace QWMSServer.Controllers
             return await _adminService.GetAllWB();
         }
 
+        [AuthenticateRequire]
+        [HttpGet]
+        [Route("WB/GetAllWBPC", Name = "GetAllWBPC")]
+        public async Task<ResponseViewModel<UserPC>> GetAllWBPC()
+        {
+            return await _adminService.GetAllWBPC();
+        }
+        #endregion
+
         /* SystemFunction API */
+        #region
         [AuthenticateRequire]
         [HttpGet]
         [Route("SystemFunction/GetAll", Name = "GetAllSystemFunction")]
@@ -982,5 +1081,14 @@ namespace QWMSServer.Controllers
         {
             return await _adminService.UpdateBadgeReader(badgeReader);
         }
+
+        [AuthenticateRequire]
+        [HttpGet]
+        [Route("AddWeightCode/{code}", Name = "AddWeightCode")]
+        public async Task<ResponseViewModel<GenericResponseModel>> AddWeightCode(string code)
+        {
+            return await _adminService.AddWeightCode(code);
+        }
+        #endregion
     }
 }

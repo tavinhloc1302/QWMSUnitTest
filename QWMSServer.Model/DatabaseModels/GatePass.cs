@@ -55,6 +55,12 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("leaveTime")]
         public DateTime? leaveTime { get; set; }
 
+        [Column("predictLeaveTime")]
+        public DateTime? predictLeaveTime { get; set; }
+
+        [Column("predictEnterTime")]
+        public DateTime? predictEnterTime { get; set; }
+
         [Column("RFIDCardID")]
         public int? RFIDCardID { get; set; }
 
@@ -84,6 +90,9 @@ namespace QWMSServer.Model.DatabaseModels
 
         [Column("warehouseID")]
         public int? warehouseID { get; set; }
+
+        [Column("carrierVendorID")]
+        public int? carrierVendorID { get; set; }
 
         [Column("weightType")]
         public int? weightType { get; set; }
@@ -118,6 +127,12 @@ namespace QWMSServer.Model.DatabaseModels
         [ForeignKey("customerID")]
         public Customer customer { get; set; }
 
+        [ForeignKey("carrierVendorID")]
+        public CarrierVendor carrierVendor { get; set; }
+
+        [ForeignKey("loadingBayID")]
+        public LoadingBay loadingBay { get; set; }
+
         public ICollection<Order> orders { get; set; }
 
         public ICollection<QueueList> queueLists { get; set; }
@@ -129,5 +144,20 @@ namespace QWMSServer.Model.DatabaseModels
 
         [Column("netWeightValue")]
         public float? netWeightValue { get; set; }
+
+        [Column("sealNo")]
+        public string sealNo { get; set; } 
+
+        [Column("printGoods")]
+        public string printGoods { get; set; } 
+
+        [Column("registGrossWeight")]
+        public float? registGrossWeight { get; set; } // 23
+
+        [Column("registNetWeight")]
+        public float? registNetWeight { get; set; }
+
+        [Column("QCGrossWeight")]
+        public float? QCGrossWeight { get; set; }
     }
 }

@@ -10,21 +10,25 @@ namespace QWMSServer.Model.ViewModels
     {
         public int ID { get; set; }
 
+        public DateTime createDate { get; set; }
+
         public string code { get; set; }
 
-        public int orderTypeID { get; set; }
+        public int? orderTypeID { get; set; }
 
         public float registGrossWeight { get; set; }
 
-        public float? QCWeightValue { get; set; }
+        public float? registNetWeight { get; set; }
 
-        public int gatePassID { get; set; }
+        public float? QCGrossWeight { get; set; }
 
-        public int plantID { get; set; }
+        public int? gatePassID { get; set; }
 
-        public int doID { get; set; }
+        public int? plantID { get; set; }
 
-        public int poID { get; set; }
+        public int? doID { get; set; }
+
+        public int? poID { get; set; }
 
         public OrderTypeViewModel orderType { get; set; }
 

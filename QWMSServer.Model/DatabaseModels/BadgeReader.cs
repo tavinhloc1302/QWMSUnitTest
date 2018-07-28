@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
@@ -44,10 +45,34 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("location")]
         public string pcIPAddress { get; set; }
 
+        [Column("isActive")]
+        public bool isActive { get; set; }
+
         [Column("UserPCID")]
         public int? UserPCID { get; set; }
 
         [ForeignKey("UserPCID")]
         public UserPC userPC { get; set; }
+
+        [NotMapped]
+        public int status { get; set; }
+
+        [NotMapped]
+        public string uid { get; set; }
+
+        [NotMapped]
+        public bool isEmployeeUID { get; set; }
+
+        [NotMapped]
+        public bool isDriverUID { get; set; }
+
+        [NotMapped]
+        public bool isBarrierSecurityUID { get; set; }
+
+        [NotMapped]
+        public DateTime updateStatusTime { get; set; }
+
+        [NotMapped]
+        public DateTime updateUIDTime { get; set; }
     }
 }

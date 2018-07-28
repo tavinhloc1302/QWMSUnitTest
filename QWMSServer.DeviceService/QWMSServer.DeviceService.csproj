@@ -49,11 +49,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BarrierDriver.cs" />
+    <Compile Include="CameraDriver.cs" />
+    <Compile Include="ControllerDriver.cs" />
     <Compile Include="DeviceConfig.cs" />
     <Compile Include="DeviceService.cs" />
+    <Compile Include="DeviceStatus.cs" />
+    <Compile Include="HazardLightDriver.cs" />
     <Compile Include="LPRAPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RFIDReader.cs" />
+    <Compile Include="BadgeReaderDriver.cs" />
+    <Compile Include="SensorDriver.cs" />
+    <Compile Include="WeighBridgeDriver.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QWMSServer.Data\QWMSServer.Data.csproj">

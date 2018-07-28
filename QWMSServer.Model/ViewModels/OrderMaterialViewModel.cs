@@ -22,7 +22,9 @@ namespace QWMSServer.Model.ViewModels
 
         public int? registQuantity { get; set; }
 
-        //public float theoryGrossWeight { get; set; }
+        public float? registGrossWeight { get; set; }
+
+        public float? registNetWeight { get; set; }
 
         public bool isDelete { get; set; }
 

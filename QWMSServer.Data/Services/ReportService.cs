@@ -21,9 +21,10 @@ namespace QWMSServer.Data.Services
         private readonly IActivityLogRepository _accessLogRepository;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IPrintHeaderRepository _printHeaderRepository;
+        private readonly IUserPCRepository _userPCRepository;
 
         public ReportService(IUnitOfWork unitOfWork, IGatePassRepository gatePassRepository, IWeightRecordRepository weightRecordRepository,
-                            IActivityLogRepository accessLogRepository, IEmployeeRepository employeeRepository, IPrintHeaderRepository printHeaderRepository)
+                            IActivityLogRepository accessLogRepository, IEmployeeRepository employeeRepository, IPrintHeaderRepository printHeaderRepository, IUserPCRepository userPCRepository)
         {
             _unitOfWork = unitOfWork;
             _gatePassRepository = gatePassRepository;
@@ -31,6 +32,7 @@ namespace QWMSServer.Data.Services
             _accessLogRepository = accessLogRepository;
             _employeeRepository = employeeRepository;
             _printHeaderRepository = printHeaderRepository;
+            _userPCRepository = userPCRepository;
         }
 
         public async Task<ResponseViewModel<ReportViewModel>> CreateReport(SearchCondition searchCondition)
@@ -46,22 +48,22 @@ namespace QWMSServer.Data.Services
                     case ReportType.FIRST_WEIGHT_ONLY: // Report only first weight value - at every weight - include 1st done + 2nd done and 1st done + 2nd not done
                         // Default Search - Search Weight Record FromDate - ToDate
                         weightRecords = await _weightRecordRepository.GetManyAsync(wt => wt.weightTime >= searchCondition.fromDate && wt.weightTime <= searchCondition.toDate && wt.isSuccess == true, QueryIncludes.WEIGHT_RECORD_INCLUDES);
-                        weightRecords = this.FilterCondition(weightRecords, searchCondition);
+                        weightRecords = await this.FilterCondition(weightRecords.ToList(), searchCondition);
                         break;
                     case ReportType.SECOND_WEIGHT_ONLY: // Report only first weight value - only get the final success weight
                         // Default Search - Search Weight Record FromDate - ToDate
                         weightRecords = await _weightRecordRepository.GetManyAsync(wt => wt.weightTime >= searchCondition.fromDate && wt.weightTime <= searchCondition.toDate && wt.isSuccess == true, QueryIncludes.WEIGHT_RECORD_INCLUDES);
-                        weightRecords = this.FilterCondition(weightRecords, searchCondition);
+                        weightRecords = await this.FilterCondition(weightRecords.ToList(), searchCondition);
                         break;
                     case ReportType.BOTH_WEIGHT:
                         // Default Search - Search Weight Record FromDate - ToDate - Not include fail weight - Each GP has max 2 rows
                         weightRecords = await _weightRecordRepository.GetManyAsync(wt => wt.weightTime >= searchCondition.fromDate && wt.weightTime <= searchCondition.toDate && wt.isSuccess == true, QueryIncludes.WEIGHT_RECORD_INCLUDES);
-                        weightRecords = this.FilterCondition(weightRecords, searchCondition);
+                        weightRecords = await this.FilterCondition(weightRecords.ToList(), searchCondition);
                         break;
                     case ReportType.FIRST_UNDONE_SECOND:
                         // Default Search - Search Weight Record FromDate - ToDate & WeightNo = 1 - Only First Weight
                         weightRecords = await _weightRecordRepository.GetManyAsync(wt => wt.weightTime >= searchCondition.fromDate && wt.weightTime <= searchCondition.toDate && wt.isSuccess == true, QueryIncludes.WEIGHT_RECORD_INCLUDES);
-                        weightRecords = this.FilterCondition(weightRecords, searchCondition);
+                        weightRecords = await this.FilterCondition(weightRecords.ToList(), searchCondition);
                         break;
                     case ReportType.WEIGHT_HISTORY: // Báo cáo xe cân
                         // Default Search - Search Weight Record FromDate - ToDate
@@ -85,11 +87,13 @@ namespace QWMSServer.Data.Services
                             weightRecords = weightRecords.Where(wt => wt.weightEmployeeID == searchCondition.weightEmployeeID);
                         if (searchCondition.gatePassCode.Trim() != "")
                             weightRecords = weightRecords.Where(wt => wt.gatePass.code.Equals(searchCondition.gatePassCode.Trim()));
+                        if (searchCondition.weightCode.Trim() != "")
+                            weightRecords = weightRecords.Where(wt => wt.code.Equals(searchCondition.weightCode.Trim()));
                         break;
                     case ReportType.ALL_WEIGHT:
                         // All success weigh of each GatePass
                         weightRecords = await _weightRecordRepository.GetManyAsync(wt => wt.weightTime >= searchCondition.fromDate && wt.weightTime <= searchCondition.toDate && wt.isSuccess == true, QueryIncludes.WEIGHT_RECORD_INCLUDES);
-                        weightRecords = this.FilterCondition(weightRecords, searchCondition);
+                        weightRecords = await this.FilterCondition(weightRecords.ToList(), searchCondition);
                         break;
                     default:
                         response.errorText = "Không xác định loại báo cáo";
@@ -109,26 +113,77 @@ namespace QWMSServer.Data.Services
             }
         }
 
-        public IEnumerable<WeightRecord> FilterCondition(IEnumerable<WeightRecord> weightRecords, SearchCondition searchCondition)
+        public async Task<List<WeightRecord>> FilterCondition(List<WeightRecord> weightRecords, SearchCondition searchCondition)
         {
             if (searchCondition.weighBridgeID != -1)
-                weightRecords = weightRecords.Where(wt => wt.weighBridgeID == searchCondition.weighBridgeID);
+            {
+                var userPC = await _userPCRepository.GetAsync(pc => pc.ID == searchCondition.weighBridgeID);
+                weightRecords = weightRecords.Where(wt => wt.PCIP.Equals(userPC.IPAddress)).ToList();
+            }
             if (searchCondition.gatePassCode.Trim() != "")
-                weightRecords = weightRecords.Where(wt => wt.gatePass.code.Equals(searchCondition.gatePassCode.Trim()));
+                weightRecords = weightRecords.Where(wt => wt.gatePass.code.Equals(searchCondition.gatePassCode.Trim())).ToList();
             if (searchCondition.materialWeight != -1)
-                weightRecords = weightRecords.Where(wt => wt.gatePass.orders.ToList()[0].registGrossWeight == searchCondition.materialWeight);
+                weightRecords = weightRecords.Where(wt => wt.gatePass.orders.ToList()[0].registGrossWeight == searchCondition.materialWeight).ToList();
             if (searchCondition.customerID != -1)
-                weightRecords = weightRecords.Where(wt => wt.gatePass.customerID == searchCondition.customerID);
+            {
+                //weightRecords = weightRecords.Where(wt => wt.gatePass.customerID == searchCondition.customerID).ToList();
+                foreach (var weight in weightRecords.ToList())
+                {
+                    if (weight.gatePass.orders.ToList()[0].orderTypeID == Constant.DELIVERYORDER)
+                    {
+                        if(weight.gatePass.orders.ToList()[0].deliveryOrder.customerID != searchCondition.customerID)
+                            weightRecords.Remove(weight);
+                    }
+                    else
+                    {
+                        weightRecords.Remove(weight);
+                    }
+                }
+            }
+            if (searchCondition.carriverVendorID != -1)
+            {
+                //weightRecords = weightRecords.Where(wt => wt.gatePass.customerID == searchCondition.customerID).ToList();
+                foreach (var weight in weightRecords.ToList())
+                {
+                    if (weight.gatePass.orders.ToList()[0].orderTypeID == Constant.PURCHASEORDER)
+                    {
+                        if (weight.gatePass.orders.ToList()[0].purchaseOrder.carrierVendorID != searchCondition.carriverVendorID)
+                            weightRecords.Remove(weight);
+                    }
+                    else
+                    {
+                        weightRecords.Remove(weight);
+                    }
+                }
+            }
             if (searchCondition.weightType != WeightType.WEIGHT_ALL)
-                weightRecords = weightRecords.Where(wt => wt.gatePass.weightType == searchCondition.weightType);
+                weightRecords = weightRecords.Where(wt => wt.gatePass.weightType == searchCondition.weightType).ToList();
             if (searchCondition.weightEmployeeID != -1)
-                weightRecords = weightRecords.Where(wt => wt.weightEmployeeID == searchCondition.weightEmployeeID);
+                weightRecords = weightRecords.Where(wt => wt.weightEmployeeID == searchCondition.weightEmployeeID).ToList();
             if (searchCondition.materialID != -1)
-                weightRecords = weightRecords.Where(wt => wt.gatePass.materialID == searchCondition.materialID);
+            {
+                //weightRecords = weightRecords.Where(wt => wt.gatePass.materialID == searchCondition.materialID).ToList();
+                foreach (var weight in weightRecords.ToList())
+                {
+                    var tmp = 0;
+                    foreach (var order in weight.gatePass.orders)
+                    {
+                        foreach (var item in order.orderMaterials)
+                        {
+                            if (item.materialID == searchCondition.materialID)
+                                tmp = 1;
+                        }
+                    }
+                    if (tmp == 0)
+                        weightRecords.Remove(weight);
+                }
+            }
             if (searchCondition.plateNumber.Trim() != "")
-                weightRecords = weightRecords.Where(wt => wt.gatePass.truck.plateNumber.Equals(searchCondition.plateNumber.Trim()));
+                weightRecords = weightRecords.Where(wt => wt.gatePass.truck.plateNumber.Equals(searchCondition.plateNumber.Trim())).ToList();
             if (searchCondition.driverID != -1)
-                weightRecords = weightRecords.Where(wt => wt.gatePass.driver.ID == searchCondition.driverID);
+                weightRecords = weightRecords.Where(wt => wt.gatePass.driver.ID == searchCondition.driverID).ToList();
+            if (searchCondition.weightCode.Trim() != "")
+                weightRecords = weightRecords.Where(wt => wt.code.Equals(searchCondition.weightCode.Trim())).ToList();
 
             return weightRecords;
         }
@@ -161,7 +216,7 @@ namespace QWMSServer.Data.Services
                             reportViewModel.gatePassCode = firstW.gatePass.code;
                             reportViewModel.truckPlateNumber = firstW.gatePass.truck.plateNumber;
                             reportViewModel.customerName = firstW.gatePass.customer.nameVi;
-                            reportViewModel.materialName = firstW.gatePass.material.materialNameVi;
+                            reportViewModel.materialName = firstW.gatePass.printGoods;
                             reportViewModel.firstWeightValue = firstW.weightValue;
                             reportViewModel.firstWeightTime = firstW.weightTime;
                             reportViewModel.firstWeightEmployeeName = firstW.employee.firstName + " " + firstW.employee.lastName;
@@ -173,6 +228,8 @@ namespace QWMSServer.Data.Services
                             reportViewModel.weightID = firstW.ID;
                             reportViewModel.truckWeight = firstW.gatePass.truck.truckNetWeight;
                             reportViewModel.driverName = firstW.gatePass.driver.nameVi;
+                            reportViewModel.weightCode = firstW.code;
+                            reportViewModel.materialWeight = firstW.gatePass.QCGrossWeight.ToString();
                             reportViewModels.Add(reportViewModel);
                         }
                         break;
@@ -198,7 +255,7 @@ namespace QWMSServer.Data.Services
                                 reportViewModel.gatePassCode = sectW.gatePass.code;
                                 reportViewModel.truckPlateNumber = sectW.gatePass.truck.plateNumber;
                                 reportViewModel.customerName = sectW.gatePass.customer.nameVi;
-                                reportViewModel.materialName = sectW.gatePass.material.materialNameVi;
+                                reportViewModel.materialName = sectW.gatePass.printGoods;
                                 reportViewModel.secondWeightvalue = sectW.weightValue;
                                 reportViewModel.secondWeightTime = sectW.weightTime;
                                 reportViewModel.secondWeightEmployeeName = sectW.employee.firstName + " " + sectW.employee.lastName;
@@ -210,6 +267,8 @@ namespace QWMSServer.Data.Services
                                 reportViewModel.weightID = sectW.ID;
                                 reportViewModel.truckWeight = sectW.gatePass.truck.truckNetWeight;
                                 reportViewModel.driverName = sectW.gatePass.driver.nameVi;
+                                reportViewModel.weightCode = sectW.code;
+                                reportViewModel.materialWeight = sectW.gatePass.QCGrossWeight.ToString();
                                 reportViewModels.Add(reportViewModel);
                             }
                         }
@@ -234,12 +293,14 @@ namespace QWMSServer.Data.Services
                             reportViewModel.weightID = firstW.ID;
                             reportViewModel.truckPlateNumber = firstW.gatePass.truck.plateNumber;
                             reportViewModel.customerName = firstW.gatePass.customer.nameVi;
-                            reportViewModel.materialName = firstW.gatePass.material.materialNameVi;
+                            reportViewModel.materialName = firstW.gatePass.printGoods;
                             reportViewModel.weightType = (int)firstW.gatePass.weightType;
                             reportViewModel.truckWeight = firstW.gatePass.truck.truckNetWeight;
                             reportViewModel.driverName = firstW.gatePass.driver.nameVi;
                             reportViewModel.printNo = firstW.gatePass.printNo == null ? 0 : firstW.gatePass.printNo;
                             reportViewModel.printDate = firstW.gatePass.printDate == null? DateTime.MinValue : (DateTime)firstW.gatePass.printDate;
+                            reportViewModel.weightCode = firstW.code;
+                            reportViewModel.materialWeight = firstW.gatePass.QCGrossWeight.ToString();
 
                             reportViewModel.firstWeightValue = firstW.weightValue;
                             reportViewModel.firstWeightTime = firstW.weightTime;
@@ -249,6 +310,7 @@ namespace QWMSServer.Data.Services
                             reportViewModel.containerCameraCapturePath = firstW.containerCameraCapturePath;
                             reportViewModel.frontCameraCapturePath = firstW.frontCameraCapturePath;
                             reportViewModel.gearCameraCapturePath = firstW.gearCameraCapturePath;
+                            reportViewModel.sealNo = firstW.gatePass.sealNo;
                             // gen second weight report in case done 2 times weight
                             if (tmpW.Count() > 1)
                             {
@@ -287,7 +349,7 @@ namespace QWMSServer.Data.Services
                                 reportViewModel.gatePassCode = firstW.gatePass.code;
                                 reportViewModel.truckPlateNumber = firstW.gatePass.truck.plateNumber;
                                 reportViewModel.customerName = firstW.gatePass.customer.nameVi;
-                                reportViewModel.materialName = firstW.gatePass.material.materialNameVi;
+                                reportViewModel.materialName = firstW.gatePass.printGoods;
                                 reportViewModel.firstWeightValue = firstW.weightValue;
                                 reportViewModel.firstWeightTime = firstW.weightTime;
                                 reportViewModel.firstWeightEmployeeName = firstW.employee.firstName + " " + firstW.employee.lastName;
@@ -299,6 +361,7 @@ namespace QWMSServer.Data.Services
                                 reportViewModel.weightID = firstW.ID;
                                 reportViewModel.truckWeight = firstW.gatePass.truck.truckNetWeight;
                                 reportViewModel.driverName = firstW.gatePass.driver.nameVi;
+                                reportViewModel.materialWeight = firstW.gatePass.QCGrossWeight.ToString();
                                 reportViewModels.Add(reportViewModel);
                             }
                         }
@@ -311,7 +374,8 @@ namespace QWMSServer.Data.Services
                             reportViewModel.gatePassCode = weightRecord.gatePass.code;
                             reportViewModel.truckPlateNumber = weightRecord.gatePass.truck.plateNumber;
                             reportViewModel.customerName = weightRecord.gatePass.customer.nameVi;
-                            reportViewModel.materialName = weightRecord.gatePass.material.materialNameVi;
+                            reportViewModel.materialName = weightRecord.gatePass.printGoods;
+                            reportViewModel.materialWeight = weightRecord.gatePass.QCGrossWeight.ToString();
                             reportViewModel.weightvalue = weightRecord.weightValue;
                             reportViewModel.weightTime = weightRecord.weightTime;
                             reportViewModel.weightEmployeeName = weightRecord.employee.firstName + " " + weightRecord.employee.lastName;
@@ -324,6 +388,7 @@ namespace QWMSServer.Data.Services
                             reportViewModel.weightID = weightRecord.ID;
                             reportViewModel.truckWeight = weightRecord.gatePass.truck.truckNetWeight;
                             reportViewModel.driverName = weightRecord.gatePass.driver.nameVi;
+                            reportViewModel.weightCode = weightRecord.code;
                             reportViewModels.Add(reportViewModel);
                         }
                         break;
@@ -337,6 +402,9 @@ namespace QWMSServer.Data.Services
                             reportViewModel.printNo = (int)gatePass.printNo;
                             reportViewModel.createDate = (DateTime)gatePass.createDate;
                             reportViewModel.printEmployeeName = gatePass.printEmployee.firstName + " " + gatePass.printEmployee.lastName;
+                            reportViewModel.weightCode = gatePass.weightRecords.Where(wt => wt.isSuccess == true).First().code;
+                            //reportViewModel.sealNo = gatePass.sealNo;
+                            //reportViewModel.materialName = gatePass.printGoods;
                             reportViewModels.Add(reportViewModel);
                         }
                         break;
@@ -348,7 +416,8 @@ namespace QWMSServer.Data.Services
                             reportViewModel.gatePassCode = weightRecord.gatePass.code;
                             reportViewModel.truckPlateNumber = weightRecord.gatePass.truck.plateNumber;
                             reportViewModel.customerName = weightRecord.gatePass.customer.nameVi;
-                            reportViewModel.materialName = weightRecord.gatePass.material.materialNameVi;
+                            reportViewModel.materialName = weightRecord.gatePass.printGoods;
+                            reportViewModel.materialWeight = weightRecord.gatePass.QCGrossWeight.ToString();
                             reportViewModel.weightvalue = weightRecord.weightValue;
                             reportViewModel.weightTime = weightRecord.weightTime;
                             reportViewModel.weightEmployeeName = weightRecord.employee.firstName + " " + weightRecord.employee.lastName;
@@ -361,6 +430,7 @@ namespace QWMSServer.Data.Services
                             reportViewModel.weightID = weightRecord.ID;
                             reportViewModel.createDate = weightRecord.gatePass.createDate;
                             reportViewModel.isSuccess = (bool)weightRecord.isSuccess;
+                            reportViewModel.weightCode = weightRecord.code;
                             reportViewModels.Add(reportViewModel);
                         }
                         break;
@@ -384,7 +454,8 @@ namespace QWMSServer.Data.Services
                             reportViewModel.weightID = firstW.ID;
                             reportViewModel.truckPlateNumber = firstW.gatePass.truck.plateNumber;
                             reportViewModel.customerName = firstW.gatePass.customer.nameVi;
-                            reportViewModel.materialName = firstW.gatePass.material.materialNameVi;
+                            reportViewModel.materialName = firstW.gatePass.printGoods;
+                            reportViewModel.materialWeight = firstW.gatePass.QCGrossWeight.ToString();
                             reportViewModel.weightType = (int)firstW.gatePass.weightType;
                             reportViewModel.truckWeight = firstW.gatePass.truck.truckNetWeight;
                             reportViewModel.weightvalue = firstW.weightValue;
@@ -398,6 +469,7 @@ namespace QWMSServer.Data.Services
                             reportViewModel.isSuccess = (bool)firstW.isSuccess;
                             reportViewModel.weightNo = 1;
                             reportViewModel.driverName = firstW.gatePass.driver.nameVi;
+                            reportViewModel.weightCode = firstW.code;
                             reportViewModels.Add(reportViewModel);
                             // gen second weight report in case done 2 times weight
                             if (tmpW.Count() > 1)
@@ -409,7 +481,8 @@ namespace QWMSServer.Data.Services
                                 secreportViewModel.weightID = secW.ID;
                                 secreportViewModel.truckPlateNumber = secW.gatePass.truck.plateNumber;
                                 secreportViewModel.customerName = secW.gatePass.customer.nameVi;
-                                secreportViewModel.materialName = secW.gatePass.material.materialNameVi;
+                                secreportViewModel.materialName = secW.gatePass.printGoods;
+                                secreportViewModel.materialWeight = secW.gatePass.QCGrossWeight.ToString();
                                 secreportViewModel.weightType = (int)secW.gatePass.weightType;
                                 secreportViewModel.truckWeight = secW.gatePass.truck.truckNetWeight;
                                 secreportViewModel.weightvalue = secW.weightValue;
@@ -420,8 +493,9 @@ namespace QWMSServer.Data.Services
                                 secreportViewModel.containerCameraCapturePath = secW.containerCameraCapturePath;
                                 secreportViewModel.frontCameraCapturePath = secW.frontCameraCapturePath;
                                 secreportViewModel.gearCameraCapturePath = secW.gearCameraCapturePath;
-                                reportViewModel.isSuccess = (bool)secW.isSuccess;
+                                secreportViewModel.isSuccess = (bool)secW.isSuccess;
                                 secreportViewModel.weightNo = 2;
+                                secreportViewModel.weightCode = secW.code;
                                 reportViewModels.Add(secreportViewModel);
                             }
                         }
@@ -500,7 +574,7 @@ namespace QWMSServer.Data.Services
             IEnumerable<WeightRecord> weightRecords = null;
             SearchCondition searchCondition = new SearchCondition();
             searchCondition.reportType = ReportType.BOTH_WEIGHT;
-            weightRecords = await _weightRecordRepository.GetManyAsync(wt => wt.gatePass.code.Equals(gatePassCode), QueryIncludes.WEIGHT_RECORD_INCLUDES);
+            weightRecords = await _weightRecordRepository.GetManyAsync(wt => wt.gatePass.code.Equals(gatePassCode) && wt.isSuccess == true, QueryIncludes.WEIGHT_RECORD_INCLUDES);
             response.responseDatas = this.CreateReportViewModel(weightRecords, gatePasses, searchCondition);
             return response;
         }

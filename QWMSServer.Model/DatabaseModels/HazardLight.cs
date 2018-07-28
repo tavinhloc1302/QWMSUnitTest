@@ -1,15 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace QWMSServer.Model.DatabaseModels
 {
-	[Table("t_barrier")]
-	public class Barrier
-	{
-		public Barrier ()
-		{
+    [Table("t_hazzardLight")]
+    public class HazardLight
+    {
+        public HazardLight()
+        {
 
-		}
+        }
 
         [Key]
         [Required]
@@ -28,17 +33,11 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("description")]
         public string description { get; set; }
 
-        [Column("openControllerID")]
-        public int openControllerID { get; set; }
+        [Column("controllerID")]
+        public int controllerID { get; set; }
 
-        [Column("openPort")]
-        public int openPort { get; set; }
-
-        [Column("closeControllerID")]
-        public int closeControllerID { get; set; }
-
-        [Column("closePort")]
-        public int closePort { get; set; }
+        [Column("port")]
+        public int port { get; set; }
 
         [Column("isActive")]
         public bool isActive { get; set; }
@@ -46,19 +45,13 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("isDelete")]
         public bool isDelete { get; set; }
 
-        [ForeignKey("openControllerID")]
-        public Controller openController { get; set; }
-
-        [ForeignKey("closeControllerID")]
-        public Controller closeController { get; set; }
+        [ForeignKey("controllerID")]
+        public Controller controller { get; set; }
 
         [NotMapped]
         public int status { get; set; }
 
         [NotMapped]
-        public bool openPortValue { get; set; }
-
-        [NotMapped]
-        public bool closePortValue { get; set; }
+        public bool portValue { get; set; }
     }
 }

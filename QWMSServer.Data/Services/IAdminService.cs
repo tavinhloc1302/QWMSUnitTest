@@ -11,6 +11,7 @@ namespace QWMSServer.Data.Services
     public interface IAdminService
     {
         /* Customer management block */
+        #region
         Task<ResponseViewModel<CustomerViewModel>> GetAllCustomer();
 
         Task<ResponseViewModel<CustomerViewModel>> GetCustomerByCode(string code);
@@ -22,8 +23,27 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<CustomerViewModel>> UpdateCustomer(CustomerViewModel customerView);
 
         Task<ResponseViewModel<CustomerViewModel>> DeleteCustomer(CustomerViewModel customerView);
+        #endregion
+
+        /* Customer Warehouse management block */
+        #region
+        Task<ResponseViewModel<CustomerWarehouseViewModel>> GetAllCustomerWarehouse();
+
+        Task<ResponseViewModel<CustomerWarehouseViewModel>> GetCustomerWarehouseByCode(string code);
+
+        Task<ResponseViewModel<CustomerWarehouseViewModel>> SearchCustomerWarehouse(string code);
+
+        Task<ResponseViewModel<CustomerWarehouseViewModel>> GetCustomerWarehouseByCustomerID(int customerID);
+
+        Task<ResponseViewModel<CustomerWarehouseViewModel>> CreateNewCustomerWarehouse(CustomerWarehouseViewModel customerWarehouse);
+
+        Task<ResponseViewModel<CustomerWarehouseViewModel>> UpdateCustomerWarehouse(CustomerWarehouseViewModel customerWarehouse);
+
+        Task<ResponseViewModel<CustomerWarehouseViewModel>> DeleteCustomerWarehouse(CustomerWarehouseViewModel customerWarehouse);
+        #endregion
 
         /* Driver management block */
+        #region
         Task<ResponseViewModel<DriverViewModel>> GetAllDriver();
 
         Task<ResponseViewModel<DriverViewModel>> GetDriverByCode(string code);
@@ -35,8 +55,10 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<DriverViewModel>> UpdateDriver(DriverViewModel driverView);
 
         Task<ResponseViewModel<DriverViewModel>> DeleteDriver(DriverViewModel driverView);
+        #endregion
 
         /* Carrier management block */
+        #region
         Task<ResponseViewModel<CarrierVendorViewModel>> GetAllCarrier();
 
         Task<ResponseViewModel<CarrierVendorViewModel>> SearchCarrier(string code);
@@ -48,13 +70,10 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<CarrierVendorViewModel>> UpdateCarrier(CarrierVendorViewModel carrierView);
 
         Task<ResponseViewModel<CarrierVendorViewModel>> DeleteCarrier(CarrierVendorViewModel carrierView);
-
-		///* Login service */
-  //      Task<List<SystemFunctionViewModel>> GetUserPermission(int userID);
-
-  //      Task<ResponseViewModel<UserViewModel>> Login(string userName, string passWord);
+        #endregion
 
         /* Material management block */
+        #region
         Task<ResponseViewModel<MaterialViewModel>> GetAllMaterial();
 
         Task<ResponseViewModel<MaterialViewModel>> SearchMaterial(string code);
@@ -66,8 +85,10 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<MaterialViewModel>> UpdateMaterial(MaterialViewModel materialView);
 
         Task<ResponseViewModel<MaterialViewModel>> DeleteMaterial(MaterialViewModel materialView);
+        #endregion
 
         /* UnitType management block */
+        #region
         Task<ResponseViewModel<UnitTypeViewModel>> GetAllUnitType();
 
         Task<ResponseViewModel<UnitTypeViewModel>> SearchUnitType(string code);
@@ -79,8 +100,10 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<UnitTypeViewModel>> UpdateUnitType(UnitTypeViewModel unitTypeView);
 
         Task<ResponseViewModel<UnitTypeViewModel>> DeleteUnitType(UnitTypeViewModel unitTypeView);
+        #endregion
 
         /* Truck management block */
+        #region
         Task<ResponseViewModel<TruckViewModel>> GetAllTruck();
 
         Task<ResponseViewModel<TruckViewModel>> TruckGetAllSuggestedDriver();
@@ -94,8 +117,10 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<TruckViewModel>> UpdateTruck(TruckViewModel truckView);
 
         Task<ResponseViewModel<TruckViewModel>> DeleteTruck(TruckViewModel truckView);
+        #endregion
 
         /* Truck Type management block */
+        #region
         Task<ResponseViewModel<TruckTypeViewModel>> GetAllTruckType();
 
         Task<ResponseViewModel<TruckTypeViewModel>> SearchTruckType(string code);
@@ -107,8 +132,10 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<TruckTypeViewModel>> UpdateTruckType(TruckTypeViewModel truckTypeView);
 
         Task<ResponseViewModel<TruckTypeViewModel>> DeleteTruckType(TruckTypeViewModel truckTypeView);
+        #endregion
 
         /* Loading Type management block */
+        #region
         Task<ResponseViewModel<LoadingTypeViewModel>> GetAllLoadingType();
 
         Task<ResponseViewModel<LoadingTypeViewModel>> SearchLoadingType(string code);
@@ -120,8 +147,10 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<LoadingTypeViewModel>> UpdateLoadingType(LoadingTypeViewModel loadingTypeView);
 
         Task<ResponseViewModel<LoadingTypeViewModel>> DeleteLoadingType(LoadingTypeViewModel loadingTypeView);
+        #endregion
 
         /* Employee management block */
+        #region
         Task<ResponseViewModel<EmployeeViewModel>> GetAllEmployee();
 
         Task<ResponseViewModel<EmployeeViewModel>> SearchEmployee(string code);
@@ -133,8 +162,10 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<EmployeeViewModel>> UpdateEmployee(EmployeeViewModel employeeView);
 
         Task<ResponseViewModel<EmployeeViewModel>> DeleteEmployee(EmployeeViewModel employeeView);
+        #endregion
 
-        /* Employee management block */
+        /* Employee Group management block */
+        #region
         Task<ResponseViewModel<EmployeeGroupViewModel>> GetAllEmployeeGroup();
 
         Task<ResponseViewModel<EmployeeGroupViewModel>> SearchEmployeeGroup(string code);
@@ -146,8 +177,10 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<EmployeeGroupViewModel>> UpdateEmployeeGroup(EmployeeGroupViewModel employeeGroupView);
 
         Task<ResponseViewModel<EmployeeGroupViewModel>> DeleteEmployeeGroup(EmployeeGroupViewModel employeeGroupView);
+        #endregion
 
         /* User management block */
+        #region
         Task<ResponseViewModel<UserViewModel>> GetAllUser();
 
         Task<ResponseViewModel<UserViewModel>> GetUserByEmployeeID(int employeeID);
@@ -165,8 +198,10 @@ namespace QWMSServer.Data.Services
         Task<string> CreateUserName(string userName);
 
         Task<ResponseViewModel<UserViewModel>> UpdateUserPassword(UserViewModel userView);
+        #endregion
 
         /* Employee Role management block */
+        #region
         Task<ResponseViewModel<EmployeeRoleViewModel>> GetAllEmployeeRole();
 
         Task<ResponseViewModel<EmployeeRoleViewModel>> SearchEmployeeRole(string code);
@@ -178,8 +213,10 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<EmployeeRoleViewModel>> UpdateEmployeeRole(EmployeeRoleViewModel employeeRoleView);
 
         Task<ResponseViewModel<EmployeeRoleViewModel>> DeleteEmployeeRole(EmployeeRoleViewModel employeeRoleView);
+        #endregion
 
         /* Plant management block */
+        #region
         Task<ResponseViewModel<PlantViewModel>> GetAllPlant();
 
         Task<ResponseViewModel<PlantViewModel>> SearchPlant(string code);
@@ -191,8 +228,10 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<PlantViewModel>> UpdatePlant(PlantViewModel plantView);
 
         Task<ResponseViewModel<PlantViewModel>> DeletePlant(PlantViewModel plantView);
+        #endregion
 
         /* Company management block */
+        #region
         Task<ResponseViewModel<CompanyViewModel>> GetAllCompany();
 
         Task<ResponseViewModel<CompanyViewModel>> SearchCompany(string code);
@@ -204,8 +243,10 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<CompanyViewModel>> UpdateCompany(CompanyViewModel companyView);
 
         Task<ResponseViewModel<CompanyViewModel>> DeleteCompany(CompanyViewModel companyView);
+        #endregion
 
         /* Warehouse management block */
+        #region
         Task<ResponseViewModel<WarehouseViewModel>> GetAllWarehouse();
 
         Task<ResponseViewModel<WarehouseViewModel>> SearchWarehouse(string code);
@@ -217,8 +258,10 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<WarehouseViewModel>> UpdateWarehouse(WarehouseViewModel warehouseView);
 
         Task<ResponseViewModel<WarehouseViewModel>> DeleteWarehouse(WarehouseViewModel warehouseView);
+        #endregion
 
         /* Loading Bay management block */
+        #region
         Task<ResponseViewModel<LoadingBayViewModel>> GetAllLoadingBay();
 
         Task<ResponseViewModel<LoadingBayViewModel>> SearchLoadingBay(string code);
@@ -230,8 +273,10 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<LoadingBayViewModel>> UpdateLoadingBay(LoadingBayViewModel loadingBayView);
 
         Task<ResponseViewModel<LoadingBayViewModel>> DeleteLoadingBay(LoadingBayViewModel loadingBayView);
+        #endregion
 
         /* Lane management block */
+        #region
         Task<ResponseViewModel<LaneViewModel>> GetAllLane();
 
         Task<ResponseViewModel<LaneViewModel>> SearchLane(string code);
@@ -243,9 +288,11 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<LaneViewModel>> UpdateLane(LaneViewModel laneView);
 
         Task<ResponseViewModel<LaneViewModel>> DeleteLane(LaneViewModel laneView);
+        #endregion
 
 
         /* DO management block */
+        #region
         Task<ResponseViewModel<DeliveryOrderViewModel>> GetAllDO();
 
         Task<ResponseViewModel<DeliveryOrderViewModel>> SearchDO(string code);
@@ -257,6 +304,7 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<DeliveryOrderViewModel>> UpdateDO(DeliveryOrderViewModel DOView);
 
         Task<ResponseViewModel<DeliveryOrderViewModel>> DeleteDO(DeliveryOrderViewModel DOView);
+        #endregion
 
         /* SO management block */
         Task<ResponseViewModel<SaleOrderViewModel>> GetAllSO();
@@ -296,6 +344,7 @@ namespace QWMSServer.Data.Services
         /* Weigh Bridge */
         #region
         Task<ResponseViewModel<WeighBridge>> GetAllWB();
+        Task<ResponseViewModel<UserPC>> GetAllWBPC();
         Task<ResponseViewModel<WeighBridge>> UpdateWeighBridge(WeighBridge weighBridge);
         #endregion
 
@@ -323,5 +372,7 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<BadgeReader>> UpdateBadgeReader(BadgeReader badgeReader);
         #endregion
         #endregion
+
+        Task<ResponseViewModel<GenericResponseModel>> AddWeightCode(string code);
     }
 }

@@ -27,8 +27,8 @@ namespace QWMSServer.Model.DatabaseModels
         //[Column("doNumber")]
         //public string doNumber { get; set; }
 
-        [Column("createDate")]
-        public DateTime createDate { get; set; }
+        //[Column("createDate")]
+        //public DateTime createDate { get; set; }
 
         [Column("soID")]
         public int? soID { get; set; }

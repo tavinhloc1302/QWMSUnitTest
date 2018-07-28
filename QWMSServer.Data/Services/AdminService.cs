@@ -46,6 +46,7 @@ namespace QWMSServer.Data.Services
         private readonly IEmployeeGroup_SystemFunctionRepository _employeeGroup_SystemFunctionRepository;
         private readonly IUserPCRepository _userPCRepository;
         private readonly IBadgeReaderRepository _badgeReaderRepository;
+        private readonly IWeightRecordRepository _weightRecordRepository;
         private Random _random = new Random();
 
         public AdminService(IUnitOfWork unitOfWork, ICustomerRepository customerRepository, IDriverRepository driverRepository, ICarrierVendorRepository carrierRepository,
@@ -57,7 +58,7 @@ namespace QWMSServer.Data.Services
                             IDeliveryOrderRepository doRepository, ICustomerWarehouseRepository customerWarehouseRepository,
                             ISaleOrderRepository saleOrderRepository, IOrderRepository orderRepository, IWeighBridgeRepository weighBridgeRepository, IPrintHeaderRepository printHeaderRepository,
                             IUserPasswordRepository userPasswordRepository, ISystemFunctionRepository systemFunctionRepository, IEmployeeGroup_SystemFunctionRepository employeeGroup_SystemFunctionRepository,
-                            IUserPCRepository userPCRepository, IBadgeReaderRepository badgeReaderRepository)
+                            IUserPCRepository userPCRepository, IBadgeReaderRepository badgeReaderRepository, IWeightRecordRepository weightRecordRepository)
         {
             _unitOfWork = unitOfWork;
             _customerRepository = customerRepository;
@@ -91,6 +92,7 @@ namespace QWMSServer.Data.Services
             _employeeGroup_SystemFunctionRepository = employeeGroup_SystemFunctionRepository;
             _userPCRepository = userPCRepository;
             _badgeReaderRepository = badgeReaderRepository;
+            _weightRecordRepository = weightRecordRepository;
         }
 
         public async Task<bool> SaveChangesAsync()
@@ -104,7 +106,7 @@ namespace QWMSServer.Data.Services
         {
             try
             {
-                var result = await _customerRepository.GetManyAsync(c => c.isDelete == false);
+                var result = await _customerRepository.GetManyAsync(c => c.isDelete == false, QueryIncludes.CUSTOMERFULLINCUDES);
                 var customerView = Mapper.Map<IEnumerable<Customer>, IEnumerable<CustomerViewModel>>(result);
                 ResponseViewModel<CustomerViewModel> responseViewModel = new ResponseViewModel<CustomerViewModel>();
                 responseViewModel.responseDatas = Mapper.Map<IEnumerable<Customer>, IEnumerable<CustomerViewModel>>(result);
@@ -197,10 +199,15 @@ namespace QWMSServer.Data.Services
             ResponseViewModel<CustomerViewModel> responseViewModel = new ResponseViewModel<CustomerViewModel>();
             if (customerView != null)
             {
-                Customer customer = await _customerRepository.GetAsync(cs => cs.code.Equals(customerView.code));
+                Customer customer = await _customerRepository.GetAsync(cs => cs.code.Equals(customerView.code), QueryIncludes.CUSTOMERFULLINCUDES);
                 if (customer != null)
                 {
                     customer.isDelete = true;
+                    //foreach (var item in customer.customerWarehouses.ToArray())
+                    //{
+                    //    item.isDelete = false;
+                    //}
+                    
                     _customerRepository.Update(customer);
                     if (await this.SaveChangesAsync())
                     {
@@ -248,6 +255,194 @@ namespace QWMSServer.Data.Services
                 else
                 {
                     responseViewModel.errorText = Common.ResponseText.EDIT_CUSTOMER_FAIL;
+                }
+            }
+            else
+            {
+                responseViewModel.errorText = Common.ResponseText.ERR_LACK_INPUT;
+            }
+            return responseViewModel;
+        }
+        #endregion
+
+        /* Customer Warehouse management block */
+        #region
+        public async Task<ResponseViewModel<CustomerWarehouseViewModel>> GetAllCustomerWarehouse()
+        {
+            try
+            {
+                var result = await _customerWarehouseRepository.GetManyAsync(c => c.isDelete == false);
+                var customerView = Mapper.Map<IEnumerable<CustomerWarehouse>, IEnumerable<CustomerWarehouseViewModel>>(result);
+                ResponseViewModel<CustomerWarehouseViewModel> responseViewModel = new ResponseViewModel<CustomerWarehouseViewModel>();
+                responseViewModel.responseDatas = Mapper.Map<IEnumerable<CustomerWarehouse>, IEnumerable<CustomerWarehouseViewModel>>(result);
+                return responseViewModel;
+            }
+            catch
+            {
+                ResponseViewModel<CustomerWarehouseViewModel> responseViewModel = new ResponseViewModel<CustomerWarehouseViewModel>();
+                responseViewModel.errorText = Common.ResponseText.ERR_EMPTY_DATABASE;
+                return responseViewModel;
+            }
+        }
+
+        public async Task<ResponseViewModel<CustomerWarehouseViewModel>> SearchCustomerWarehouse(string code)
+        {
+            ResponseViewModel<CustomerWarehouseViewModel> responseViewModel = new ResponseViewModel<CustomerWarehouseViewModel>();
+            responseViewModel.responseData = null;
+            responseViewModel.responseDatas = null;
+            if (code != null)
+            {
+                var result = await _customerWarehouseRepository.GetManyAsync(c => (c.code.Contains(code) || c.warehouseName.Contains(code)) && c.isDelete == false, QueryIncludes.CUSTOMERWAREHOUSEFULLINCUDES);
+                if (result.Count() == 0)
+                    responseViewModel.errorText = Common.ResponseText.ERR_SEARCH_FAIL;
+                responseViewModel.responseDatas = Mapper.Map<IEnumerable<CustomerWarehouse>, IEnumerable<CustomerWarehouseViewModel>>(result);
+            }
+            else
+            {
+                responseViewModel.errorText = Common.ResponseText.ERR_SEARCH_KEYWORD_NULL;
+            }
+            return responseViewModel;
+
+        }
+
+        public async Task<ResponseViewModel<CustomerWarehouseViewModel>> GetCustomerWarehouseByCustomerID(int customerID)
+        {
+            ResponseViewModel<CustomerWarehouseViewModel> responseViewModel = new ResponseViewModel<CustomerWarehouseViewModel>();
+            try
+            {
+                var resultCustomer = await _customerRepository.GetAsync(cs => cs.ID == customerID && cs.isDelete == false, QueryIncludes.CUSTOMERFULLINCUDES);
+                if (resultCustomer == null)
+                {
+                    return responseViewModel = ResponseConstructor<CustomerWarehouseViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, Common.ResponseText.ERR_SEARCH_FAIL, null);
+                }
+                else
+                {
+                    var result = await _customerWarehouseRepository.GetManyAsync(c => c.customerID == customerID && c.isDelete == false, QueryIncludes.CUSTOMERWAREHOUSEFULLINCUDES);
+                    if (result == null)
+                        return responseViewModel = ResponseConstructor<CustomerWarehouseViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, Common.ResponseText.ERR_SEARCH_FAIL, null);
+                    return responseViewModel = ResponseConstructor<CustomerWarehouseViewModel>.ConstructEnumerableData(ResponseCode.SUCCESS, Mapper.Map<IEnumerable<CustomerWarehouse>, IEnumerable<CustomerWarehouseViewModel>>(result));
+                }
+            }
+            catch
+            {
+                return responseViewModel = ResponseConstructor<CustomerWarehouseViewModel>.ConstructEnumerableData(ResponseCode.ERR_NO_OBJECT_FOUND, Common.ResponseText.ERR_SEARCH_FAIL, null);
+            }
+        }
+
+        public async Task<ResponseViewModel<CustomerWarehouseViewModel>> GetCustomerWarehouseByCode(string code)
+        {
+            ResponseViewModel<CustomerWarehouseViewModel> responseViewModel = new ResponseViewModel<CustomerWarehouseViewModel>();
+            responseViewModel.responseData = null;
+            responseViewModel.responseDatas = null;
+            if (code != null)
+            {
+                var result = await _customerWarehouseRepository.GetAsync(c => c.code.Equals(code), null);
+                if (result == null)
+                    responseViewModel.errorText = Common.ResponseText.ERR_SEARCH_FAIL;
+                responseViewModel.responseData = Mapper.Map<CustomerWarehouse, CustomerWarehouseViewModel>(result);
+            }
+            else
+            {
+                responseViewModel.errorText = Common.ResponseText.ERR_SEARCH_KEYWORD_NULL;
+            }
+            return responseViewModel;
+
+        }
+
+        public async Task<ResponseViewModel<CustomerWarehouseViewModel>> CreateNewCustomerWarehouse(CustomerWarehouseViewModel customerWarehouseView)
+        {
+            ResponseViewModel<CustomerWarehouseViewModel> responseViewModel = new ResponseViewModel<CustomerWarehouseViewModel>();
+            responseViewModel.responseData = null;
+            responseViewModel.responseDatas = null;
+            if (customerWarehouseView != null)
+            {
+                CustomerWarehouse customerWarehouse = Mapper.Map<CustomerWarehouseViewModel, CustomerWarehouse>(customerWarehouseView);
+                if (customerWarehouse != null)
+                {
+                    customerWarehouse.customer = await _customerRepository.GetAsync(cs => cs.code == customerWarehouseView.customer.code && cs.isDelete == false);
+                    customerWarehouse.customerID = customerWarehouse.customer.ID;
+                    customerWarehouse.isDelete = false;
+                    _customerWarehouseRepository.Add(customerWarehouse);
+                    if (await this.SaveChangesAsync())
+                    {
+                        responseViewModel = await this.GetCustomerWarehouseByCode(customerWarehouse.code);
+                        responseViewModel.errorText = Common.ResponseText.ADD_CUSTOMERWAREHOUSE_SUCCESS;
+                    }
+                    else
+                    {
+                        responseViewModel.errorText = Common.ResponseText.ADD_CUSTOMERWAREHOUSE_FAIL;
+                    }
+                }
+                else
+                {
+                    responseViewModel.errorText = Common.ResponseText.ADD_CUSTOMERWAREHOUSE_FAIL;
+                }
+            }
+            else
+            {
+                responseViewModel.errorText = Common.ResponseText.ERR_LACK_INPUT;
+            }
+            return responseViewModel;
+        }
+
+        public async Task<ResponseViewModel<CustomerWarehouseViewModel>> DeleteCustomerWarehouse(CustomerWarehouseViewModel customerWarehouseView)
+        {
+            ResponseViewModel<CustomerWarehouseViewModel> responseViewModel = new ResponseViewModel<CustomerWarehouseViewModel>();
+            if (customerWarehouseView != null)
+            {
+                CustomerWarehouse customerWarehouse = await _customerWarehouseRepository.GetAsync(cs => cs.code.Equals(customerWarehouseView.code));
+                if (customerWarehouse != null)
+                {
+                    customerWarehouse.isDelete = true;
+                    _customerWarehouseRepository.Update(customerWarehouse);
+                    if (await this.SaveChangesAsync())
+                    {
+                        responseViewModel = await this.GetAllCustomerWarehouse();
+                        responseViewModel.errorText = Common.ResponseText.DELETE_CUSTOMERWAREHOUSE_SUCCESS;
+                    }
+                    else
+                    {
+                        responseViewModel.errorText = Common.ResponseText.DELETE_CUSTOMERWAREHOUSE_FAIL;
+                    }
+                }
+                else
+                {
+                    responseViewModel.errorText = Common.ResponseText.DELETE_CUSTOMERWAREHOUSE_FAIL;
+                }
+            }
+            else
+            {
+                responseViewModel.errorText = Common.ResponseText.ERR_LACK_INPUT;
+            }
+            return responseViewModel;
+        }
+
+        public async Task<ResponseViewModel<CustomerWarehouseViewModel>> UpdateCustomerWarehouse(CustomerWarehouseViewModel customerWarehouseView)
+        {
+            ResponseViewModel<CustomerWarehouseViewModel> responseViewModel = new ResponseViewModel<CustomerWarehouseViewModel>();
+            responseViewModel.responseData = null;
+            responseViewModel.responseDatas = null;
+            if (customerWarehouseView != null)
+            {
+                CustomerWarehouse customerWarehouse = Mapper.Map<CustomerWarehouseViewModel, CustomerWarehouse>(customerWarehouseView);
+                if (customerWarehouse != null)
+                {
+                    customerWarehouse.customer = await _customerRepository.GetAsync(cs => cs.code == customerWarehouseView.customer.code && cs.isDelete == false);
+                    customerWarehouse.customerID = customerWarehouse.customer.ID;
+                    _customerWarehouseRepository.Update(customerWarehouse);
+                    if (await this.SaveChangesAsync())
+                    {
+                        responseViewModel = await this.GetCustomerWarehouseByCode(customerWarehouse.code);
+                        responseViewModel.errorText = Common.ResponseText.EDIT_CUSTOMERWAREHOUSE_SUCCESS;
+                    }
+                    else
+                    {
+                        responseViewModel.errorText = Common.ResponseText.EDIT_CUSTOMERWAREHOUSE_FAIL;
+                    }
+                }
+                else
+                {
+                    responseViewModel.errorText = Common.ResponseText.EDIT_CUSTOMERWAREHOUSE_FAIL;
                 }
             }
             else
@@ -3589,7 +3784,7 @@ namespace QWMSServer.Data.Services
             ResponseViewModel<RFIDCardViewModel> responseViewModel = new ResponseViewModel<RFIDCardViewModel>();
             try
             {
-                var result = await _rdifCardRepository.GetManyAsync(c => true, null);
+                var result = await _rdifCardRepository.GetManyAsync(c => true, QueryIncludes.RFIDFULLINCLUDES);
                 responseViewModel.responseDatas = Mapper.Map<IEnumerable<RFIDCard>, IEnumerable<RFIDCardViewModel>>(result);
                 return responseViewModel;
             }
@@ -3607,7 +3802,7 @@ namespace QWMSServer.Data.Services
             responseViewModel.responseDatas = null;
             if (code != null)
             {
-                var result = await _rdifCardRepository.GetManyAsync(c => c.code.Contains(code)  && c.isDelete == false);
+                var result = await _rdifCardRepository.GetManyAsync(c => c.code.Contains(code)  && c.isDelete == false, QueryIncludes.RFIDFULLINCLUDES);
                 if (result.Count() == 0)
                     responseViewModel.errorText = Common.ResponseText.ERR_SEARCH_FAIL;
                 responseViewModel.responseDatas = Mapper.Map<IEnumerable<RFIDCard>, IEnumerable<RFIDCardViewModel>>(result);
@@ -3801,6 +3996,50 @@ namespace QWMSServer.Data.Services
                 responseViewModel.errorText = Common.ResponseText.EDIT_BADGEREADER_FAIL;
             }
             return responseViewModel;
+        }
+
+        public async Task<ResponseViewModel<GenericResponseModel>> AddWeightCode(string code)
+        {
+            ResponseViewModel<GenericResponseModel> responseViewModel = new ResponseViewModel<GenericResponseModel>();
+            var weightRecords = await _weightRecordRepository.GetManyAsync(wt => wt.gatePass.code.Equals(code) && wt.isDelete == false && wt.isSuccess == true);
+            if(weightRecords != null && weightRecords.Count() > 1)
+            {
+                foreach (var weight in weightRecords)
+                {
+                    weight.code = DateTime.Now.ToString("yyMMddHHmmss");
+                    _weightRecordRepository.Update(weight);
+                }
+                if(await this.SaveChangesAsync())
+                {
+                    responseViewModel.booleanResponse = true;
+                }
+                else
+                {
+                    responseViewModel.booleanResponse = false;
+                }
+            }
+            else
+            {
+                responseViewModel.booleanResponse = false;
+            }
+            return responseViewModel;
+        }
+
+        public async Task<ResponseViewModel<UserPC>> GetAllWBPC()
+        {
+            try
+            {
+                var result = await _userPCRepository.GetManyAsync(c => c.Function.Equals(PCFunction.WEIGHT));
+                ResponseViewModel<UserPC> responseViewModel = new ResponseViewModel<UserPC>();
+                responseViewModel.responseDatas = result;
+                return responseViewModel;
+            }
+            catch
+            {
+                ResponseViewModel<UserPC> responseViewModel = new ResponseViewModel<UserPC>();
+                responseViewModel.errorText = Common.ResponseText.ERR_EMPTY_DATABASE;
+                return responseViewModel;
+            }
         }
     }
 }

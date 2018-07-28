@@ -15,5 +15,9 @@ namespace QWMSServer.Model.ViewModels
         public int status { get; set; }
 
         public bool isDelete { get; set; }
+
+        public ICollection<EmployeeViewModel> employees { get; set; }
+
+        public ICollection<GatePassViewModel> gatePasses { get; set; }
     }
 }

@@ -16,16 +16,18 @@ namespace QWMSServer.Model.ViewModels
 
         public string usingStatus { get; set; }
 
-        public DateTime inTime { get; set; }
+        public DateTime? inTime { get; set; }
 
-        public DateTime outTime { get; set; }
+        public DateTime? outTime { get; set; }
 
         public int KPI { get; set; }
 
         public string truckType { get; set; }
 
-        public string progress { get; set; }
+        public int progress { get; set; }
 
         public string plateNumber { get; set; }
+
+        public string loadingBay { get; set; }
     }
 }

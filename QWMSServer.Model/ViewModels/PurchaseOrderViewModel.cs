@@ -14,7 +14,7 @@ namespace QWMSServer.Model.ViewModels
 
         public string poNumber { get; set; }
 
-        public DateTime createDate { get; set; }
+        //public DateTime createDate { get; set; }
 
         public int? carrierVendorID { get; set; }
 

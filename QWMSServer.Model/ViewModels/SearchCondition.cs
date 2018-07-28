@@ -47,5 +47,9 @@ namespace QWMSServer.Model.ViewModels
         public string targetValue { get; set; }
 
         public int driverID { get; set; }
+
+        public string weightCode { get; set; }
+
+        public int carriverVendorID { get; set; }
     }
 }

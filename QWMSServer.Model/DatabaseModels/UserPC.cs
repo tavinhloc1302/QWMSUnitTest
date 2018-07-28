@@ -45,9 +45,19 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("BageReaderActive")]
         public bool BadgeReaderActive { get; set; }
 
+        [Column("SensorActive")]
+        public bool SensorActive { get; set; }
+
+        [Column("BarrierActive")]
+        public bool BarrierActive { get; set; }
+
+        [Column("HazardLightActive")]
+        public bool HazardLightActive { get; set; }
+
         public ICollection<WeighBridge> weighBridges { get; set; }
         public ICollection<BadgeReader> badgeReaders { get; set; }
         public ICollection<Camera> cameras { get; set; }
+        public ICollection<Controller> controllers { get; set; }
 
     }
 }

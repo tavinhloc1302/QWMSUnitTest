@@ -28,6 +28,7 @@ namespace QWMSServer.Data.Services
 		private readonly IAuthService _authService;
         private readonly IQueueService _queueService;
         private readonly IRFIDCardRepository _rFIDCardRepository;
+        private readonly IOrderRepository _orderRepository;
         private readonly IReportService _reportService;
 
         public WeightService(IUnitOfWork unitOfWork, IGatePassRepository gatePassRepository, IQueueListRepository queueListRepository,
@@ -35,7 +36,7 @@ namespace QWMSServer.Data.Services
                             IWeighBridgeRepository weighBridgeRepository, IWeighbridgeConfigurationRepository weighbridgeConfigurationRepository,
         ILaneRepository laneRepository, ICommonService commonService,
 							IAuthService authService, IQueueService queueService,
-                            IRFIDCardRepository rFIDCardRepository, IReportService reportService)
+                            IRFIDCardRepository rFIDCardRepository, IReportService reportService, IOrderRepository orderRepository)
         {
             _unitOfWork = unitOfWork;
             _gatePassRepository = gatePassRepository;
@@ -50,6 +51,7 @@ namespace QWMSServer.Data.Services
             _queueService = queueService;
             _rFIDCardRepository = rFIDCardRepository;
             _reportService = reportService;
+            _orderRepository = orderRepository;
         }
 
         public async Task<bool> SaveChangesAsync()
@@ -68,6 +70,7 @@ namespace QWMSServer.Data.Services
             }
             else
             {
+                Directory.CreateDirectory(Constant.TruckCapturePath);
                 File.WriteAllBytes(filePath, fileContent);
                 response = ResponseConstructor<GenericResponseModel>.ConstructBoolRes(ResponseCode.SUCCESS, true);
             }
@@ -242,7 +245,7 @@ namespace QWMSServer.Data.Services
                 WeightRecord weightRecord = new WeightRecord();
                 Random r = new Random();
                 var weighNum = await _weightRecordRepository.GetManyAsync(wt => wt.gatepassID == weightDataViewModel.gatePassID && wt.isDelete == false);
-                weightRecord.code = r.Next().ToString();
+                weightRecord.code = null;
                 weightRecord.gatepassID = weightDataViewModel.gatePassID;
                 weightRecord.isDelete = false;
                 weightRecord.weighBridgeID = weightDataViewModel.weighBridgeID;
@@ -384,7 +387,7 @@ namespace QWMSServer.Data.Services
             return response;
         }
 
-        public async Task<ResponseViewModel<GatePassViewModel>> GetEmptyGatepass()
+        public async Task<ResponseViewModel<GatePassViewModel>> GetEmptyGatepass(int employeeID)
         {
             ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
             //Search empty gatepass
@@ -405,11 +408,13 @@ namespace QWMSServer.Data.Services
             //If don't have empty gatepass
             //Create empty gatepass
             GatePass emptyGatepass = new GatePass();
-            emptyGatepass.code = "GP." + DateTime.Now.ToString("yyMMddhhmmss", CultureInfo.InvariantCulture);
+            emptyGatepass.code = "GP." + DateTime.Now.ToString("yyMMddHHmmss", CultureInfo.InvariantCulture);
             emptyGatepass.createDate = DateTime.Now;
             emptyGatepass.enterTime = DateTime.Now;
             emptyGatepass.leaveTime = DateTime.Now;
             emptyGatepass.isDelete = true;
+            var emp = _employeeRepository.GetByIdAsync(employeeID);
+            emptyGatepass.employeeID = employeeID;
 
             _gatePassRepository.Add(emptyGatepass);
             await this.SaveChangesAsync();
@@ -449,65 +454,116 @@ namespace QWMSServer.Data.Services
         public async Task<ResponseViewModel<GatePassViewModel>> UpdateGatepass(GatePassViewModel gatepass)
         {
             ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
-            GatePass result = await _gatePassRepository.GetAsync(g => g.code.Equals(gatepass.code), QueryIncludes.GATEPASSFULLINCLUDES);
-            if (result.weightRecords.Count() > 0)
+            try
             {
-                responseViewModel.booleanResponse = false;
-                responseViewModel.errorText = ResponseText.ERR_WEIGHTED_GATEPASS;
+                GatePass result = await _gatePassRepository.GetAsync(g => g.code.Equals(gatepass.code), QueryIncludes.GATEPASSFULLINCLUDES);
+                if (result.weightRecords.Count() > 0)
+                {
+                    responseViewModel.booleanResponse = false;
+                    responseViewModel.errorText = ResponseText.ERR_WEIGHTED_GATEPASS;
+                    return responseViewModel;
+                }
+                //Update gatepass infor
+                if (gatepass.driver != null)
+                    result.driverID = gatepass.driver.ID;
+
+                if (gatepass.truck != null)
+                    result.truckID = gatepass.truck.ID;
+
+                if (gatepass.RFIDCard != null)
+                {
+                    if ((result.RFIDCardID > 0) && (result.RFIDCardID != gatepass.RFIDCard.ID))
+                    {
+                        //Change status for old RFIDCard
+                        var oldRFID = await _rFIDCardRepository.GetAsync(g => g.ID == result.RFIDCardID, null);
+                        if (oldRFID != null)
+                        {
+                            oldRFID.status = 0;
+                            _rFIDCardRepository.Update(oldRFID);
+                            await this.SaveChangesAsync();
+                        }
+
+                    }
+                    //Change status for new RFID Card
+                    result.RFIDCardID = gatepass.RFIDCard.ID;
+                    var newRFID = await _rFIDCardRepository.GetAsync(g => g.ID == result.RFIDCardID, null);
+                    if (newRFID != null)
+                    {
+                        newRFID.status = 1;
+                        _rFIDCardRepository.Update(newRFID);
+                        await this.SaveChangesAsync();
+                    }
+                }
+
+                if (gatepass.weightType != 0)
+                    result.weightType = gatepass.weightType;
+
+                if (gatepass.warehouse != null)
+                    result.warehouseID = gatepass.warehouse.ID;
+
+                if (gatepass.loadingBay != null)
+                    result.loadingBayID = gatepass.loadingBay.ID;
+
+                result.isDelete = false;
+                result.tareWeightValue = gatepass.tareWeightValue;
+                result.netWeightValue = gatepass.netWeightValue;
+                result.registGrossWeight = gatepass.registGrossWeight;
+
+                foreach (var order in result.orders.ToList())
+                {
+                    var torder = await _orderRepository.GetAsync(o => o.ID == order.ID);
+                    //torder.isDelete = true;
+                    torder.gatePassID = null;
+                    torder.gatePass = null;
+                    _orderRepository.Update(torder);
+                }
+
+                foreach (var order in gatepass.orders.ToList())
+                {
+                    if(gatepass.weightType == WeightType.WEIGHT_IN)
+                    {
+                        if(order.orderTypeID == Constant.PURCHASEORDER)
+                        {
+                            var torder = await _orderRepository.GetAsync(o => o.ID == order.ID, QueryIncludes.ORDERSHORTINCUDES);
+                            torder.isDelete = false;
+                            torder.gatePassID = gatepass.ID;
+                            _orderRepository.Update(torder);
+                            result.carrierVendorID = torder.purchaseOrder.carrierVendorID;
+                        }
+                    }else if(gatepass.weightType == WeightType.WEIGHT_OUT)
+                    {
+                        if (order.orderTypeID == Constant.DELIVERYORDER)
+                        {
+                            var torder = await _orderRepository.GetAsync(o => o.ID == order.ID, QueryIncludes.ORDERSHORTINCUDES);
+                            torder.isDelete = false;
+                            torder.gatePassID = gatepass.ID;
+                            _orderRepository.Update(torder);
+                            result.customerID = torder.deliveryOrder.customerID;
+                        }
+                    }
+                    else if (gatepass.weightType == WeightType.WEIGHT_INTERNAL)
+                    {
+                        if (order.orderTypeID == Constant.INTERNALORDER)
+                        {
+                            var torder = await _orderRepository.GetAsync(o => o.ID == order.ID);
+                            torder.isDelete = false;
+                            torder.gatePassID = gatepass.ID;
+                            _orderRepository.Update(torder);
+                        }
+                    }
+                }
+                await this.SaveChangesAsync();
+
+                _gatePassRepository.Update(result);
+                await this.SaveChangesAsync();
+                responseViewModel.booleanResponse = true;
                 return responseViewModel;
             }
-            //Update gatepass infor
-            if (gatepass.driver != null)
-                result.driverID = gatepass.driver.ID;
-
-            if (gatepass.truck != null)
-                result.truckID = gatepass.truck.ID;
-
-            if (gatepass.customer != null)
-                result.customerID = gatepass.customer.ID;
-
-            if (gatepass.RFIDCard != null)
+            catch (Exception ex)
             {
-                if ((result.RFIDCardID > 0)&&(result.RFIDCardID != gatepass.RFIDCard.ID))
-                {
-                    //Change status for old RFIDCard
-                    var oldRFID = await _rFIDCardRepository.GetAsync(g => g.ID == result.RFIDCardID, null);
-                    if (oldRFID != null)
-                    {
-                        oldRFID.status = 0;
-                        _rFIDCardRepository.Update(oldRFID);
-                        await this.SaveChangesAsync();
-                    } 
-
-                }
-                //Change status for new RFID Card
-                result.RFIDCardID = gatepass.RFIDCard.ID;
-                var newRFID = await _rFIDCardRepository.GetAsync(g => g.ID == result.RFIDCardID, null);
-                if (newRFID != null)
-                {
-                    newRFID.status = 1;
-                    _rFIDCardRepository.Update(newRFID);
-                    await this.SaveChangesAsync();
-                }
+                responseViewModel.booleanResponse = false;
+                return responseViewModel;
             }
-                
-
-            if (gatepass.material != null)
-                result.materialID = gatepass.material.ID;
-
-            if (gatepass.weightType != 0)
-                result.weightType = gatepass.weightType;
-
-            if (gatepass.warehouse != null)
-                result.warehouseID = gatepass.warehouse.ID;
-
-            result.isDelete = false;
-            result.tareWeightValue = gatepass.tareWeightValue;
-            result.netWeightValue = gatepass.netWeightValue;
-
-            _gatePassRepository.Update(result);
-            await this.SaveChangesAsync();
-            return responseViewModel;
         }
 
         public async Task<ResponseViewModel<WeighBridge>> GetWB(string WBCode)
@@ -659,6 +715,47 @@ namespace QWMSServer.Data.Services
                 responseViewModel.errorText = Common.ResponseText.ERR_EMPTY_DATABASE;
                 return responseViewModel;
             }
+        }
+
+        public async Task<ResponseViewModel<GatePassViewModel>> UpdateSealNoNPrintGoodGatepass(GatePassViewModel gatepass)
+        {
+            ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
+            GatePass result = await _gatePassRepository.GetAsync(g => g.code.Equals(gatepass.code), QueryIncludes.GATEPASSFULLINCLUDES);
+            //if (result.weightRecords.Count() > 0)
+            //{
+            //    responseViewModel.errorCode = ResponseCode.ERR_WEIGHTED_GATEPASS;
+            //    responseViewModel.errorText = ResponseText.ERR_WEIGHTED_GATEPASS;
+            //    return responseViewModel;
+            //}
+            //Update gatepass infor
+            result.printGoods = gatepass.printGoods;
+            result.sealNo = gatepass.sealNo;
+
+            _gatePassRepository.Update(result);
+            await this.SaveChangesAsync();
+            responseViewModel.errorCode = ResponseCode.SUCCESS;
+            return responseViewModel;
+        }
+
+        public async Task<ResponseViewModel<GatePassViewModel>> UpdateGatePassWeightValue(GatePassViewModel gatepass)
+        {
+            ResponseViewModel<GatePassViewModel> responseViewModel = new ResponseViewModel<GatePassViewModel>();
+            GatePass result = await _gatePassRepository.GetAsync(g => g.code.Equals(gatepass.code), QueryIncludes.GATEPASSFULLINCLUDES);
+            //if (result.weightRecords.Count() > 0)
+            //{
+            //    responseViewModel.errorCode = ResponseCode.ERR_WEIGHTED_GATEPASS;
+            //    responseViewModel.errorText = ResponseText.ERR_WEIGHTED_GATEPASS;
+            //    return responseViewModel;
+            //}
+            //Update gatepass infor
+            result.tareWeightValue = gatepass.tareWeightValue;
+            result.registNetWeight = gatepass.registNetWeight;
+            result.registGrossWeight = gatepass.registGrossWeight;
+
+            _gatePassRepository.Update(result);
+            await this.SaveChangesAsync();
+            responseViewModel.errorCode = ResponseCode.SUCCESS;
+            return responseViewModel;
         }
     }
 }

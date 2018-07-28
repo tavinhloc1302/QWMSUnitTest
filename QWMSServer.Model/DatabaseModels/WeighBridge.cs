@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -23,6 +24,9 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("Name")]
         public string Name { get; set; }
 
+        [Column("Description")]
+        public string Description { get; set; }
+
         [Column("Location")]
         public string Location { get; set; }
 
@@ -43,5 +47,14 @@ namespace QWMSServer.Model.DatabaseModels
 
         [ForeignKey("UserPCID")]
         public UserPC userPC { get; set; }
+
+        [NotMapped]
+        public int status { get; set; }
+
+        [NotMapped]
+        public float weight { get; set; }
+
+        [NotMapped]
+        public DateTime updateTime { get; set; }
     }
 }

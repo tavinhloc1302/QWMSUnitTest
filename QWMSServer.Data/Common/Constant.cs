@@ -10,10 +10,11 @@ namespace QWMSServer.Data.Common
     public static class Constant
     {
         public static string tmpDirectory = System.IO.Path.GetTempPath();
-        public static string DriverCapturePath = tmpDirectory + "/DriverCapturePath/";
-        public static string TruckCapturePath = tmpDirectory + "/TruckCapturePath/";
+        public static string DriverCapturePath = tmpDirectory + @"DriverCapturePath\";
+        public static string TruckCapturePath = tmpDirectory + @"TruckCapturePath\";
         public static int DELIVERYORDER = 1;
         public static int PURCHASEORDER = 2;
+        public static int INTERNALORDER = 3;
 
         public static int TRUCK = 1;
         public static int CONTAINER = 2;
@@ -23,7 +24,7 @@ namespace QWMSServer.Data.Common
         public static int TRUCKGROUP2X = 2;
         public static int TRUCKGROUP3X = 3;
 
-        public static int NULLLANE = 1; // change
+        public static int NULLLANE = 1; // OK
         public static string TRUCK_INTERNAL = "Nội bộ";
         public static string TRASH_CAR = "Xe rác";
 
@@ -38,7 +39,8 @@ namespace QWMSServer.Data.Common
         public static List<String> DRIVERFULLINCLUDES = new List<string> { "carrierVendor" };
         public static List<String> MATERIALFULLINCLUDES = new List<string> { "unit" };
         public static List<String> CUSTOMERFULLINCUDES = new List<string> { "customerWarehouses" };
-        public static List<String> GATEPASSFULLINCLUDES = new List<string> { "printEmployee", "truck.truckType", "Driver", "State", "Employee", "orders.DeliveryOrder.customer", "queueLists.Lane.LoadingBay.Warehouse.Plant.Company", "truckGroup", "Truck.CarrierVendor", "orders.orderMaterials.material.unit", "orders.orderType", "orders.purchaseOrder.carrierVendor", "weightRecords", "customer", "warehouse", "material", "RFIDCard"};
+        public static List<String> CUSTOMERWAREHOUSEFULLINCUDES = new List<string> { "customer" };
+        public static List<String> GATEPASSFULLINCLUDES = new List<string> { "loadingBay", "printEmployee", "truck.truckType", "Driver", "State", "Employee", "orders.DeliveryOrder.customer", "queueLists.Lane.LoadingBay.Warehouse.Plant.Company", "truckGroup", "Truck.CarrierVendor", "orders.orderMaterials.material.unit", "orders.orderType", "orders.purchaseOrder.carrierVendor", "weightRecords", "customer", "warehouse", "material", "RFIDCard"};
         public static List<String> QUEUELISTFULLINCLUDES = new List<string> { "truck", "lane", "gatePass", "gatePass.state" };
         public static List<String> USERFULLINCLUDES = new List<string> { "employee", "employee.employeeGroup.functionMaps.systemFunction", "employee.rfidCard", "userPasswords" }; //employees.groupMaps.employeeGroup.functionMaps.systemFunction
         public static List<String> EMPLOYEEFULLINCLUDES = new List<string> { "employeeGroup", "employeeGroup.functionMaps.systemFunction", "rfidCard", "users" }; //groupMaps.employeeGroup.functionMaps.systemFunction
@@ -49,23 +51,28 @@ namespace QWMSServer.Data.Common
         public static List<String> WAREHOUSEINCLUDES = new List<string> { "plant", "loadingBays" };
         public static List<String> LOADINGBAYINCLUDES = new List<string> { "warehouse", "lanes" };
         public static List<String> LANEINCLUDES = new List<string> { "loadingBay", "loadingType", "truckType", "loadingBay.warehouse" };
-        public static List<String> ORDERFULLINCUDES = new List<string> { "orderType", "deliveryOrder", "purchaseOrder", "orderMaterials" };
+        public static List<String> ORDERFULLINCUDES = new List<string> { "gatePass.weightRecords", "orderType", "deliveryOrder.customer", "deliveryOrder.customerWarehouse", "purchaseOrder.carrierVendor", "orderMaterials.material.unit" };
         public static List<String> DOINCLUDES = new List<String> { "customerWarehouse", "customer", "carrierVendor", "deliveryOrderType", "order.plant", "saleOrder" };
         public static List<String> WBINCLUDES = new List<string> { "WBConfiguration" };
-        public static List<String> PCFULLINCLUDES = new List<string> { "weighBridges", "badgeReaders", "cameras" };
+        public static List<String> PCFULLINCLUDES = new List<string> { "weighBridges", "weighBridges.WBConfiguration", "badgeReaders", "cameras", "controllers", "controllers.valueSensors", "controllers.statusSensors", "controllers.openBarriers", "controllers.closeBarriers", "controllers.hazardLights" };
 
         // Security App
         public static List<String> SECURITY_QUEUE_INCLUDES = new List<string> { "Lane.LoadingBay.Warehouse", "GatePass.orders.OrderType", "GatePass.Truck.TruckType", "GatePass.State", "GatePass.TruckGroup", "GatePass.RFIDCard", "GatePass.orders.deliveryOrder.customer", "GatePass.orders.purchaseOrder.carrierVendor", "GatePass.RFIDCard" };
-        public static List<String> SECURITY_GATEPASS_INCLUDES = new List<string> { "queueLists", "Driver", "Truck", "TruckGroup", "Truck.TruckType","orders.orderType", "orders.deliveryOrder.Customer", "orders.PurchaseOrder.carrierVendor", "RFIDCard", "queueLists.Lane.LoadingBay.Warehouse", "State", "material", "warehouse", "customer", "weightRecords" };
+        public static List<String> SECURITY_GATEPASS_INCLUDES = new List<string> { "queueLists", "Driver", "Truck", "TruckGroup", "Truck.TruckType","orders.orderType", "orders.orderMaterials", "orders.deliveryOrder.Customer", "orders.PurchaseOrder.carrierVendor", "RFIDCard", "queueLists.Lane.LoadingBay.Warehouse", "State", "material", "warehouse", "customer", "weightRecords" };
 
         // Queue App
         public static List<String> QUEUE_GATEPASS_ORDER_INCLUDES = new List<string> { "orders" };
 
         // Weight App
         public static List<String> WEIGHT_LANE_INCLUDES = new List<string> { "truckType", "loadingBay.warehouse" };
-        public static List<String> WEIGHT_RECORD_INCLUDES = new List<string> { "employee", "weighBridge", "gatePass.customer", "gatePass.material", "gatePass.truck", "gatePass.Driver" };
+        public static List<String> WEIGHT_RECORD_INCLUDES = new List<string> { "employee", "weighBridge", "gatePass.truck", "gatePass.Driver", "gatePass.orders.orderMaterials", "gatePass.orders.deliveryOrder.customer", "gatePass.orders.purchaseOrder.carrierVendor" }; //, "gatePass.customer", "gatePass.material"
 
         public static List<String> ACCESSLOGFULLINCLUDES = new List<String> { "employee" };
+
+        public static List<String> RFIDFULLINCLUDES = new List<String> { "employees", "gatePasses" };
+
+        public static List<String> ORDERSHORTINCUDES = new List<string> { "deliveryOrder.customer", "purchaseOrder.carrierVendor"};
+
     }
 
     public static class ResponseCode
@@ -99,11 +106,21 @@ namespace QWMSServer.Data.Common
 		public const int ERR_NO_OBJECT_FOUND = 3008;
         public const int ERR_DB_FAIL_TO_SAVE = 3009;
         public const int ERR_WEI_NOT_FOUND_EMPTY_GATEPASS = 3010;
+        public const int ERR_WEIGHTED_GATEPASS = 3011;
 
         // Error Login
         public const int ERR_LOGIN_WRONG_USERNAME_PASS = 4001;
         public const int ERR_PASS_DUPLICATE = 4002;
         public const int PASSWORD_CHANGE_REQUIRE = 4003;
+
+        // Error Import DO, PO
+        public const int ERR_IMPORT_CREATE_SO_FAIL = 5001;
+        public const int ERR_IMPORT_DATA_NOT_SYNC = 5002;
+        public const int ERR_IMPORT_DATA_HAVED_IN_DB = 5003;
+        public const int ERR_IMPORT_DONT_HAVE_MATERIAL_IN_DB = 5004;
+        public const int ERR_IMPORT_DONT_HAVE_VENDOR_IN_DB = 5005;
+        public const int ERR_IMPORT_DONT_HAVE_PLANT_IN_DB = 5006;
+        public const int ERR_IMPORT_EXCEPTION = 5007;
     }
 
     public static class ResponseText
@@ -165,6 +182,13 @@ namespace QWMSServer.Data.Common
         public const string EDIT_CUSTOMER_FAIL = "Sửa khách hàng\r\nthất bại";
         public const string DELETE_CUSTOMER_SUCCESS = "Xóa khách hàng\r\nthành công";
         public const string DELETE_CUSTOMER_FAIL = "Xóa khách hàng\r\nthất bại";
+
+        public const string ADD_CUSTOMERWAREHOUSE_SUCCESS = "Thêm kho khách hàng\r\nthành công";
+        public const string ADD_CUSTOMERWAREHOUSE_FAIL = "Thêm kho khách hàng\r\nthất bại";
+        public const string EDIT_CUSTOMERWAREHOUSE_SUCCESS = "Sửa kho khách hàng\r\nthành công";
+        public const string EDIT_CUSTOMERWAREHOUSE_FAIL = "Sửa kho khách hàng\r\nthất bại";
+        public const string DELETE_CUSTOMERWAREHOUSE_SUCCESS = "Xóa kho khách hàng\r\nthành công";
+        public const string DELETE_CUSTOMERWAREHOUSE_FAIL = "Xóa kho khách hàng\r\nthất bại";
 
         public const string ADD_DRIVER_SUCCESS = "Thêm tài xế\r\nthành công";
         public const string ADD_DRIVER_FAIL = "Thêm tài xế\r\nthất bại";
@@ -361,6 +385,15 @@ namespace QWMSServer.Data.Common
         public const string ERR_CONFIG_WB_TIMES_OVER_20 = "Số cấu hình tùy chỉnh\r\nđược vượt quá 20";
         public const string ERR_CONFIG_WB_NAME_NULL = "Tên cấu hình\r\nkhông được trống";
         public const string ERR_CONFIG_WB_DONT_CHANGE_DEFAULT = "Không lưu thay đổi\r\ncấu hình mặc định";
+
+        // Error Import DO, PO
+        public const string ERR_IMPORT_CREATE_SO_FAIL = "Tạo Sale Order\r\nthất bại";
+        public const string ERR_IMPORT_DATA_NOT_SYNC = "Dữ liệu\r\nkhông đồng bộ";
+        public const string ERR_IMPORT_DATA_HAVED_IN_DB = "Dữ liệu đã có\r\ntrong database";
+        public const string ERR_IMPORT_DONT_HAVE_MATERIAL_IN_DB = "Không có hàng\r\ntrong database";
+        public const string ERR_IMPORT_DONT_HAVE_VENDOR_IN_DB = "Không có nhà cung cấp\r\ntrong database";
+        public const string ERR_IMPORT_DONT_HAVE_PLANT_IN_DB = "Không có nhà máy\r\ntrong database";
+        public const string ERR_IMPORT_EXCEPTION = "Lỗi chưa xác định";
     }
 
     public static class GatepassState
@@ -566,5 +599,11 @@ namespace QWMSServer.Data.Common
         public const string PASS_IS_INCLUDE_UPPERCASE = "PASS_IS_INCLUDE_UPPERCASE";
         public const string PASS_IS_INCLUDE_NUMBER = "PASS_IS_INCLUDE_NUMBER";
         public const string PASS_IS_INCLUDE_SPEC_CHAR = "PASS_IS_INCLUDE_SPEC_CHAR";
+    }
+
+    public static class PCFunction
+    {
+        public const string WEIGHT = "Weight";
+
     }
 }

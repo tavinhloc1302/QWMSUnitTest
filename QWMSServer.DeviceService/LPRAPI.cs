@@ -47,11 +47,15 @@ namespace QWMSServer.DeviceService
             int count, imgSize, numberSize;
 
             srcImg = Image.FromStream(new MemoryStream(buff));
+
+            // Recognize
             string orgIIS = System.IO.Directory.GetCurrentDirectory();
             Directory.SetCurrentDirectory(_webPath);
             ptrInstance = CreateGVCLPRInstance(PLR_LICENSE_FILE);
             ptrResult = Recognize(ptrInstance, buff, buff.Count(), srcImg.Width, srcImg.Height);
             Directory.SetCurrentDirectory(orgIIS);
+
+            // Get number result
             count = GetNumberOfImage(ptrResult);
 
             if (count <= 0)
