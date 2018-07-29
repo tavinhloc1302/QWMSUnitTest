@@ -46,6 +46,7 @@ namespace QWMSServer.Tests.ServiceTest
         private readonly PurchaseOrderRepositoryTest _purchaseOrderRepository;
         private readonly PurchaseOrderTypeRepositoryTest _purchaseOrderTypeRepository;
         private readonly PlantRepositoryTest _plantRepository;
+        private readonly OrderTypeRepositoryTest _orderTypeRepository;
 
         private readonly QueueService _queueService;
 
@@ -72,7 +73,7 @@ namespace QWMSServer.Tests.ServiceTest
             _orderMaterialRepository = new OrderMaterialRepositoryTest();
             _materialRepository = new MaterialRepositoryTest();
             _driverRepository = new DriverRepositoryTest();
-            //_unitTypeRepository = new UnitTypeRepositoryTest();
+            _orderTypeRepository = new OrderTypeRepositoryTest();
             _loadingBayRepository = new LoadingBayRepositoryTest();
             //_commonService = new CommonServiceTest();
             //_purchaseOrderRepository = new PurchaseOrderRepositoryTest();
@@ -87,7 +88,7 @@ namespace QWMSServer.Tests.ServiceTest
                _orderMaterialRepository, _materialRepository, _driverRepository,
                _unitTypeRepository, _loadingBayRepository, _commonService,
                _purchaseOrderRepository, _purchaseOrderTypeRepository,
-               _plantRepository
+               _plantRepository, _orderTypeRepository
             );
         }
 
@@ -691,7 +692,7 @@ namespace QWMSServer.Tests.ServiceTest
                     dOItemCode = "DOITEM1111",
                     materialCode = "MAR1111",
                     materialName = "Mar 1111",
-                    quanlity = "11",
+                    quanlity = 11,
                     unit = "piece",
                     sOCode = "SO Number 1",
                     customerCode = "CUS1111",
@@ -1100,7 +1101,7 @@ namespace QWMSServer.Tests.ServiceTest
                     pOItemCode = "item 1111",
                     materialCode = "MAR1111",
                     materialName = "Mar 1111",
-                    quanlity = "11",
+                    quanlity = 11,
                     unit = "piece",
                     vendorCode = "VEN1111",
                     vendorName = "Ven 1111",

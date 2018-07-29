@@ -5,8 +5,8 @@ using QWMSServer.Data.Repository;
 using QWMSServer.Data.Services;
 using QWMSServer.Model.ViewModels;
 using QWMSServer.Tests.Dummy;
+
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace QWMSServer.Tests.ServiceTest
@@ -32,6 +32,21 @@ namespace QWMSServer.Tests.ServiceTest
         private readonly IWarehouseRepository _warehouseRepository;
         private readonly ILoadingBayRepository _loadingBayRepository;
         private readonly ILaneRepository _laneRepository;
+        private readonly IRFIDCardRepository _rdifCardRepository;
+        private readonly ICameraRepository _cameraRepository;
+        private readonly IConstrainRepository _constrainRepository;
+        private readonly IDeliveryOrderRepository _doRepository;
+        private readonly ICustomerWarehouseRepository _customerWarehouseRepository;
+        private readonly ISaleOrderRepository _saleOrderRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IWeighBridgeRepository _weighBridgeRepository;
+        private readonly IPrintHeaderRepository _printHeaderRepository;
+        private readonly IUserPasswordRepository _userPasswordRepository;
+        private readonly ISystemFunctionRepository _systemFunctionRepository;
+        private readonly IEmployeeGroup_SystemFunctionRepository _employeeGroup_SystemFunctionRepository;
+        private readonly IUserPCRepository _userPCRepository;
+        private readonly IBadgeReaderRepository _badgeReaderRepository;
+
         private readonly AdminService _adminService;
 
         public AdminServiceTest()
@@ -57,12 +72,29 @@ namespace QWMSServer.Tests.ServiceTest
             _laneRepository = new LaneRepositoryTest();
             _employeeRoleRepository = new EmployeeRoleRepositoryTest();
             _truckTypeRepository = new TruckTypeRepositoryTest();
+            _rdifCardRepository = new RFIDCardRepositoryTest();
+            _cameraRepository = new CameraRepositoryTest();
+            _constrainRepository = new ConstrainRepositoryTest();
+            _doRepository = new DeliveryOrderRepositoryTest();
+            _customerWarehouseRepository = new CustomerWarehouseRepositoryTest();
+            _saleOrderRepository = new SaleOrderRepositoryTest();
+            _orderRepository = new OrderRepositoryTest();
+            _weighBridgeRepository = new WeighBridgeRepositoryTest();
+            _printHeaderRepository = new PrintHeaderRepositoryTest();
+            _userPasswordRepository = new UserPasswordRepositoryTest();
+            _systemFunctionRepository = new SystemFunctionRepositoryTest();
+            _employeeGroup_SystemFunctionRepository = new EmployeeGroup_SystemFunctionRepositoryTest();
+            _userPCRepository = new UserPCRepositoryTest();
+            _badgeReaderRepository = new BadgeReaderRepositoryTest();
 
             _adminService = new AdminService(
                 _unitOfWork, _customerRepository, _driverRepository, _carrierRepository, _userRepository,
                 _materialRepository, _unittypeRepository, _truckRepository, _truckTypeRepository, _loadingTypeRepository,
                 _employeeRepository, _employeeGroupRepository, _employeeRoleRepository, _plantRepository,
-                _companyRepository, _warehouseRepository, _loadingBayRepository, _laneRepository);
+                _companyRepository, _warehouseRepository, _loadingBayRepository, _laneRepository, _rdifCardRepository, 
+                _cameraRepository, _constrainRepository, _doRepository, _customerWarehouseRepository, _saleOrderRepository,
+                _orderRepository, _weighBridgeRepository, _printHeaderRepository, _userPasswordRepository, _systemFunctionRepository,
+                _employeeGroup_SystemFunctionRepository, _userPCRepository, _badgeReaderRepository);
         }
 
         [TestMethod]
@@ -1878,6 +1910,20 @@ namespace QWMSServer.Tests.ServiceTest
         }
 
         [TestMethod]
+        public async Task GetUserByEmployeeID()
+        {
+            var actualResult = await _adminService.GetUserByEmployeeID(1);
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task GetUserByEmployeeID_WrongID()
+        {
+            var actualResult = await _adminService.GetUserByEmployeeID(0);
+            Assert.IsNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
         public async Task TestMethod_SearchUser()
         {
             UserRepositoryTest.FLAG_GET_ASYNC = 1;
@@ -3077,6 +3123,22 @@ namespace QWMSServer.Tests.ServiceTest
         {
             var actualResult = await _adminService.DeleteLane(null);
             Assert.IsNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateUserName()
+        {
+            var actualResult = await _adminService.CreateUserName("testUser");
+            Assert.AreEqual("testUser", actualResult);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateUserName_ShouldBeEmptied()
+        {
+            UserRepositoryTest.FLAG_DELETE = 3; // No Delete
+            UserRepositoryTest.FLAG_GET_ASYNC = 0; // Cannot get => Simulate no record found
+            var actualResult = await _adminService.CreateUserName("shouldBeEmptied");
+            Assert.AreEqual(String.Empty, actualResult);
         }
     }
 }

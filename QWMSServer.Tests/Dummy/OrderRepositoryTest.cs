@@ -27,7 +27,6 @@ namespace QWMSServer.Tests.Dummy
                 code = "1234",
                 orderTypeID = DataRecords.ORDER_TYPE_DELIVERY.ID,
                 orderType = DataRecords.ORDER_TYPE_DELIVERY,
-                grossWeight = 10,
                 gatePassID = DataRecords.GATE_PASS_NORMAL.ID,
                 gatePass = DataRecords.GATE_PASS_NORMAL,
                 plantID = null,

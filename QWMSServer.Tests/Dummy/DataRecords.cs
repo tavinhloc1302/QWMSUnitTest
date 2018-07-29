@@ -61,10 +61,7 @@ namespace QWMSServer.Tests.Dummy
         public static User USER_NORMAL_1 = new User()
         {
             Code = "0123",
-            employees = new List<Employee>() {
-                        EMPLOYEE_NORMAL,
-                        EMPLOYEE_DELETED
-                    },
+            employee = EMPLOYEE_NORMAL,
             password = "password",
             username = "skyrider1",
             ID = 1,
@@ -73,7 +70,7 @@ namespace QWMSServer.Tests.Dummy
         public static User USER_NORMAL_2 = new User()
         {
             Code = "3210",
-            employees = new List<Employee>(),
+            employee = EMPLOYEE_NORMAL,
             password = "password",
             username = "skyrider2",
             ID = 2,
@@ -227,9 +224,9 @@ namespace QWMSServer.Tests.Dummy
         { code = "3456", ID = 3, isDelete = true, status = 1 };
 
         public static Employee EMPLOYEE_NORMAL = new Employee()
-        { ID = 1, code = "0123", isDelete = false, firstName = "Van Hoang", lastName = "Dinh", rfidCard = RFID_CARD_NORMAL, RFIDCardID = RFID_CARD_NORMAL.ID, userID = null, user = null, };
+        { ID = 1, code = "0123", isDelete = false, firstName = "Van Hoang", lastName = "Dinh", rfidCard = RFID_CARD_NORMAL, RFIDCardID = RFID_CARD_NORMAL.ID, users = null };
         public static Employee EMPLOYEE_DELETED = new Employee()
-        { ID = 1, code = "1234", isDelete = true, firstName = "Van Dang", lastName = "Huynh", rfidCard = RFID_CARD_NORMAL, RFIDCardID = RFID_CARD_NORMAL.ID, userID = null, user = null, };
+        { ID = 1, code = "1234", isDelete = true, firstName = "Van Dang", lastName = "Huynh", rfidCard = RFID_CARD_NORMAL, RFIDCardID = RFID_CARD_NORMAL.ID, users = null, };
 
         public static LoadingType LOADING_TYPE_NORMAL = new LoadingType()
         { ID = 1, code = "1111", description = "1111 Desc", isDelete = false };
@@ -280,13 +277,13 @@ namespace QWMSServer.Tests.Dummy
         { ID = OrderTypeConst.OTHERSORDER, code = "OTHER", description = "Other", isDelete = false };
 
         public static Order ORDER_NORMAL_DELI = new Order()
-        { ID = 1, code = "1234", orderTypeID = ORDER_TYPE_DELIVERY.ID, orderType = ORDER_TYPE_DELIVERY, grossWeight = 10, gatePassID = GATE_PASS_NORMAL.ID, gatePass = GATE_PASS_NORMAL, plantID = null, plant = null, doID = null, deliveryOrder = null, poID = null, purchaseOrder = null, isDelete = false, };
+        { ID = 1, code = "1234", orderTypeID = ORDER_TYPE_DELIVERY.ID, orderType = ORDER_TYPE_DELIVERY, registGrossWeight = 10, gatePassID = GATE_PASS_NORMAL.ID, gatePass = GATE_PASS_NORMAL, plantID = null, plant = null, doID = null, deliveryOrder = null, poID = null, purchaseOrder = null, isDelete = false, };
         public static Order ORDER_NORMAL_PURCHASE = new Order()
-        { ID = 2, code = "2345", orderTypeID = ORDER_TYPE_PURCHASE.ID, orderType = ORDER_TYPE_PURCHASE, grossWeight = 20, gatePassID = GATE_PASS_NORMAL.ID, gatePass = GATE_PASS_NORMAL, plantID = null, plant = null, doID = null, deliveryOrder = null, poID = null, purchaseOrder = null, isDelete = false, };
+        { ID = 2, code = "2345", orderTypeID = ORDER_TYPE_PURCHASE.ID, orderType = ORDER_TYPE_PURCHASE, registGrossWeight = 20, gatePassID = GATE_PASS_NORMAL.ID, gatePass = GATE_PASS_NORMAL, plantID = null, plant = null, doID = null, deliveryOrder = null, poID = null, purchaseOrder = null, isDelete = false, };
         public static Order ORDER_NORMAL_TYPE_OTHER = new Order()
-        { ID = 3, code = "3456", orderTypeID = ORDER_TYPE_OTHER.ID, orderType = ORDER_TYPE_OTHER, grossWeight = 30, gatePassID = GATE_PASS_NORMAL.ID, gatePass = GATE_PASS_NORMAL, plantID = null, plant = null, doID = null, deliveryOrder = null, poID = null, purchaseOrder = null, isDelete = false, };
+        { ID = 3, code = "3456", orderTypeID = ORDER_TYPE_OTHER.ID, orderType = ORDER_TYPE_OTHER, registGrossWeight = 30, gatePassID = GATE_PASS_NORMAL.ID, gatePass = GATE_PASS_NORMAL, plantID = null, plant = null, doID = null, deliveryOrder = null, poID = null, purchaseOrder = null, isDelete = false, };
         public static Order ORDER_NORMAL_INTERNAL= new Order()
-        { ID = 4, code = "4567", orderTypeID = ORDER_TYPE_INTERNAL.ID, orderType = ORDER_TYPE_INTERNAL, grossWeight = 40, gatePassID = GATE_PASS_NORMAL.ID, gatePass = GATE_PASS_NORMAL, plantID = null, plant = null, doID = null, deliveryOrder = null, poID = null, purchaseOrder = null, isDelete = false, };
+        { ID = 4, code = "4567", orderTypeID = ORDER_TYPE_INTERNAL.ID, orderType = ORDER_TYPE_INTERNAL, registGrossWeight = 40, gatePassID = GATE_PASS_NORMAL.ID, gatePass = GATE_PASS_NORMAL, plantID = null, plant = null, doID = null, deliveryOrder = null, poID = null, purchaseOrder = null, isDelete = false, };
 
         public static Customer CUSTOMER_NORMAL = new Customer()
         { ID = 1, code = "1111", nameVi = "KH 1", nameEn = "Cus 1", shortName = "K 1", invoiceAddressVi = "Ho Chi Minh", invoiceAddressEn = "HCMC", taxCode = "Tax 1", contactPerson = "Contact 1", telNo = "0908832000", faxNo = "11111111", email = "cus1@yopmail.com", isDelete = false };

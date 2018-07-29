@@ -97,13 +97,18 @@
     <Reference Include="System.Net.Http.WebRequest" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dummy\BadgeReaderRepositoryTest.cs" />
+    <Compile Include="Dummy\CameraRepositoryTest.cs" />
     <Compile Include="Dummy\CarrierVendorRepositoryTest.cs" />
     <Compile Include="Dummy\CompanyRepositoryTest.cs" />
+    <Compile Include="Dummy\ConstrainRepositoryTest.cs" />
     <Compile Include="Dummy\CustomerWarehouseRepositoryTest.cs" />
     <Compile Include="Dummy\CustomerRepositoryTest.cs" />
     <Compile Include="Dummy\DataRecords.cs" />
     <Compile Include="Dummy\DeliveryOrderTypeRepositoryTest.cs" />
+    <Compile Include="Dummy\EmployeeGroup_SystemFunctionRepositoryTest.cs" />
     <Compile Include="Dummy\OrderMaterialRepositoryTest.cs" />
+    <Compile Include="Dummy\PrintHeaderRepositoryTest.cs" />
     <Compile Include="Dummy\PurchaseOrderTypeRepositoryTest.cs" />
     <Compile Include="Dummy\PurchaseOrderRepositoryTest.cs" />
     <Compile Include="Dummy\SaleOrderRepositoryTest.cs" />
@@ -124,14 +129,18 @@
     <Compile Include="Dummy\RFIDCardRepositoryTest.cs" />
     <Compile Include="Dummy\StateRecordRepositoryTest.cs" />
     <Compile Include="Dummy\StateRepositoryTest.cs" />
+    <Compile Include="Dummy\SystemFunctionRepositoryTest.cs" />
     <Compile Include="Dummy\TokenRepositoryTest.cs" />
     <Compile Include="Dummy\TruckRepositoryTest.cs" />
     <Compile Include="Dummy\LoadingTypeRepositoryTest.cs" />
     <Compile Include="Dummy\TruckTypeRepositoryTest.cs" />
     <Compile Include="Dummy\UnitOfWorkTest.cs" />
     <Compile Include="Dummy\UnitTypeRepositoryTest.cs" />
+    <Compile Include="Dummy\UserPasswordRepositoryTest.cs" />
+    <Compile Include="Dummy\UserPCRepositoryTest.cs" />
     <Compile Include="Dummy\UserRepositoryTest.cs" />
     <Compile Include="Dummy\WarehouseRepositoryTest.cs" />
+    <Compile Include="Dummy\WeighBridgeRepositoryTest.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceTest\AdminServiceTest.cs" />

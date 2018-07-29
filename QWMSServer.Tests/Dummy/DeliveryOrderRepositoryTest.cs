@@ -23,9 +23,7 @@ namespace QWMSServer.Tests.Dummy
             {
                 ID = 1,
                 code = "1111",
-                doNumber = "DO Number 1",
-                createDate = DateTime.Now,
-                soNumber = "SO Number 1",
+                createDate = DateTime.Now,                
                 customerID = DataRecords.CUSTOMER_NORMAL.ID,
                 customer = DataRecords.CUSTOMER_NORMAL,
                 carrierVendorID = DataRecords.CARRIER_VENDOR_NORMAL.ID,
@@ -50,7 +48,6 @@ namespace QWMSServer.Tests.Dummy
                     sampleObject.isDelete = true;
                     break;
                 case 11:
-                    sampleObject.soNumber = "__!@#__";
                     break;
                 default:
                     throw new InvalidOperationException();
