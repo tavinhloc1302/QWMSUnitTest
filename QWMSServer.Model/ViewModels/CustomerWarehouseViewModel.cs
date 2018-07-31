@@ -10,6 +10,8 @@ namespace QWMSServer.Model.ViewModels
     {
         public int ID { get; set; }
 
+        public string code { get; set; }
+
         public string deliveryCode { get; set; }
 
         public string warehouseName { get; set; }

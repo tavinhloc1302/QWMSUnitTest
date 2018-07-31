@@ -16,7 +16,6 @@ namespace QWMSServer.Model.DatabaseModels
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
-        [Index(IsUnique = true)]
         [StringLength(50)]
         [Column("code")]
         public string code { get; set; }
@@ -27,6 +26,9 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("materialID")]
         public int? materialID { get; set; }
 
+        [Column("fMaterialName")]
+        public string fMaterialName { get; set; }
+
         [Column("QCQuantity")]
         public int? QCQuantity { get; set; }
 
@@ -36,8 +38,11 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("registQuantity")]
         public int? registQuantity { get; set; }
 
-        //[Column("theoryGrossWeight")]
-        //public float theoryGrossWeight { get; set; }
+        [Column("registGrossWeight")]
+        public float? registGrossWeight { get; set; }
+
+        [Column("registNetWeight")]
+        public float? registNetWeight { get; set; }
 
         [Column("isDelete")]
         public bool isDelete { get; set; }

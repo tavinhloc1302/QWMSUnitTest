@@ -85,6 +85,7 @@
     <Compile Include="DatabaseModels\Company.cs" />
     <Compile Include="DatabaseModels\COMPort.cs" />
     <Compile Include="DatabaseModels\Constrain.cs" />
+    <Compile Include="DatabaseModels\Controller.cs" />
     <Compile Include="DatabaseModels\Customer.cs" />
     <Compile Include="DatabaseModels\CustomerWarehouse.cs" />
     <Compile Include="DatabaseModels\DeliveryOrder.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="DatabaseModels\EmployeeRole.cs" />
     <Compile Include="DatabaseModels\Employee_EmployeeGroup.cs" />
     <Compile Include="DatabaseModels\GatePass.cs" />
+    <Compile Include="DatabaseModels\HazardLight.cs" />
     <Compile Include="DatabaseModels\Lane.cs" />
     <Compile Include="DatabaseModels\LaneType.cs" />
     <Compile Include="DatabaseModels\LoadingBay.cs" />
@@ -158,6 +160,7 @@
     <Compile Include="ViewModels\ReportViewModel.cs" />
     <Compile Include="ViewModels\SaleOrderViewModel.cs" />
     <Compile Include="ViewModels\SearchCondition.cs" />
+    <Compile Include="ViewModels\UIDViewModel.cs" />
     <Compile Include="ViewModels\UpdateLaneStatusViewModel.cs" />
     <Compile Include="ViewModels\LaneMgntViewModel.cs" />
     <Compile Include="ViewModels\LaneViewModel.cs" />
@@ -178,7 +181,7 @@
     <Compile Include="ViewModels\SecurityUpdateStateViewModel.cs" />
     <Compile Include="ViewModels\StateViewModel.cs" />
     <Compile Include="ViewModels\SystemFunctionViewModel.cs" />
-    <Compile Include="ViewModels\QCWeighValueModel.cs" />
+    <Compile Include="ViewModels\WarehouseCheckModel.cs" />
     <Compile Include="ViewModels\TokenViewModel.cs" />
     <Compile Include="ViewModels\TruckGroupViewModel.cs" />
     <Compile Include="ViewModels\TruckTypeViewModel.cs" />

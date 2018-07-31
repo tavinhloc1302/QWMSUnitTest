@@ -13,9 +13,13 @@ namespace QWMSServer.Model.DatabaseModels
 
         [Key]
         [Required]
-        [Index(IsUnique = true)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+
+        [Index(IsUnique = true)]
+        [StringLength(50)]
+        [Column("code")]
+        public string code { get; set; }
 
         [StringLength(50)]
         [Column("deliveryCode")]

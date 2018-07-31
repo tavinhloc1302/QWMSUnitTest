@@ -316,11 +316,17 @@ namespace QWMSServer.Data.Services
                                 queryGatePassResult.leaveTime = DateTime.Now;
                                 queryGatePassResult.isDelete = true;
                                 queryGatePassResult.queueLists.First().isDelete = true;
-                                if(queryGatePassResult.orders != null && queryGatePassResult.orders.Count > 0)
+                                queryGatePassResult.RFIDCard.status = 0;
+                                queryGatePassResult.RFIDCardID = null;
+                                if (queryGatePassResult.orders != null && queryGatePassResult.orders.Count > 0)
                                 {
                                     foreach (Order order in queryGatePassResult.orders)
                                     {
                                         order.isDelete = true;
+                                        foreach (var orderItem in order.orderMaterials)
+                                        {
+                                            orderItem.isDelete = true;
+                                        }
                                     }
                                 }
                                 tmpResponseCode = ResponseCode.SUCCESS;

@@ -17,13 +17,15 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<WeightRecordViewModel>> UpdateWeightValue(WeightDataViewModel weightDataViewModel); // 
         Task<ResponseViewModel<WeightRecordViewModel>> GetWeightValueByGatePassID(int gatePassID); //
         Task<ResponseViewModel<UpdateLaneStatusViewModel>> UpdateLaneStatus(UpdateLaneStatusViewModel updateLaneStatusViewModel);
-        Task<ResponseViewModel<GatePassViewModel>> GetEmptyGatepass();
+        Task<ResponseViewModel<GatePassViewModel>> GetEmptyGatepass(int employeeID);
         Task<ResponseViewModel<RFIDCardViewModel>> GetRFIDNotUse();
         Task<ResponseViewModel<GatePassViewModel>> UpdateGatepass(GatePassViewModel gatepass);
+        Task<ResponseViewModel<GatePassViewModel>> UpdateSealNoNPrintGoodGatepass(GatePassViewModel gatepass);
         Task<ResponseViewModel<WeightRecordViewModel>> GetTruckNetWeightValueByTruckID(int truckID);
         Task<ResponseViewModel<WeighBridge>> GetWB(string WBCode);
         Task<ResponseViewModel<WeighBridge>> UpdateWB(WeighBridge WBView);
         Task<ResponseViewModel<WeighbridgeConfiguration>> GetAllWBConfigs();
         Task<ResponseViewModel<WeighbridgeConfiguration>> UpdateWBConfig(WeighbridgeConfiguration WBConfigView);
+        Task<ResponseViewModel<GatePassViewModel>> UpdateGatePassWeightValue(GatePassViewModel gatepass);
     }
 }

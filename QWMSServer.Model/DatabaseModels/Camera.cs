@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -45,31 +46,25 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("Pass")]
         public string Pass { get; set; }
 
-        [Column("ModifyOn")]
-        public string ModifyOn { get; set; }
-
-        [Column("ModifyBy")]
-        public string ModifyBy { get; set; }
-
         [Column("isDelete")]
         public bool? isDelete { get; set; }
 
-        [Column("status")]
-        public bool? status { get; set; }
-
         [Column("isActive")]
-        public bool? isActive { get; set; }
+        public bool isActive { get; set; }
 
         [Column("location")]
         public int? location { get; set; }
-
-        [Column("usage")]
-        public int? usage { get; set; }
 
         [Column("UserPCID")]
         public int? UserPCID { get; set; }
 
         [ForeignKey("UserPCID")]
         public UserPC userPC { get; set; }
+
+        [NotMapped]
+        public int status { get; set; }
+
+        [NotMapped]
+        public DateTime updateTime { get; set; }
     }
 }

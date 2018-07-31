@@ -10,10 +10,10 @@ namespace QWMSServer.Data.Services
 {
     public interface IWarehouseService
     {
-        Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheckIn(QCWeighValueModel theoryWeighValueModel);
-        Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheckOut(QCWeighValueModel theoryWeighValueModel);
-        Task<ResponseViewModel<GenericResponseModel>> UpdateQCWeighValue(QCWeighValueModel QCWeighValueModel);
-        Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheck(QCWeighValueModel theoryWeighValueModel);
+        Task<ResponseViewModel<GatePassViewModel>> UpdateTruckOnWarehouseCheckIn(WarehouseCheckModel warehouseCheckModel);
+        Task<ResponseViewModel<GatePassViewModel>> UpdateTruckOnWarehouseCheckOut(WarehouseCheckModel warehouseCheckModel);
+        Task<ResponseViewModel<GatePassViewModel>> UpdateQCWeighValue(WarehouseCheckModel warehouseCheckModel);
+        Task<ResponseViewModel<GatePassViewModel>> UpdateTruckOnWarehouseCheck(WarehouseCheckModel warehouseCheckModel);
         Task<ResponseViewModel<LaneMgntViewModel>> GetLaneForWarehouseManagement(string code);
     }
 }

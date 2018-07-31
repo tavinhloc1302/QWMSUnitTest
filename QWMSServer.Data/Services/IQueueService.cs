@@ -12,6 +12,8 @@ namespace QWMSServer.Data.Services
     {
         Task<ResponseViewModel<GatePassViewModel>> GetAllGatePass();
 
+        Task<ResponseViewModel<OrderViewModel>> GetAllOrder();
+
         Task<ResponseViewModel<GatePassViewModel>> GetGatePassByID(int ID);
 
         Task<ResponseViewModel<GatePassViewModel>> GetGatePassByCode(string Code);
@@ -30,7 +32,7 @@ namespace QWMSServer.Data.Services
 
         Task<ResponseViewModel<GatePassViewModel>> UpdateGatePassWithRFIDCode(GatePassViewModel gatePassViewModel);
 
-        Task<ResponseViewModel<GenericResponseModel>> CreateRegisteredQueueItem(int gatePassID, string driverImageName, string employeeRFID, string driverRFID);
+        Task<ResponseViewModel<GatePassViewModel>> CreateRegisteredQueueItem(int gatePassID, string driverImageName, string employeeRFID, string driverRFID, int loadingBayID);
 
         Task<ResponseViewModel<GenericResponseModel>> ReOrderQueue();
 
@@ -55,5 +57,15 @@ namespace QWMSServer.Data.Services
         Task<ResponseViewModel<GatePassViewModel>> SearchGatePass(string searchText);
 
         Task<ResponseViewModel<GatePassViewModel>> DeleteGatePass(int ID);
+
+        Task<ResponseViewModel<OrderViewModel>> AddNewOrder(OrderViewModel order);
+
+        Task<ResponseViewModel<OrderViewModel>> DeleteOrder(OrderViewModel order);
+
+        Task<ResponseViewModel<OrderViewModel>> AddOrderMaterial(OrderMaterialViewModel orderMaterialView);
+
+        Task<ResponseViewModel<OrderViewModel>> DeleteOrderMaterial(OrderMaterialViewModel orderMaterialView);
+
+
     }
 }

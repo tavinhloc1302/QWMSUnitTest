@@ -37,7 +37,7 @@ namespace QWMSServer.Controllers
 
         [AuthenticateRequire]
         [HttpGet]
-        [Route("CallNextTruck/{gatePassID}", Name = "CallNextTruckByGatePass")]
+        [Route("CallNextTruckByGatePass/{gatePassID}", Name = "CallNextTruckByGatePass")]
         public async Task<ResponseViewModel<QueueListViewModel>> CallNextTruckByGatePassID(int gatePassID)
         {
             return await _weightService.CallNextTruckByGatePassID(gatePassID);
@@ -46,14 +46,15 @@ namespace QWMSServer.Controllers
         [AuthenticateRequire]
         [HttpPost]
         [Route("AddTruckCamera", Name = "AddTruckCamera")]
-        public async Task<ResponseViewModel<GenericResponseModel>> AddTruckCamera(string filename, byte[] fileContent)
+        public async Task<ResponseViewModel<GenericResponseModel>> AddTruckCamera()
         {
             var provider = new MultipartMemoryStreamProvider();
             await Request.Content.ReadAsMultipartAsync(provider);
             // extract file name and file contents
-            var fileNameParam = provider.Contents[0].Headers.ContentDisposition.Parameters
-                .FirstOrDefault(p => p.Name.ToLower() == "filename");
-            string fileName = (fileNameParam == null) ? "" : fileNameParam.Value.Trim('"');
+            //var fileNameParam = provider.Contents[0].Headers.ContentDisposition.Parameters
+            //    .FirstOrDefault(p => p.Name.ToLower() == "filename");
+            //string fileName = (fileNameParam == null) ? "" : fileNameParam.Value.Trim('"');
+            string fileName = provider.Contents[0].Headers.ContentDisposition.Name;
             byte[] file = await provider.Contents[0].ReadAsByteArrayAsync();
 
             return _weightService.AddTruckCamera(fileName, file);
@@ -85,10 +86,10 @@ namespace QWMSServer.Controllers
 
         [AuthenticateRequire]
         [HttpGet]
-        [Route("Gatepass/GetEmpty", Name = "GetEmptyGatepass")]
-        public async Task<ResponseViewModel<GatePassViewModel>> GetEmptyGatepass()
+        [Route("Gatepass/GetEmpty/{employeeID}", Name = "GetEmptyGatepass")]
+        public async Task<ResponseViewModel<GatePassViewModel>> GetEmptyGatepass(int employeeID)
         {
-            return await _weightService.GetEmptyGatepass();
+            return await _weightService.GetEmptyGatepass(employeeID);
         }
 
         [AuthenticateRequire]
@@ -105,6 +106,14 @@ namespace QWMSServer.Controllers
         public async Task<ResponseViewModel<GatePassViewModel>> UpdateGatepass([FromBody]GatePassViewModel gatepass)
         {
             return await _weightService.UpdateGatepass(gatepass);
+        }
+
+        [AuthenticateRequire]
+        [HttpPost]
+        [Route("Gatepass/UpdateSealNoNPrintGoodGatepass", Name = "UpdateSealNoNPrintGoodGatepassWeight")]
+        public async Task<ResponseViewModel<GatePassViewModel>> UpdateSealNoNPrintGoodGatepass([FromBody]GatePassViewModel gatepass)
+        {
+            return await _weightService.UpdateSealNoNPrintGoodGatepass(gatepass);
         }
 
         [AuthenticateRequire]
@@ -145,6 +154,14 @@ namespace QWMSServer.Controllers
         public async Task<ResponseViewModel<WeighbridgeConfiguration>> UpdateWBConfig([FromBody]WeighbridgeConfiguration WBConfigView)
         {
             return await _weightService.UpdateWBConfig(WBConfigView);
+        }
+
+        [AuthenticateRequire]
+        [HttpPost]
+        [Route("Gatepass/UpdateGatePassWeightValue", Name = "UpdateGatePassWeightValue")]
+        public async Task<ResponseViewModel<GatePassViewModel>> UpdateGatePassWeightValue([FromBody]GatePassViewModel gatepass)
+        {
+            return await _weightService.UpdateGatePassWeightValue(gatepass);
         }
     }
 }

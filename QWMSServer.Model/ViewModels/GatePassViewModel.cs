@@ -21,6 +21,10 @@ namespace QWMSServer.Model.ViewModels
 
         public DateTime? leaveTime { get; set; }
 
+        public DateTime? predictLeaveTime { get; set; }
+
+        public DateTime? predictEnterTime { get; set; }
+
         public int RFIDCardID { get; set; }
 
         public int truckGroupID { get; set; }
@@ -47,15 +51,29 @@ namespace QWMSServer.Model.ViewModels
 
         public CustomerViewModel customer { get; set; }
 
+        public CarrierVendorViewModel carrierVendor { get; set; }
+
         public MaterialViewModel material { get; set; }
 
         public int weightType { get; set; }
 
         public WarehouseViewModel warehouse { get; set; }
 
+        public LoadingBayViewModel loadingBay { get; set; }
+
         public float? tareWeightValue { get; set; }
 
         public float? netWeightValue { get; set; }
+
+        public string sealNo { get; set; } 
+
+        public string printGoods { get; set; } 
+
+        public float? registGrossWeight { get; set; } // 23
+
+        public float? registNetWeight { get; set; }
+
+        public float? QCGrossWeight { get; set; }
 
     }
 }

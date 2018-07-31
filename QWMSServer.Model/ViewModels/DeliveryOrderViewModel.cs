@@ -14,7 +14,7 @@ namespace QWMSServer.Model.ViewModels
 
         //public string doNumber { get; set; }
 
-        public DateTime createDate { get; set; }
+        //public DateTime createDate { get; set; }
 
         public int? soID { get; set; }
 

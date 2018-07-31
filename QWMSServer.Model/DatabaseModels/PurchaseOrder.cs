@@ -26,8 +26,8 @@ namespace QWMSServer.Model.DatabaseModels
         [Column("poNumber")]
         public string poNumber { get; set; }
 
-        [Column("createDate")]
-        public DateTime createDate { get; set; }
+        //[Column("createDate")]
+        //public DateTime createDate { get; set; }
 
         [Column("carrierVendorID")]
         public int? carrierVendorID { get; set; }

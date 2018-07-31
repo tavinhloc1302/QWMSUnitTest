@@ -14,6 +14,8 @@ namespace QWMSServer.Model.ViewModels
 
         public string gatePassCode { get; set; }
 
+        public string weightCode { get; set; }
+
         public string truckPlateNumber { get; set; }
 
         public string driverName { get; set; }
@@ -75,5 +77,7 @@ namespace QWMSServer.Model.ViewModels
         public bool isSuccess { get; set; } // 31
 
         public DateTime createDate { get; set; } // 32
+
+        public string sealNo { get; set; } // 33
     }
 }

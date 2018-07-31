@@ -15,5 +15,7 @@ namespace QWMSServer.Model.ViewModels
         public string employeeRFID { get; set; }
 
         public string driverRFID { get; set; }
+
+        public int loadingBayID { get; set; }
     }
 }

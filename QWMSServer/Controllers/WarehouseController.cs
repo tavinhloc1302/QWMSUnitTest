@@ -19,7 +19,7 @@ namespace QWMSServer.Controllers
         [AuthenticateRequire]
         [HttpPost]
         [Route("UpdateTruckOnWarehouseCheckIn", Name = "UpdateTruckOnWarehouseCheckIn")]
-        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheckIn(QCWeighValueModel QCWeighValueModel)
+        public async Task<ResponseViewModel<GatePassViewModel>> UpdateTruckOnWarehouseCheckIn(WarehouseCheckModel QCWeighValueModel)
         {
             return await _warehouseService.UpdateTruckOnWarehouseCheckIn(QCWeighValueModel);
         }
@@ -27,7 +27,7 @@ namespace QWMSServer.Controllers
         [AuthenticateRequire]
         [HttpPost]
         [Route("UpdateTruckOnWarehouseCheckOut", Name = "UpdateTruckOnWarehouseCheckOut")]
-        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheckOut(QCWeighValueModel QCWeighValueModel)
+        public async Task<ResponseViewModel<GatePassViewModel>> UpdateTruckOnWarehouseCheckOut(WarehouseCheckModel QCWeighValueModel)
         {
             return await _warehouseService.UpdateTruckOnWarehouseCheckOut(QCWeighValueModel);
         }
@@ -35,7 +35,7 @@ namespace QWMSServer.Controllers
         [AuthenticateRequire]
         [HttpPost]
         [Route("UpdateTheoryWeighValue", Name = "UpdateTheoryWeighValue")]
-        public async Task<ResponseViewModel<GenericResponseModel>> UpdateQCWeighValue(QCWeighValueModel QCWeighValueModel)
+        public async Task<ResponseViewModel<GatePassViewModel>> UpdateQCWeighValue(WarehouseCheckModel QCWeighValueModel)
         {
             return await _warehouseService.UpdateQCWeighValue(QCWeighValueModel);
         }
@@ -43,7 +43,7 @@ namespace QWMSServer.Controllers
         [AuthenticateRequire]
         [HttpPost]
         [Route("UpdateTruckOnWarehouseCheck", Name = "UpdateTruckOnWarehouseCheck")]
-        public async Task<ResponseViewModel<GenericResponseModel>> UpdateTruckOnWarehouseCheck(QCWeighValueModel theoryWeighValueModel)
+        public async Task<ResponseViewModel<GatePassViewModel>> UpdateTruckOnWarehouseCheck(WarehouseCheckModel theoryWeighValueModel)
         {
             return await _warehouseService.UpdateTruckOnWarehouseCheck(theoryWeighValueModel);
         }

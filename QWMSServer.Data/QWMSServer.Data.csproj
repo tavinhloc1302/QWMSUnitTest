@@ -118,6 +118,9 @@
     <Compile Include="Repository\ConstrainRepository.cs">
       <DependentUpon>IConstrainRepository.cs</DependentUpon>
     </Compile>
+    <Compile Include="Repository\ControllerRepository.cs">
+      <DependentUpon>IControllerRepository.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repository\CustomerRepository.cs">
       <DependentUpon>ICustomerRepository.cs</DependentUpon>
     </Compile>
@@ -159,6 +162,7 @@
     <Compile Include="Repository\ICompanyRepository.cs" />
     <Compile Include="Repository\ICOMPortRepository.cs" />
     <Compile Include="Repository\IConstrainRepository.cs" />
+    <Compile Include="Repository\IControllerRepository.cs" />
     <Compile Include="Repository\ICustomerRepository.cs" />
     <Compile Include="Repository\ICustomerWarehouseRepository.cs" />
     <Compile Include="Repository\IDeliveryOrderRepository.cs" />
@@ -324,7 +328,9 @@
     </Compile>
     <Compile Include="Services\IAuthService.cs" />
     <Compile Include="Services\IReportService.cs" />
-    <Compile Include="Services\ReportService.cs" />
+    <Compile Include="Services\ReportService.cs">
+      <DependentUpon>IReportService.cs</DependentUpon>
+    </Compile>
     <Compile Include="Services\ResponseConstructor.cs" />
     <Compile Include="Services\IAdminService.cs" />
     <Compile Include="Services\ICommonService.cs" />

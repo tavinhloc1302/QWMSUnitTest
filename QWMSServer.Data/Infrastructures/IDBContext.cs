@@ -66,6 +66,7 @@ namespace QWMSServer.Data.Infrastructures
         DbSet<PrintHeader> PrintHeader { get; set; }
         DbSet<UserPassword> UserPassword { get; set; }
         DbSet<UserPC> UserPC { get; set; }
+        DbSet<Controller> Controller { get; set; }
         DbSet<WeighbridgeConfiguration> WeighbridgeConfiguration { get; set; }
         Task<int> SaveChangesAsync();
 
