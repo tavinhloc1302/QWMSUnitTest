@@ -46,6 +46,7 @@ namespace QWMSServer.Tests.ServiceTest
         private readonly IEmployeeGroup_SystemFunctionRepository _employeeGroup_SystemFunctionRepository;
         private readonly IUserPCRepository _userPCRepository;
         private readonly IBadgeReaderRepository _badgeReaderRepository;
+        private readonly IWeightRecordRepository _weightRecordRepository;
 
         private readonly AdminService _adminService;
 
@@ -84,7 +85,9 @@ namespace QWMSServer.Tests.ServiceTest
             _userPasswordRepository = new UserPasswordRepositoryTest();
             _systemFunctionRepository = new SystemFunctionRepositoryTest();
             _employeeGroup_SystemFunctionRepository = new EmployeeGroup_SystemFunctionRepositoryTest();
+            _weightRecordRepository = new WeighRecordRepositoryTest();
             _userPCRepository = new UserPCRepositoryTest();
+            
             _badgeReaderRepository = new BadgeReaderRepositoryTest();
 
             _adminService = new AdminService(
@@ -94,7 +97,7 @@ namespace QWMSServer.Tests.ServiceTest
                 _companyRepository, _warehouseRepository, _loadingBayRepository, _laneRepository, _rdifCardRepository, 
                 _cameraRepository, _constrainRepository, _doRepository, _customerWarehouseRepository, _saleOrderRepository,
                 _orderRepository, _weighBridgeRepository, _printHeaderRepository, _userPasswordRepository, _systemFunctionRepository,
-                _employeeGroup_SystemFunctionRepository, _userPCRepository, _badgeReaderRepository);
+                _employeeGroup_SystemFunctionRepository, _userPCRepository, _badgeReaderRepository, _weightRecordRepository);
         }
 
         [TestMethod]
@@ -3140,5 +3143,7 @@ namespace QWMSServer.Tests.ServiceTest
             var actualResult = await _adminService.CreateUserName("shouldBeEmptied");
             Assert.AreEqual(String.Empty, actualResult);
         }
+
+
     }
 }
