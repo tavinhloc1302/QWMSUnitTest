@@ -1,9 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using QWMSServer.Data.Infrastructures;
 using QWMSServer.Data.Repository;
 using QWMSServer.Data.Services;
 using QWMSServer.Model.ViewModels;
 using QWMSServer.Tests.Dummy;
+
 using System.Threading.Tasks;
 
 namespace QWMSServer.Tests.ServiceTest
@@ -94,6 +96,7 @@ namespace QWMSServer.Tests.ServiceTest
             _badgeReaderRepository = new BadgeReaderRepositoryTest();
             _orderMaterialRepository = new OrderMaterialRepositoryTest();
             _weightRecordRepository = new WeighRecordRepositoryTest();
+            _tokenRepository = new TokenRepositoryTest();
 
             _authService = new AuthService(_unitOfWork, _tokenRepository, _userRepository, _employeeRepository, _adminService);
             _adminService = new AdminService(

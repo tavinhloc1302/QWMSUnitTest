@@ -87,14 +87,14 @@ namespace QWMSServer.Tests.ServiceTest
             _employeeGroup_SystemFunctionRepository = new EmployeeGroup_SystemFunctionRepositoryTest();
             _weightRecordRepository = new WeighRecordRepositoryTest();
             _userPCRepository = new UserPCRepositoryTest();
-            
+
             _badgeReaderRepository = new BadgeReaderRepositoryTest();
 
             _adminService = new AdminService(
                 _unitOfWork, _customerRepository, _driverRepository, _carrierRepository, _userRepository,
                 _materialRepository, _unittypeRepository, _truckRepository, _truckTypeRepository, _loadingTypeRepository,
                 _employeeRepository, _employeeGroupRepository, _employeeRoleRepository, _plantRepository,
-                _companyRepository, _warehouseRepository, _loadingBayRepository, _laneRepository, _rdifCardRepository, 
+                _companyRepository, _warehouseRepository, _loadingBayRepository, _laneRepository, _rdifCardRepository,
                 _cameraRepository, _constrainRepository, _doRepository, _customerWarehouseRepository, _saleOrderRepository,
                 _orderRepository, _weighBridgeRepository, _printHeaderRepository, _userPasswordRepository, _systemFunctionRepository,
                 _employeeGroup_SystemFunctionRepository, _userPCRepository, _badgeReaderRepository, _weightRecordRepository);
@@ -3151,10 +3151,42 @@ namespace QWMSServer.Tests.ServiceTest
             UserViewModel viewModel = new UserViewModel
             {
                 ID = 1,
-                password = "0123"              
+                password = "0123"
             };
             var actualResult = await _adminService.UpdateUserPassword(viewModel);
             Assert.IsNotNull(actualResult.responseData);
+        }
+
+        public async Task TestMethod_UpdateUserPassword_NoID_ShouldFail()
+        {
+            UserRepositoryTest.FLAG_DELETE = 3; // No Delete
+            UserRepositoryTest.FLAG_GET_ASYNC = 1;
+            UserViewModel viewModel = new UserViewModel
+            {
+                password = "0123"
+            };
+            var actualResult = await _adminService.UpdateUserPassword(viewModel); // => No ID should fail here
+            Assert.IsNull(actualResult.responseData);
+        }
+
+        public async Task TestMethod_UpdateUserPassword_NoPassword_ShouldFail()
+        {
+            UserRepositoryTest.FLAG_DELETE = 3; // No Delete
+            UserRepositoryTest.FLAG_GET_ASYNC = 1;
+            UserViewModel viewModel = new UserViewModel
+            {
+                ID = 1
+            };
+            var actualResult = await _adminService.UpdateUserPassword(viewModel); // => No new password fail here
+            Assert.IsNull(actualResult.responseData);
+        }
+
+        public async Task TestMethod_UpdateUserPassword_NoModel()
+        {
+            UserRepositoryTest.FLAG_DELETE = 3; // No Delete
+            UserRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateUserPassword(null); // => No new password fail here
+            Assert.IsNull(actualResult.responseData);
         }
 
         [TestMethod]
@@ -3233,7 +3265,7 @@ namespace QWMSServer.Tests.ServiceTest
 
         [TestMethod]
         public async Task TestMethod_CreateNewCustomerWarehouse_NoModel()
-        {        
+        {
             CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.CreateNewCustomerWarehouse(null);
             Assert.IsNotNull(actualResult.responseData);
@@ -3379,6 +3411,59 @@ namespace QWMSServer.Tests.ServiceTest
             CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.DeleteCustomerWarehouse(viewModel);
             Assert.AreEqual(Data.Common.ResponseText.DELETE_CUSTOMERWAREHOUSE_FAIL, actualResult.errorText);
+        }
+
+        public async Task TestMethod_GetAllDO()
+        {
+            var actualResult = await _adminService.GetAllDO();
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        public async Task TestMethod_SearchDO()
+        {
+            string code = "0123";
+            var actualResult = await _adminService.SearchDO(code);
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        public async Task TestMethod_SearchDO_NoCode()
+        {
+            var actualResult = await _adminService.SearchDO(null);
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        public async Task TestMethod_GetDOByCode()
+        {
+            string code = "0123";
+            var actualResult = await _adminService.GetDOByCode(code);
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        public async Task TestMethod_GetDOByCode_NoCode()
+        {
+            var actualResult = await _adminService.GetDOByCode(null);
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        public async Task TestMethod_CreateNewDO()
+        {
+            DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
+            {
+            };
+        }
+
+        public async Task TestMethod_UpdateDO()
+        {
+            DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
+            {
+            };
+        }
+
+        public async Task TestMethod_DeleteDO()
+        {
+            DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
+            {
+            };
         }
     }
 }

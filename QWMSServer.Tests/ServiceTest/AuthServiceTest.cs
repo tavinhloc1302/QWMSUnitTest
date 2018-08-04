@@ -1,13 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using QWMSServer.Data.Infrastructures;
 using QWMSServer.Data.Repository;
 using QWMSServer.Data.Services;
 using QWMSServer.Model.ViewModels;
 using QWMSServer.Tests.Dummy;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 using System.Threading.Tasks;
 
 namespace QWMSServer.Tests.ServiceTest
