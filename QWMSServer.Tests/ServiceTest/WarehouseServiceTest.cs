@@ -46,6 +46,8 @@ namespace QWMSServer.Tests.ServiceTest
         private readonly IEmployeeGroup_SystemFunctionRepository _employeeGroup_SystemFunctionRepository;
         private readonly IUserPCRepository _userPCRepository;
         private readonly IBadgeReaderRepository _badgeReaderRepository;
+        private readonly IOrderMaterialRepository _orderMaterialRepository;
+        private readonly IWeightRecordRepository _weightRecordRepository;
 
         private readonly IWarehouseService _warehouseService;
         private readonly IAuthService _authService;
@@ -90,8 +92,10 @@ namespace QWMSServer.Tests.ServiceTest
             _employeeGroup_SystemFunctionRepository = new EmployeeGroup_SystemFunctionRepositoryTest();
             _userPCRepository = new UserPCRepositoryTest();
             _badgeReaderRepository = new BadgeReaderRepositoryTest();
+            _orderMaterialRepository = new OrderMaterialRepositoryTest();
+            _weightRecordRepository = new WeighRecordRepositoryTest();
 
-            _authService = new AuthService(_unitOfWork,_tokenRepository, _userRepository, _employeeRepository, _adminService);
+            _authService = new AuthService(_unitOfWork, _tokenRepository, _userRepository, _employeeRepository, _adminService);
             _adminService = new AdminService(
                 _unitOfWork, _customerRepository, _driverRepository, _carrierRepository, _userRepository,
                 _materialRepository, _unittypeRepository, _truckRepository, _truckTypeRepository, _loadingTypeRepository,
@@ -99,19 +103,18 @@ namespace QWMSServer.Tests.ServiceTest
                 _companyRepository, _warehouseRepository, _loadingBayRepository, _laneRepository, _rdifCardRepository,
                 _cameraRepository, _constrainRepository, _doRepository, _customerWarehouseRepository, _saleOrderRepository,
                 _orderRepository, _weighBridgeRepository, _printHeaderRepository, _userPasswordRepository, _systemFunctionRepository,
-                _employeeGroup_SystemFunctionRepository, _userPCRepository, _badgeReaderRepository);
-            _warehouseService = new WarehouseService(_gatePassRepository, _unitOfWork, _laneRepository, _queueListRepository, _authService);
+                _employeeGroup_SystemFunctionRepository, _userPCRepository, _badgeReaderRepository, _weightRecordRepository);
+            _warehouseService = new WarehouseService(_gatePassRepository, _unitOfWork, _laneRepository, _queueListRepository, _authService,
+                _orderMaterialRepository, _orderRepository);
         }
 
         [TestMethod]
         public async Task UpdateTruckOnWarehouseCheckIn()
         {
-            QCWeighValueModel viewModel = new QCWeighValueModel()
+            WarehouseCheckModel viewModel = new WarehouseCheckModel
             {
-                gatePassID = 1,
-                employeeID = 1,
-                employeeRFID = "0123",
-                QCWeighValue = 1
+                gatePassCode = "0123",
+                QCGrossWeight = 1
             };
             var actualResult = await _warehouseService.UpdateTruckOnWarehouseCheckIn(viewModel);
             Assert.IsTrue(actualResult.booleanResponse);
@@ -120,11 +123,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task UpdateTruckOnWarehouseCheckIn_NoGatePassID()
         {
-            QCWeighValueModel viewModel = new QCWeighValueModel()
+            WarehouseCheckModel viewModel = new WarehouseCheckModel
             {
-                employeeID = 1,
-                employeeRFID = "0123",
-                QCWeighValue = 1
+                gatePassCode = "0123",
+                QCGrossWeight = 1
             };
             var actualResult = await _warehouseService.UpdateTruckOnWarehouseCheckIn(viewModel);
             Assert.IsFalse(actualResult.booleanResponse);
@@ -133,11 +135,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task UpdateTruckOnWarehouseCheckIn_NoEmployeeId()
         {
-            QCWeighValueModel viewModel = new QCWeighValueModel()
+            WarehouseCheckModel viewModel = new WarehouseCheckModel
             {
-                gatePassID = 1,
-                employeeRFID = "0123",
-                QCWeighValue = 1
+                gatePassCode = "0123",
+                QCGrossWeight = 1
             };
             var actualResult = await _warehouseService.UpdateTruckOnWarehouseCheckIn(viewModel);
             Assert.IsFalse(actualResult.booleanResponse);
@@ -146,11 +147,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task UpdateTruckOnWarehouseCheckIn_NoRFID()
         {
-            QCWeighValueModel viewModel = new QCWeighValueModel()
+            WarehouseCheckModel viewModel = new WarehouseCheckModel
             {
-                gatePassID = 1,
-                employeeID = 1,
-                QCWeighValue = 1
+                gatePassCode = "0123",
+                QCGrossWeight = 1
             };
             var actualResult = await _warehouseService.UpdateTruckOnWarehouseCheckIn(viewModel);
             Assert.IsFalse(actualResult.booleanResponse);
@@ -166,7 +166,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task UpdateTruckOnWarehouseCheckOut()
         {
-            QCWeighValueModel viewModel = new QCWeighValueModel();
+            WarehouseCheckModel viewModel = new WarehouseCheckModel();
             var actualResult = await _warehouseService.UpdateTruckOnWarehouseCheckOut(null);
             Assert.IsFalse(actualResult.booleanResponse);
         }
@@ -174,11 +174,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task UpdateTruckOnWarehouseCheckOut_NoGatePassID()
         {
-            QCWeighValueModel viewModel = new QCWeighValueModel()
+            WarehouseCheckModel viewModel = new WarehouseCheckModel
             {
-                employeeID = 1,
-                employeeRFID = "0123",
-                QCWeighValue = 1
+                gatePassCode = "0123",
+                QCGrossWeight = 1
             };
             var actualResult = await _warehouseService.UpdateTruckOnWarehouseCheckOut(viewModel);
             Assert.IsFalse(actualResult.booleanResponse);
@@ -187,11 +186,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task UpdateTruckOnWarehouseCheckOut_NoEmployeeId()
         {
-            QCWeighValueModel viewModel = new QCWeighValueModel()
+            WarehouseCheckModel viewModel = new WarehouseCheckModel
             {
-                gatePassID = 1,
-                employeeRFID = "0123",
-                QCWeighValue = 1
+                gatePassCode = "0123",
+                QCGrossWeight = 1
             };
             var actualResult = await _warehouseService.UpdateTruckOnWarehouseCheckOut(viewModel);
             Assert.IsFalse(actualResult.booleanResponse);
@@ -200,11 +198,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task UpdateTruckOnWarehouseCheckOut_NoRFID()
         {
-            QCWeighValueModel viewModel = new QCWeighValueModel()
+            WarehouseCheckModel viewModel = new WarehouseCheckModel
             {
-                gatePassID = 1,
-                employeeID = 1,
-                QCWeighValue = 1
+                gatePassCode = "0123",
+                QCGrossWeight = 1
             };
             var actualResult = await _warehouseService.UpdateTruckOnWarehouseCheckOut(viewModel);
             Assert.IsFalse(actualResult.booleanResponse);
@@ -220,7 +217,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task UpdateTheoryWeighValue()
         {
-            QCWeighValueModel viewModel = new QCWeighValueModel();
+            WarehouseCheckModel viewModel = new WarehouseCheckModel();
             var actualResult = await _warehouseService.UpdateQCWeighValue(null);
             Assert.IsFalse(actualResult.booleanResponse);
         }
@@ -228,11 +225,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task UpdateTheoryWeighValue_NoGatePassID()
         {
-            QCWeighValueModel viewModel = new QCWeighValueModel()
+            WarehouseCheckModel viewModel = new WarehouseCheckModel
             {
-                employeeID = 1,
-                employeeRFID = "0123",
-                QCWeighValue = 1
+                gatePassCode = "0123",
+                QCGrossWeight = 1
             };
             var actualResult = await _warehouseService.UpdateQCWeighValue(viewModel);
             Assert.IsFalse(actualResult.booleanResponse);
@@ -241,11 +237,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task UpdateTheoryWeighValue_NoEmployeeId()
         {
-            QCWeighValueModel viewModel = new QCWeighValueModel()
+            WarehouseCheckModel viewModel = new WarehouseCheckModel
             {
-                gatePassID = 1,
-                employeeRFID = "0123",
-                QCWeighValue = 1
+                gatePassCode = "0123",
+                QCGrossWeight = 1
             };
             var actualResult = await _warehouseService.UpdateQCWeighValue(viewModel);
             Assert.IsFalse(actualResult.booleanResponse);
@@ -254,11 +249,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task UpdateTheoryWeighValue_NoRFID()
         {
-            QCWeighValueModel viewModel = new QCWeighValueModel()
+            WarehouseCheckModel viewModel = new WarehouseCheckModel
             {
-                gatePassID = 1,
-                employeeID = 1,
-                QCWeighValue = 1
+                gatePassCode = "0123",
+                QCGrossWeight = 1
             };
             var actualResult = await _warehouseService.UpdateQCWeighValue(viewModel);
             Assert.IsFalse(actualResult.booleanResponse);
@@ -274,7 +268,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task UpdateTruckOnWarehouseCheck()
         {
-            QCWeighValueModel theoryWeighValueModel = new QCWeighValueModel();
+            WarehouseCheckModel viewModel = new WarehouseCheckModel();
             var actualResult = await _warehouseService.UpdateTruckOnWarehouseCheck(null);
             Assert.IsFalse(actualResult.booleanResponse);
         }
@@ -282,11 +276,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task UpdateTruckOnWarehouseCheck_NoGatePassID()
         {
-            QCWeighValueModel viewModel = new QCWeighValueModel()
+            WarehouseCheckModel viewModel = new WarehouseCheckModel
             {
-                employeeID = 1,
-                employeeRFID = "0123",
-                QCWeighValue = 1
+                gatePassCode = "0123",
+                QCGrossWeight = 1
             };
             var actualResult = await _warehouseService.UpdateTruckOnWarehouseCheck(viewModel);
             Assert.IsFalse(actualResult.booleanResponse);
@@ -295,11 +288,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task UpdateTruckOnWarehouseCheck_NoEmployeeId()
         {
-            QCWeighValueModel viewModel = new QCWeighValueModel()
+            WarehouseCheckModel viewModel = new WarehouseCheckModel
             {
-                gatePassID = 1,
-                employeeRFID = "0123",
-                QCWeighValue = 1
+                gatePassCode = "0123",
+                QCGrossWeight = 1
             };
             var actualResult = await _warehouseService.UpdateTruckOnWarehouseCheck(viewModel);
             Assert.IsFalse(actualResult.booleanResponse);
@@ -308,11 +300,10 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task UpdateTruckOnWarehouseCheck_NoRFID()
         {
-            QCWeighValueModel viewModel = new QCWeighValueModel()
+            WarehouseCheckModel viewModel = new WarehouseCheckModel
             {
-                gatePassID = 1,
-                employeeID = 1,
-                QCWeighValue = 1
+                gatePassCode = "0123",
+                QCGrossWeight = 1
             };
             var actualResult = await _warehouseService.UpdateTruckOnWarehouseCheck(viewModel);
             Assert.IsFalse(actualResult.booleanResponse);

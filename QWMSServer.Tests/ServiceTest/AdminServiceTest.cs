@@ -3144,6 +3144,241 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.AreEqual(String.Empty, actualResult);
         }
 
+        public async Task TestMethod_UpdateUserPassword()
+        {
+            UserRepositoryTest.FLAG_DELETE = 3; // No Delete
+            UserRepositoryTest.FLAG_GET_ASYNC = 1;
+            UserViewModel viewModel = new UserViewModel
+            {
+                ID = 1,
+                password = "0123"              
+            };
+            var actualResult = await _adminService.UpdateUserPassword(viewModel);
+            Assert.IsNotNull(actualResult.responseData);
+        }
 
+        [TestMethod]
+        public async Task TestMethod_GetAllCustomerWarehouse()
+        {
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetAllCustomerWarehouse();
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetCustomerWarehouseByCode()
+        {
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetCustomerWarehouseByCode("0123");
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetCustomerWarehouseByCode_NoCode()
+        {
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetCustomerWarehouseByCode(null);
+            Assert.IsNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_SearchCustomerWarehouse()
+        {
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.SearchCustomerWarehouse("0123");
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_SearchCustomerWarehouse_NoCode()
+        {
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.SearchCustomerWarehouse(null);
+            Assert.IsNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetCustomerWarehouseByCustomerID()
+        {
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetCustomerWarehouseByCustomerID(1);
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetCustomerWarehouseByCustomerID_WrongID()
+        {
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetCustomerWarehouseByCustomerID(0);
+            Assert.IsNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateNewCustomerWarehouse()
+        {
+            CustomerWarehouseViewModel viewModel = new CustomerWarehouseViewModel
+            {
+                code = "0123",
+                customer = new CustomerViewModel
+                {
+                    code = "0123",
+                    ID = 1
+                },
+                warehouseName = "Warehouse"
+            };
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.CreateNewCustomerWarehouse(viewModel);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateNewCustomerWarehouse_NoModel()
+        {        
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.CreateNewCustomerWarehouse(null);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateNewCustomerWarehouse_ModelNoCustomer()
+        {
+            CustomerWarehouseViewModel viewModel = new CustomerWarehouseViewModel
+            {
+                code = "0123",
+                warehouseName = "Warehouse"
+            };
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.CreateNewCustomerWarehouse(viewModel);
+            Assert.IsNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateNewCustomerWarehouse_ModelNoCode()
+        {
+            CustomerWarehouseViewModel viewModel = new CustomerWarehouseViewModel
+            {
+                customer = new CustomerViewModel
+                {
+                    code = "0123",
+                    ID = 1
+                },
+                warehouseName = "Warehouse"
+            };
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.CreateNewCustomerWarehouse(viewModel);
+            Assert.IsNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateCustomerWarehouse()
+        {
+            CustomerWarehouseViewModel viewModel = new CustomerWarehouseViewModel
+            {
+                code = "0123",
+                customer = new CustomerViewModel
+                {
+                    code = "0123",
+                    ID = 1
+                },
+                warehouseName = "Warehouse"
+            };
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateCustomerWarehouse(viewModel);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateCustomerWarehouse_NoModel()
+        {
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateCustomerWarehouse(null);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateCustomerWarehouse_ModelNoCode()
+        {
+            CustomerWarehouseViewModel viewModel = new CustomerWarehouseViewModel
+            {
+                customer = new CustomerViewModel
+                {
+                    code = "0123",
+                    ID = 1
+                },
+                warehouseName = "Warehouse"
+            };
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateCustomerWarehouse(viewModel);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateCustomerWarehouse_ModelNoCustomer()
+        {
+            CustomerWarehouseViewModel viewModel = new CustomerWarehouseViewModel
+            {
+                code = "0123",
+                warehouseName = "Warehouse"
+            };
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateCustomerWarehouse(viewModel);
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_DeleteCustomerWarehouse()
+        {
+            CustomerWarehouseViewModel viewModel = new CustomerWarehouseViewModel
+            {
+                code = "0123",
+                customer = new CustomerViewModel
+                {
+                    code = "0123",
+                    ID = 1
+                },
+                warehouseName = "Warehouse"
+            };
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.DeleteCustomerWarehouse(viewModel);
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_DelteCustomerWarehouse_NoModel()
+        {
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.DeleteCustomerWarehouse(null);
+            Assert.AreEqual(Data.Common.ResponseText.ERR_LACK_INPUT, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_DeleteCustomerWarehouse_ModelNoCode()
+        {
+            CustomerWarehouseViewModel viewModel = new CustomerWarehouseViewModel
+            {
+                customer = new CustomerViewModel
+                {
+                    code = "0123",
+                    ID = 1
+                },
+                warehouseName = "Warehouse"
+            };
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.DeleteCustomerWarehouse(viewModel);
+            Assert.AreEqual(Data.Common.ResponseText.DELETE_CUSTOMERWAREHOUSE_FAIL, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_DeleteCustomerWarehouse_ModelNoCustomer()
+        {
+            CustomerWarehouseViewModel viewModel = new CustomerWarehouseViewModel
+            {
+                code = "0123",
+                warehouseName = "Warehouse"
+            };
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.DeleteCustomerWarehouse(viewModel);
+            Assert.AreEqual(Data.Common.ResponseText.DELETE_CUSTOMERWAREHOUSE_FAIL, actualResult.errorText);
+        }
     }
 }

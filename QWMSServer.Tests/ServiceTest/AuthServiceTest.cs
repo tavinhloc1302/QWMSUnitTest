@@ -50,6 +50,7 @@ namespace QWMSServer.Tests.ServiceTest
         private readonly IEmployeeGroup_SystemFunctionRepository _employeeGroup_SystemFunctionRepository;
         private readonly IUserPCRepository _userPCRepository;
         private readonly IBadgeReaderRepository _badgeReaderRepository;
+        private readonly IWeightRecordRepository _weightRecordRepository;
 
         public AuthServiceTest()
         {
@@ -85,6 +86,7 @@ namespace QWMSServer.Tests.ServiceTest
             _systemFunctionRepository = new SystemFunctionRepositoryTest();
             _employeeGroup_SystemFunctionRepository = new EmployeeGroup_SystemFunctionRepositoryTest();
             _userPCRepository = new UserPCRepositoryTest();
+            _weightRecordRepository = new WeighRecordRepositoryTest();
             _badgeReaderRepository = new BadgeReaderRepositoryTest();
 
             _adminService = new AdminService(
@@ -94,7 +96,7 @@ namespace QWMSServer.Tests.ServiceTest
                 _companyRepository, _warehouseRepository, _loadingBayRepository, _laneRepository, _rdifCardRepository,
                 _cameraRepository, _constrainRepository, _doRepository, _customerWarehouseRepository, _saleOrderRepository,
                 _orderRepository, _weighBridgeRepository, _printHeaderRepository, _userPasswordRepository, _systemFunctionRepository,
-                _employeeGroup_SystemFunctionRepository, _userPCRepository, _badgeReaderRepository);
+                _employeeGroup_SystemFunctionRepository, _userPCRepository, _badgeReaderRepository, _weightRecordRepository);
             _authService = new AuthService(_unitOfWork, _tokenRepository, _userRepository, _employeeRepository, _adminService);
         }
 
@@ -196,7 +198,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public void TestMethod_ValidateToken_ShouldFail()
         {
-            var actualResult =  _authService.ValidateToken(null);
+            var actualResult = _authService.ValidateToken(null);
             Assert.IsTrue(actualResult);
         }
 

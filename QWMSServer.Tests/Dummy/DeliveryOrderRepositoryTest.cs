@@ -23,7 +23,6 @@ namespace QWMSServer.Tests.Dummy
             {
                 ID = 1,
                 code = "1111",
-                createDate = DateTime.Now,                
                 customerID = DataRecords.CUSTOMER_NORMAL.ID,
                 customer = DataRecords.CUSTOMER_NORMAL,
                 carrierVendorID = DataRecords.CARRIER_VENDOR_NORMAL.ID,

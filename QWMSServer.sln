@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QWMSServer.Model", "QWMSSer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QWMSServer.Data", "QWMSServer.Data\QWMSServer.Data.csproj", "{9CC9B294-339B-4AAE-8E62-7DE8F3BEA4EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QWMSServer.DeviceService", "QWMSServer.DeviceService\QWMSServer.DeviceService.csproj", "{723CC464-193D-4351-8205-C1DB7336C887}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{9CC9B294-339B-4AAE-8E62-7DE8F3BEA4EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CC9B294-339B-4AAE-8E62-7DE8F3BEA4EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CC9B294-339B-4AAE-8E62-7DE8F3BEA4EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{723CC464-193D-4351-8205-C1DB7336C887}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{723CC464-193D-4351-8205-C1DB7336C887}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{723CC464-193D-4351-8205-C1DB7336C887}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{723CC464-193D-4351-8205-C1DB7336C887}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
