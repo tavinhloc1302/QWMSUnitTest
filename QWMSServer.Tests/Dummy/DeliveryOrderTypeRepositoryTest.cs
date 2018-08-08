@@ -1,15 +1,17 @@
-﻿using QWMSServer.Data.Repository;
-using QWMSServer.Model.DatabaseModels;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+
+using QWMSServer.Data.Repository;
+using QWMSServer.Model.DatabaseModels;
 
 namespace QWMSServer.Tests.Dummy
 {
     public class DeliveryOrderTypeRepositoryTest : RepositoryBaseTest<DeliveryOrderType>, IDeliveryOrderTypeRepository
     {
+        public static int FLAG_DELETE = 0;
+
         public override IList<DeliveryOrderType> GetObjectList()
         {
             return new List<DeliveryOrderType>() {
@@ -20,15 +22,21 @@ namespace QWMSServer.Tests.Dummy
 
         public override async Task<DeliveryOrderType> GetAsync(Expression<Func<DeliveryOrderType, bool>> where)
         {
-            var sampleObject = new DeliveryOrderType()
+            var result = DataRecords.DELIVERY_ORDER_TYPE_NORMAL;
+            switch (FLAG_DELETE)
             {
-                ID = 1,
-                code = "1111",
-                description = "Normal",
-                isDelete = false
-            };
-
-            return this.SimpleGetPatcher(sampleObject);
+                case 1: // No ID
+                case 2: // Wrong ID
+                    result = null;
+                    break;
+                case 0: // OK
+                    result = this.SimpleGetPatcher(DataRecords.DELIVERY_ORDER_TYPE_NORMAL);
+                    break;
+                default:
+                    result = this.SimpleGetPatcher(DataRecords.DELIVERY_ORDER_TYPE_DELETED);
+                    break;
+            }
+            return result;
         }
     }
 }

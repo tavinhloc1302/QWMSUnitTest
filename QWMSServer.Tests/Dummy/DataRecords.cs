@@ -8,6 +8,199 @@ namespace QWMSServer.Tests.Dummy
 {
     public static class DataRecords
     {
+        public static BadgeReader BADGEREADER_NORMAL = new BadgeReader
+        {
+            Code = "0213",
+            ID = 1,
+            name = "Badge reader 1",
+            isDelete = false,
+            
+        };
+
+        public static BadgeReader BADGEREADER_DELETED = new BadgeReader
+        {
+            Code = "0123",
+            ID = 2,
+            name = "Badge reader 2",
+            isDelete = true,
+        };
+
+        public static CustomerWarehouse CUSTOMERWAREHOUSE_NORMAL = new CustomerWarehouse
+        {
+            ID = 1,
+            code = "0123",
+            deliveryCode = "0123",
+            warehouseName = "Warehouse 1",
+            deliveryAddressVi = "Ho Chi Minh",
+            deliveryAddressEn = "HCMC",
+            isDelete = false,
+            customer = DataRecords.CUSTOMER_NORMAL,
+        };
+
+        public static CustomerWarehouse CUSTOMERWAREHOUSE_DELETED = new CustomerWarehouse
+        {
+            ID = 2,
+            code = "0123",
+            deliveryCode = "0123",
+            warehouseName = "Warehouse 2",
+            deliveryAddressVi = "Ho Chi Minh",
+            deliveryAddressEn = "HCMC",
+            isDelete = true,
+            customer = DataRecords.CUSTOMER_NORMAL,
+        };
+
+        public static DeliveryOrder DELIVERYORDER_NORMAL = new DeliveryOrder
+        {
+            ID = 1,
+            code = "0123",
+            carrierVendor = CARRIER_VENDOR_NORMAL,
+            customerWarehouse = CUSTOMERWAREHOUSE_NORMAL,
+            customer = CUSTOMER_NORMAL,
+            deliveryOrderType = DELIVERY_ORDER_TYPE_NORMAL,
+            isDelete = false
+        };
+
+        public static DeliveryOrder DELIVERYORDER_DELETED = new DeliveryOrder
+        {
+            ID = 2,
+            code = "0231",
+            carrierVendor = CARRIER_VENDOR_NORMAL,
+            customerWarehouse = CUSTOMERWAREHOUSE_NORMAL,
+            customer = CUSTOMER_NORMAL,
+            deliveryOrderType = DELIVERY_ORDER_TYPE_NORMAL,
+            isDelete = true
+        };
+
+        public static Camera CAMERA_NORMAL = new Camera
+        {
+            Code = "0123",
+            ID = 1,
+            Name = "Camera 1",
+            isDelete = false
+        };
+
+        public static Camera CAMERA_DELETED = new Camera
+        {
+            Code = "0213",
+            ID = 2,
+            Name = "Camera 2",
+            isDelete = true
+        };
+
+        public static Constrain CONSTRAIN_NORMAL = new Constrain
+        {
+            category = "Constrain Cate 1",
+            ID = 1,
+            name = "Constrain 1",
+            value = 1.0f,
+            svalue = "value",
+            description = "Constrain 1"
+        };
+
+        public static Constrain CONSTRAIN_DELETED = new Constrain
+        {
+            category = "Constrain Cate 2",
+            ID = 2,
+            name = "Constrain 2",
+            value = 1.0f,
+            svalue = "value",
+            description = "Constrain 2"
+        };
+
+        public static EmployeeGroup_SystemFunction ESFUNCTION_NORMAL = new EmployeeGroup_SystemFunction
+        {
+            ID = 1,
+            employeeGroup = EMPLOYEE_GROUP_NORMAL,
+            systemFunction = SYSTEMFUNCTION_NORMAL,
+        };
+
+        public static EmployeeGroup_SystemFunction ESFUNCTION_DELETED = new EmployeeGroup_SystemFunction
+        {
+            ID = 2,
+            employeeGroup = EMPLOYEE_GROUP_NORMAL,
+            systemFunction = SYSTEMFUNCTION_NORMAL,
+        };
+
+        public static SystemFunction SYSTEMFUNCTION_NORMAL = new SystemFunction
+        {
+            Code = "0123",
+            ID = 1,
+            functionName = "System Function 1",
+            functionDescription = "System Function 1"
+        };
+
+        public static SystemFunction SYSTEMFUNCTION_DELETE = new SystemFunction
+        {
+            Code = "0213",
+            ID = 2,
+            functionName = "System Function 2",
+            functionDescription = "System Function 2"
+        };
+
+        public static PrintHeader PRINTHEADER_NORMAL = new PrintHeader
+        {
+            ID = 1,
+            address = "Address 1",
+            companyName = "Company 1",
+            phoneNo = "012345678"
+        };
+
+        public static PrintHeader PRINTHEADER_DELETED = new PrintHeader
+        {
+            ID = 2,
+            address = "Address 2",
+            companyName = "Company 2",
+            phoneNo = "98765421"
+        };
+
+        public static PurchaseOrder PURCHASEORDER_NORMAL = new PurchaseOrder
+        {
+            ID = 1,
+            carrierVendor = CARRIER_VENDOR_NORMAL,
+            code = "0123",
+            isDelete = false
+        };
+
+        public static PurchaseOrder PURCHASEORDER_DELETED = new PurchaseOrder
+        {
+            ID = 2,
+            carrierVendor = CARRIER_VENDOR_NORMAL,
+            code = "0321",
+            isDelete = true
+        };
+
+        public static PurchaseOrderType PURCHASEORDERTYPE_NORMAL = new PurchaseOrderType
+        {
+            Code = "0123",
+            ID = 1,
+            description = "Purchase order type 1",
+            isDelete = false
+        };
+
+        public static PurchaseOrderType PURCHASEORDERTYPE_DELETED = new PurchaseOrderType
+        {
+            Code = "0321",
+            ID = 2,
+            description = "Purchase order type 2",
+            isDelete = true
+        };
+
+        public static SaleOrder SALEORDER_NORMAL = new SaleOrder
+        {
+            Code = "0132",
+            isDelete = true,
+            deliveryOrder = new List<DeliveryOrder> { DELIVERYORDER_NORMAL, DELIVERYORDER_DELETED },
+            ID = 1
+        };
+
+        public static SaleOrder SALEORDER_DELETED = new SaleOrder
+        {
+            Code = "0321",
+            isDelete = true,
+            deliveryOrder = new List<DeliveryOrder> { DELIVERYORDER_NORMAL, DELIVERYORDER_DELETED },
+            ID = 2
+        };
+
         public static CarrierVendor CARRIER_VENDOR_NORMAL = new CarrierVendor()
         {
             ID = 1,

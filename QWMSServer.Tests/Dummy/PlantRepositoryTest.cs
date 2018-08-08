@@ -1,9 +1,10 @@
-﻿using QWMSServer.Data.Repository;
-using QWMSServer.Model.DatabaseModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+
+using QWMSServer.Data.Repository;
+using QWMSServer.Model.DatabaseModels;
 
 namespace QWMSServer.Tests.Dummy
 {
@@ -14,7 +15,8 @@ namespace QWMSServer.Tests.Dummy
         public override IList<Plant> GetObjectList()
         {
             return new List<Plant>() {
-                
+                DataRecords.PLANT_DELETED,
+                DataRecords.PLANT_NORMAL,
             };
         }
 

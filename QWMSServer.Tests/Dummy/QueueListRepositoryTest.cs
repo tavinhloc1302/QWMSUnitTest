@@ -23,8 +23,21 @@ namespace QWMSServer.Tests.Dummy
 
         public override async Task<QueueList> GetAsync(Expression<Func<QueueList, bool>> where)
         {
-            var sampleObj = DataRecords.QUEUE_LIST_NORMAL;
-            return SimpleGetPatcher(sampleObj);
+            var result = DataRecords.QUEUE_LIST_NORMAL;
+            switch (FLAG_DELETE)
+            {
+                case 1: // No ID
+                case 2: // Wrong ID
+                    result = null;
+                    break;
+                case 0: // OK
+                    result = this.SimpleGetPatcher(DataRecords.QUEUE_LIST_NORMAL);
+                    break;
+                default:
+                    result = this.SimpleGetPatcher(DataRecords.QUEUE_LIST_DELETED);
+                    break;
+            }
+            return result;
         }
     }
 }

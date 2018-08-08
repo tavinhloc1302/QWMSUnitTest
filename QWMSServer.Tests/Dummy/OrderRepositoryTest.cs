@@ -1,15 +1,17 @@
-﻿using QWMSServer.Data.Repository;
-using QWMSServer.Model.DatabaseModels;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+
+using QWMSServer.Data.Repository;
+using QWMSServer.Model.DatabaseModels;
 
 namespace QWMSServer.Tests.Dummy
 {
     public class OrderRepositoryTest : RepositoryBaseTest<Order>, IOrderRepository
     {
+        public static int FLAG_DELETE = 0;
+
         public override IList<Order> GetObjectList()
         {
             return new List<Order>() {
@@ -21,24 +23,21 @@ namespace QWMSServer.Tests.Dummy
 
         public override async Task<Order> GetAsync(Expression<Func<Order, bool>> where)
         {
-            var sampleObject = new Order()
+            var result = DataRecords.ORDER_NORMAL_DELI;
+            switch (FLAG_DELETE)
             {
-                ID = 1,
-                code = "1234",
-                orderTypeID = DataRecords.ORDER_TYPE_DELIVERY.ID,
-                orderType = DataRecords.ORDER_TYPE_DELIVERY,
-                gatePassID = DataRecords.GATE_PASS_NORMAL.ID,
-                gatePass = DataRecords.GATE_PASS_NORMAL,
-                plantID = null,
-                plant = null,
-                doID = null,
-                deliveryOrder = null,
-                poID = null,
-                purchaseOrder = null,
-                isDelete = false,
-            };
-
-            return this.SimpleGetPatcher(sampleObject);
+                case 1: // No ID
+                case 2: // Wrong ID
+                    result = null;
+                    break;
+                case 0: // OK
+                    result = this.SimpleGetPatcher(DataRecords.ORDER_NORMAL_TYPE_OTHER);
+                    break;
+                default: // NO DELETE
+                    result = this.SimpleGetPatcher(DataRecords.ORDER_NORMAL_DELI);
+                    break;
+            }
+            return result;
         }
     }
 }

@@ -10,36 +10,33 @@ namespace QWMSServer.Tests.Dummy
 {
     public class SaleOrderRepositoryTest : RepositoryBaseTest<SaleOrder>, ISaleOrderRepository
     {
+        public static int FLAG_DELETE = 0;
+
         public override IList<SaleOrder> GetObjectList()
         {
             return new List<SaleOrder>() {
+                DataRecords.SALEORDER_NORMAL,
+                DataRecords.SALEORDER_DELETED,
             };
         }
 
         public override async Task<SaleOrder> GetAsync(Expression<Func<SaleOrder, bool>> where)
         {
-            var sampleObject = new SaleOrder()
+            var result = DataRecords.SALEORDER_NORMAL;
+            switch (FLAG_DELETE)
             {
-                ID = 1,
-                Code = "1111",
-                isDelete = false,
-            };
-
-            switch (FLAG_GET_ASYNC)
-            {
-                case 0:
-                    sampleObject = null;
+                case 1: // No ID
+                case 2: // Wrong ID
+                    result = null;
                     break;
-                case 1:
-                    break;
-                case 2:
-                    sampleObject.isDelete = true;
+                case 0: // OK
+                    result = this.SimpleGetPatcher(DataRecords.SALEORDER_NORMAL);
                     break;
                 default:
-                    throw new InvalidOperationException();
+                    result = this.SimpleGetPatcher(DataRecords.SALEORDER_DELETED);
+                    break;
             }
-
-            return sampleObject;
+            return result;
         }
     }
 }

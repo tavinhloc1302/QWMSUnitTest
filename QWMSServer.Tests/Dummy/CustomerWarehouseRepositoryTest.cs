@@ -10,37 +10,33 @@ namespace QWMSServer.Tests.Dummy
 {
     public class CustomerWarehouseRepositoryTest : RepositoryBaseTest<CustomerWarehouse>, ICustomerWarehouseRepository
     {
+        public static int FLAG_DELETE = 0;
+
         public override IList<CustomerWarehouse> GetObjectList()
         {
             return new List<CustomerWarehouse>() {
+                DataRecords.CUSTOMERWAREHOUSE_DELETED,
+                DataRecords.CUSTOMERWAREHOUSE_NORMAL
             };
         }
 
         public override async Task<CustomerWarehouse> GetAsync(Expression<Func<CustomerWarehouse, bool>> where)
         {
-            var sampleObject = new CustomerWarehouse()
+            var result = DataRecords.CUSTOMERWAREHOUSE_NORMAL;
+            switch (FLAG_DELETE)
             {
-                ID = 1,
-                deliveryCode = "1111",
-                warehouseName = "Warehouse 1",
-                deliveryAddressVi = "Ho Chi Minh",
-                deliveryAddressEn = "HCMC",
-                isDelete = false,
-                customerID = DataRecords.CUSTOMER_NORMAL.ID,
-                customer = DataRecords.CUSTOMER_NORMAL,
-
-            };
-
-            switch (FLAG_GET_ASYNC)
-            {
-                case 1:
-                    sampleObject.isDelete = true;
+                case 1: // No ID
+                case 2: // Wrong ID
+                    result = null;
+                    break;
+                case 0: // OK
+                    result = this.SimpleGetPatcher(DataRecords.CUSTOMERWAREHOUSE_NORMAL);
                     break;
                 default:
-                    throw new InvalidOperationException();
+                    result = this.SimpleGetPatcher(DataRecords.CUSTOMERWAREHOUSE_DELETED);
+                    break;
             }
-
-            return sampleObject;
+            return result;
         }
     }
 }

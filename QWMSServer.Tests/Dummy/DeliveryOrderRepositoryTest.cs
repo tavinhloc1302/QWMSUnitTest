@@ -10,49 +10,34 @@ namespace QWMSServer.Tests.Dummy
 {
     public class DeliveryOrderRepositoryTest : RepositoryBaseTest<DeliveryOrder>, IDeliveryOrderRepository
     {
+        public static int FLAG_DELETE = 0;
+
         public override IList<DeliveryOrder> GetObjectList()
         {
             return new List<DeliveryOrder>()
             {
+                DataRecords.DELIVERYORDER_NORMAL,
+                DataRecords.DELIVERYORDER_DELETED,
             };
         }
 
         public override async Task<DeliveryOrder> GetAsync(Expression<Func<DeliveryOrder, bool>> where)
         {
-            var sampleObject = new DeliveryOrder()
+            var result = DataRecords.DELIVERYORDER_NORMAL;
+            switch (FLAG_DELETE)
             {
-                ID = 1,
-                code = "1111",
-                customerID = DataRecords.CUSTOMER_NORMAL.ID,
-                customer = DataRecords.CUSTOMER_NORMAL,
-                carrierVendorID = DataRecords.CARRIER_VENDOR_NORMAL.ID,
-                carrierVendor = DataRecords.CARRIER_VENDOR_NORMAL,
-                remark = "remark",
-                sloc = "sloc",
-                doTypeID = DataRecords.DELIVERY_ORDER_TYPE_NORMAL.ID,
-                deliveryOrderType = DataRecords.DELIVERY_ORDER_TYPE_NORMAL,
-                customerWarehouseID = null,
-                customerWarehouse = null,
-                isDelete = false,
-            };
-
-            switch (GetFlagGet())
-            {
-                case 0:
-                    sampleObject = null;
+                case 1: // No ID
+                case 2: // Wrong ID
+                    result = null;
                     break;
-                case 1:
-                    break;
-                case 2:
-                    sampleObject.isDelete = true;
-                    break;
-                case 11:
+                case 0: // OK
+                    result = this.SimpleGetPatcher(DataRecords.DELIVERYORDER_NORMAL);
                     break;
                 default:
-                    throw new InvalidOperationException();
+                    result = this.SimpleGetPatcher(DataRecords.DELIVERYORDER_DELETED);
+                    break;
             }
-
-            return sampleObject;
+            return result;
         }
     }
 }

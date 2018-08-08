@@ -1,16 +1,17 @@
-﻿using QWMSServer.Data.Repository;
-using QWMSServer.Model.DatabaseModels;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+
+using QWMSServer.Data.Repository;
+using QWMSServer.Model.DatabaseModels;
 
 namespace QWMSServer.Tests.Dummy
 {
     public class LoadingBayRepositoryTest : RepositoryBaseTest<LoadingBay>, ILoadingBayRepository
     {
         public static int FLAG_DELETE = 0;
+
         public override IList<LoadingBay> GetObjectList()
         {
             return new List<LoadingBay>() {

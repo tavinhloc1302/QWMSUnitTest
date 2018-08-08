@@ -3449,14 +3449,127 @@ namespace QWMSServer.Tests.ServiceTest
         {
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
             {
+                customer = new CustomerViewModel
+                {
+                    code = "0123"
+                },
+                carrierVendor = new CarrierVendorViewModel
+                {
+                    code = "0123"
+                }
             };
+            var actualResult = await _adminService.CreateNewDO(viewModel);
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        public async Task TestMethod_CreateNewDO_NoModel()
+        {
+            var actualResult = await _adminService.CreateNewDO(null);
+            Assert.IsNull(actualResult.responseData);
+        }
+
+        public async Task TestMethod_CreateNewDO_NoCustomerModel()
+        {
+            DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
+            {
+                carrierVendor = new CarrierVendorViewModel
+                {
+                    code = "0123"
+                }
+            };
+            var actualResult = await _adminService.CreateNewDO(viewModel);
+            Assert.IsNull(actualResult.responseData);
+        }
+
+        public async Task TestMethod_CreateNewDO_NoCarrierModel()
+        {
+            DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
+            {
+                customer = new CustomerViewModel
+                {
+                    code = "0123"
+                }
+            };
+            var actualResult = await _adminService.CreateNewDO(viewModel);
+            Assert.IsNull(actualResult.responseData);
         }
 
         public async Task TestMethod_UpdateDO()
         {
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
             {
+                customerWarehouse = new CustomerWarehouseViewModel
+                {
+
+                },
+                customer = new CustomerViewModel
+                {
+                    code = "0123"
+                },
+                carrierVendor = new CarrierVendorViewModel
+                {
+                    code = "0123"
+                }
             };
+            var actualResult = await _adminService.CreateNewDO(viewModel);
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        public async Task TestMethod_UpdateDO_NoWarehouse()
+        {
+            DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
+            {
+                customer = new CustomerViewModel
+                {
+                    code = "0123"
+                },
+                carrierVendor = new CarrierVendorViewModel
+                {
+                    code = "0123"
+                }
+            };
+            var actualResult = await _adminService.CreateNewDO(viewModel);
+            Assert.IsNull(actualResult.responseDatas);
+        }
+
+        public async Task TestMethod_UpdateDO_NoCustomer()
+        {
+            DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
+            {
+                customerWarehouse = new CustomerWarehouseViewModel
+                {
+
+                },
+                carrierVendor = new CarrierVendorViewModel
+                {
+                    code = "0123"
+                }
+            };
+            var actualResult = await _adminService.CreateNewDO(viewModel);
+            Assert.IsNull(actualResult.responseDatas);
+        }
+
+        public async Task TestMethod_UpdateDO_NoCarrier()
+        {
+            DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
+            {
+                customerWarehouse = new CustomerWarehouseViewModel
+                {
+
+                },
+                customer = new CustomerViewModel
+                {
+                    code = "0123"
+                }
+            };
+            var actualResult = await _adminService.CreateNewDO(viewModel);
+            Assert.IsNull(actualResult.responseDatas);
+        }
+
+        public async Task TestMethod_UpdateDO_NoModel()
+        {
+            var actualResult = await _adminService.CreateNewDO(null);
+            Assert.IsNull(actualResult.responseDatas);
         }
 
         public async Task TestMethod_DeleteDO()

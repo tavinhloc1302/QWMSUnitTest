@@ -1,10 +1,10 @@
-﻿using QWMSServer.Data.Repository;
-using QWMSServer.Model.DatabaseModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
+
+using QWMSServer.Data.Repository;
+using QWMSServer.Model.DatabaseModels;
 
 namespace QWMSServer.Tests.Dummy
 {
@@ -23,7 +23,7 @@ namespace QWMSServer.Tests.Dummy
             parentFunc.Invoke(null, null);
 
             FLAG_ORDER_TYPE = 0;
-    }
+        }
 
         public override IList<GatePass> GetObjectList()
         {
