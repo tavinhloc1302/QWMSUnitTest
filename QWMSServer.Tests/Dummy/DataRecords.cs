@@ -201,6 +201,24 @@ namespace QWMSServer.Tests.Dummy
             ID = 2
         };
 
+        public static OrderMaterial ORDERMATERIAL_NORMAL = new OrderMaterial
+        {
+            ID = 1,
+            code = "0123",
+            isDelete = false,
+            order = ORDER_NORMAL_PURCHASE,
+            material = MATERIAL_NORMAL,
+        };
+
+        public static OrderMaterial ORDERMATERIAL_DELETED = new OrderMaterial
+        {
+            ID = 2,
+            code = "0321",
+            isDelete = true,
+            order = ORDER_NORMAL_PURCHASE,
+            material = MATERIAL_NORMAL,
+        };
+
         public static CarrierVendor CARRIER_VENDOR_NORMAL = new CarrierVendor()
         {
             ID = 1,
