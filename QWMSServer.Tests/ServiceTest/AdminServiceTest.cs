@@ -1,13 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Threading.Tasks;
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using QWMSServer.Data.Common;
 using QWMSServer.Data.Infrastructures;
 using QWMSServer.Data.Repository;
 using QWMSServer.Data.Services;
 using QWMSServer.Model.ViewModels;
 using QWMSServer.Tests.Dummy;
-
-using System;
-using System.Threading.Tasks;
 
 namespace QWMSServer.Tests.ServiceTest
 {
@@ -3500,19 +3500,22 @@ namespace QWMSServer.Tests.ServiceTest
             {
                 customerWarehouse = new CustomerWarehouseViewModel
                 {
-
+                    ID = 1,
+                    code = "0123"
                 },
                 customer = new CustomerViewModel
                 {
+                    ID = 1,
                     code = "0123"
                 },
                 carrierVendor = new CarrierVendorViewModel
                 {
+                    ID = 1,
                     code = "0123"
                 }
             };
             var actualResult = await _adminService.CreateNewDO(viewModel);
-            Assert.IsNotNull(actualResult.responseDatas);
+            Assert.IsNotNull(actualResult.responseData);
         }
 
         public async Task TestMethod_UpdateDO_NoWarehouse()
@@ -3521,15 +3524,17 @@ namespace QWMSServer.Tests.ServiceTest
             {
                 customer = new CustomerViewModel
                 {
+                    ID = 1,
                     code = "0123"
                 },
                 carrierVendor = new CarrierVendorViewModel
                 {
+                    ID = 1,
                     code = "0123"
                 }
             };
-            var actualResult = await _adminService.CreateNewDO(viewModel);
-            Assert.IsNull(actualResult.responseDatas);
+            var actualResult = await _adminService.CreateNewDO(viewModel); // Should throw exception as no customer warehouse
+            Assert.AreEqual(ResponseText.EDIT_DO_FAIL, actualResult.errorText);
         }
 
         public async Task TestMethod_UpdateDO_NoCustomer()
@@ -3538,14 +3543,16 @@ namespace QWMSServer.Tests.ServiceTest
             {
                 customerWarehouse = new CustomerWarehouseViewModel
                 {
-
+                    ID = 1,
+                    code = "0123"
                 },
                 carrierVendor = new CarrierVendorViewModel
                 {
+                    ID = 1,
                     code = "0123"
                 }
             };
-            var actualResult = await _adminService.CreateNewDO(viewModel);
+            var actualResult = await _adminService.CreateNewDO(viewModel); // Should throw exception as no customer
             Assert.IsNull(actualResult.responseDatas);
         }
 
@@ -3555,28 +3562,47 @@ namespace QWMSServer.Tests.ServiceTest
             {
                 customerWarehouse = new CustomerWarehouseViewModel
                 {
-
+                    ID = 1,
+                    code = "0123"
                 },
                 customer = new CustomerViewModel
                 {
+                    ID = 1,
                     code = "0123"
                 }
             };
-            var actualResult = await _adminService.CreateNewDO(viewModel);
+            var actualResult = await _adminService.CreateNewDO(viewModel); // Should throw exception as no carrier
             Assert.IsNull(actualResult.responseDatas);
         }
 
         public async Task TestMethod_UpdateDO_NoModel()
         {
             var actualResult = await _adminService.CreateNewDO(null);
-            Assert.IsNull(actualResult.responseDatas);
+            Assert.AreEqual(ResponseText.ERR_LACK_INPUT, actualResult.errorText);
         }
 
         public async Task TestMethod_DeleteDO()
         {
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
             {
+                ID = 1,
+                code = "0123"
             };
+            var actualResult = await _adminService.DeleteDO(viewModel);
+            Assert.AreEqual(ResponseText.DELETE_DO_SUCCESS, actualResult.errorText);
+        }
+
+        public async Task TestMethod_DeleteDO_NoID()
+        {
+            DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel();
+            var actualResult = await _adminService.DeleteDO(viewModel);
+            Assert.AreEqual(ResponseText.DELETE_DO_FAIL, actualResult.errorText);
+        }
+
+        public async Task TestMethod_DeleteDO_NoModel()
+        {
+            var actualResult = await _adminService.DeleteDO(null);
+            Assert.AreEqual(ResponseText.ERR_LACK_INPUT, actualResult.errorText);
         }
     }
 }
