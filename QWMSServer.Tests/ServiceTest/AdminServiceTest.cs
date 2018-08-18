@@ -3960,8 +3960,17 @@ namespace QWMSServer.Tests.ServiceTest
             {
                 Code = "0123"
             };
+            CameraRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.CreateNewCamera(viewModel);
             Assert.AreEqual(ResponseText.ADD_CAMERA_SUCCESS, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateNewCamera_NoModel()
+        {
+            CameraRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.CreateNewCamera(null);
+            Assert.AreEqual(ResponseText.ADD_CAMERA_FAIL, actualResult.errorText);
         }
 
         [TestMethod]
@@ -3971,8 +3980,17 @@ namespace QWMSServer.Tests.ServiceTest
             {
                 Code = "0123"
             };
+            CameraRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.UpdateCamera(viewModel);
-            Assert.AreEqual(ResponseText.ADD_CAMERA_SUCCESS, actualResult.errorText);
+            Assert.AreEqual(ResponseText.EDIT_CAMERA_SUCCESS, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateCamera_NoModel()
+        {
+            CameraRepositoryTest.FLAG_DELETE = 1;
+            var actualResult = await _adminService.UpdateCamera(null);
+            Assert.AreEqual(ResponseText.EDIT_CAMERA_FAIL, actualResult.errorText);
         }
 
         [TestMethod]
@@ -3982,8 +4000,121 @@ namespace QWMSServer.Tests.ServiceTest
             {
                 Code = "0123"
             };
+            CameraRepositoryTest.FLAG_GET_ASYNC = 1;
+            CameraRepositoryTest.FLAG_DELETE = 0;
             var actualResult = await _adminService.DeleteCamera(viewModel);
-            Assert.AreEqual(ResponseText.ADD_CAMERA_SUCCESS, actualResult.errorText);
+            Assert.AreEqual(ResponseText.DELETE_CAMERA_SUCCESS, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_DeleteCamera_NoModel()
+        {
+            CameraRepositoryTest.FLAG_GET_ASYNC = 1;
+            CameraRepositoryTest.FLAG_DELETE = 1;
+            var actualResult = await _adminService.DeleteCamera(null);
+            Assert.AreEqual(ResponseText.DELETE_CAMERA_FAIL, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetAllUserPC()
+        {
+            UserPCRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetAllUserPC();
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetUserPCByIP()
+        {
+            UserPCRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetUserPCByIP("127.0.0.1");
+            Assert.IsNotNull(actualResult.responseData);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetUserPCByIP_NoIP()
+        {
+            UserPCRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetUserPCByIP(null);
+            Assert.AreEqual(ResponseText.ERR_EMPTY_DATABASE, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateUserPC()
+        {
+            UserPC viewModel = new UserPC
+            {
+                IPAddress = "127.0.0.1"
+            };
+            UserPCRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateUserPC(viewModel);
+            Assert.AreEqual(ResponseText.EDIT_PC_SUCCESS, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateUserPC_NoIP(UserPC userPC)
+        {
+            UserPC viewModel = new UserPC
+            {
+                IPAddress = "127.0.0.1"
+            };
+            UserPCRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateUserPC(null);
+            Assert.AreEqual(ResponseText.EDIT_PC_FAIL, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateUserPC_NoModel(UserPC userPC)
+        {
+            CameraRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateUserPC(null);
+            Assert.AreEqual(ResponseText.EDIT_PC_FAIL, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetBadgeReaderByCode()
+        {
+            BadgeReaderRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetBadgeReaderByCode("0123");
+            Assert.AreEqual(ResponseText.EDIT_PC_FAIL, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetBadgeReaderByCode_NoCode()
+        {
+            BadgeReaderRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetBadgeReaderByCode(null);
+            Assert.AreEqual(ResponseText.EDIT_PC_FAIL, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateBadgeReader()
+        {
+            BadgeReader viewModel = new BadgeReader
+            {
+                Code = "0123",
+                ipAddress = "127.0.0.1",
+                port = 80
+            };
+            BadgeReaderRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateBadgeReader(viewModel);
+            Assert.AreEqual(ResponseText.EDIT_BADGEREADER_SUCCESS, actualResult.errorText);
+        }
+
+        public async Task TestMethod_UpdateBadgeReader_NoField()
+        {
+            BadgeReader viewModel = new BadgeReader();
+            BadgeReaderRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateBadgeReader(viewModel);
+            Assert.AreEqual(ResponseText.EDIT_BADGEREADER_FAIL, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateBadgeReader_NoModel()
+        {
+            var actualResult = await _adminService.UpdateBadgeReader(null);
+            BadgeReaderRepositoryTest.FLAG_GET_ASYNC = 1;        
+            Assert.AreEqual(ResponseText.EDIT_BADGEREADER_FAIL, actualResult.errorText);
         }
     }
 }
