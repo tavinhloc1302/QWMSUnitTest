@@ -24,11 +24,18 @@ namespace QWMSServer.Tests.Dummy
 
         public override async Task<IEnumerable<WeightRecord>> GetManyAsync(Expression<Func<WeightRecord, bool>> where)
         {
-            return new List<WeightRecord>
+            if (FLAG_GET_ASYNC == 1)
             {
-                DataRecords.WEIGHRECORD_NORMAL,
-                DataRecords.WEIGHRECORD_DELETED
-            };
+                return new List<WeightRecord>()
+                {
+                    DataRecords.WEIGHRECORD_NORMAL,
+                    DataRecords.WEIGHRECORD_DELETED
+                };
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public override async Task<WeightRecord> GetAsync(Expression<Func<WeightRecord, bool>> where)

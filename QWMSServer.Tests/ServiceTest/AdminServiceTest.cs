@@ -3267,6 +3267,7 @@ namespace QWMSServer.Tests.ServiceTest
                 },
                 warehouseName = "Warehouse"
             };
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
             CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.CreateNewCustomerWarehouse(viewModel);
             Assert.IsNotNull(actualResult.responseData);
@@ -3276,8 +3277,9 @@ namespace QWMSServer.Tests.ServiceTest
         public async Task TestMethod_CreateNewCustomerWarehouse_NoModel()
         {
             CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.CreateNewCustomerWarehouse(null);
-            Assert.IsNotNull(actualResult.responseData);
+            Assert.IsNull(actualResult.responseData);
         }
 
         [TestMethod]
@@ -3289,8 +3291,8 @@ namespace QWMSServer.Tests.ServiceTest
                 warehouseName = "Warehouse"
             };
             CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.CreateNewCustomerWarehouse(viewModel);
-            Assert.IsNull(actualResult.responseData);
         }
 
         [TestMethod]
@@ -3305,6 +3307,7 @@ namespace QWMSServer.Tests.ServiceTest
                 },
                 warehouseName = "Warehouse"
             };
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
             CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.CreateNewCustomerWarehouse(viewModel);
             Assert.IsNull(actualResult.responseData);
@@ -3480,6 +3483,7 @@ namespace QWMSServer.Tests.ServiceTest
         {
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
             {
+                code = "0123",
                 customer = new CustomerViewModel
                 {
                     code = "0123"
@@ -3493,8 +3497,9 @@ namespace QWMSServer.Tests.ServiceTest
             CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
             CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
             CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.CreateNewDO(viewModel);
-            Assert.IsNotNull(actualResult.responseDatas);
+            Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
@@ -3508,7 +3513,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_CreateNewDO_NoCustomerModel()
         {
-            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
             {
                 carrierVendor = new CarrierVendorViewModel
@@ -3523,7 +3528,6 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_CreateNewDO_NoCarrierModel()
         {
-            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
             {
                 customer = new CustomerViewModel
@@ -3531,6 +3535,11 @@ namespace QWMSServer.Tests.ServiceTest
                     code = "0123"
                 }
             };
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 0;
             var actualResult = await _adminService.CreateNewDO(viewModel);
             Assert.IsNull(actualResult.responseData);
         }
@@ -4132,8 +4141,8 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_AddWeightCode_NoCode()
         {
+            WeighRecordRepositoryTest.FLAG_GET_ASYNC = 0;
             var actualResult = await _adminService.AddWeightCode(null);
-            WeighRecordRepositoryTest.FLAG_GET_ASYNC = 1;
             Assert.AreEqual(false, actualResult.booleanResponse);
         }
     }

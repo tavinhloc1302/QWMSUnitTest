@@ -20,6 +20,22 @@ namespace QWMSServer.Tests.Dummy
             };
         }
 
+        public override async Task<IEnumerable<User>> GetManyAsync(Expression<Func<User, bool>> where)
+        {
+            if (FLAG_GET_ASYNC == 1)
+            {
+                return new List<User>()
+                {
+                    DataRecords.USER_NORMAL_1,
+                    DataRecords.USER_NORMAL_2
+                };
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public override async Task<User> GetAsync(Expression<Func<User, bool>> where)
         {
             var result = DataRecords.USER_NORMAL_1;
