@@ -30,10 +30,10 @@ namespace QWMSServer.Tests.Dummy
                     result = null;
                     break;
                 case 0: // OK
-                    result = this.SimpleGetPatcher(DataRecords.SALEORDER_NORMAL);
+                    result = this.SimpleGetPatcher(DataRecords.SALEORDER_DELETED);
                     break;
                 default:
-                    result = this.SimpleGetPatcher(DataRecords.SALEORDER_DELETED);
+                    result = this.SimpleGetPatcher(DataRecords.SALEORDER_NORMAL);
                     break;
             }
             return result;

@@ -389,6 +389,7 @@ namespace QWMSServer.Tests.Dummy
             loadingBays = new List<LoadingBay> { LOADING_BAY_NORMAL },
             plantID = 1
         };
+
         public static Warehouse WAREHOUSE_DELETED = new Warehouse()
         {
             code = "0123",
@@ -431,6 +432,7 @@ namespace QWMSServer.Tests.Dummy
             stateID = 1,
             stateStatus = 1
         };
+
         public static StateRecord STATERECORD_DELETED = new StateRecord()
         {
             code = "0123",
@@ -439,6 +441,90 @@ namespace QWMSServer.Tests.Dummy
             gatePassID = 1,
             stateID = 1,
             stateStatus = 1
+        };
+
+        public static UserPassword USERPASSWORD_NORMAL = new UserPassword()
+        {
+            ID = 1,
+            isUsing = true,
+            passwordString = "test",
+            userID = 1
+        };
+
+        public static UserPassword USERPASSWORD_DELETED = new UserPassword()
+        {
+            ID = 2,
+            isUsing = false,
+            passwordString = "test",
+            userID = 2
+        };
+
+        public static State STATE_NORMAL = new State()
+        {
+            code = "0123",
+            ID = 1,
+            isDelete = false,
+            desciption = "Sky Rider 1",
+            order = 1
+        };
+
+        public static State STATE_DELETED = new State()
+        {
+            code = "3210",
+            ID = 2,
+            isDelete = true,
+            desciption = "Sky Rider 2",
+            order = 2
+        };
+
+        public static Token TOKEN_NORMAL = new Token
+        {
+            Id = 1,
+            ExpiresIn = 3600,
+            IssuedOn = new DateTime(2018, 1, 1),
+            TokenString = "AS9D8F7A9BN9A88DSRF76A7WQ64E5AS9DF89AS7E6",
+            UserId = 1
+        };
+
+        public static Token TOKEN_NORMAL_2 = new Token
+        {
+            Id = 2,
+            ExpiresIn = 3600,
+            IssuedOn = new DateTime(2018, 1, 1),
+            TokenString = "JQWG4F5U6J7HJKE4G5FH32K4J6H4J5G6F2LKJ5V3J",
+            UserId = 2
+        };
+
+        public static UserPC USERPC_NORMAL = new UserPC
+        {
+            Code = "0123",
+            IPAddress = "127.0.0.1",
+            ID = 1,
+            Name = "PC 1"
+        };
+
+        public static UserPC USERPC_NORMAL_2 = new UserPC
+        {
+            Code = "0123",
+            IPAddress = "127.0.0.1",
+            ID = 1,
+            Name = "PC 1"
+        };
+
+        public static WeightRecord WEIGHRECORD_NORMAL = new WeightRecord
+        {
+            code = "0123",
+            ID = 1,
+            comment = "Weigh record 1",
+            isDelete = false
+        };
+
+        public static WeightRecord WEIGHRECORD_DELETED = new WeightRecord
+        {
+            code = "3210",
+            ID = 2,
+            comment = "Weigh record 2",
+            isDelete = true
         };
 
         public static LoadingBay LOADING_BAY_NORMAL = new LoadingBay()

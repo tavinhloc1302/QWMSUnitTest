@@ -1,10 +1,10 @@
-﻿using System;
+﻿using QWMSServer.Data.Repository;
+using QWMSServer.Model.DatabaseModels;
+
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-
-using QWMSServer.Data.Repository;
-using QWMSServer.Model.DatabaseModels;
 
 namespace QWMSServer.Tests.Dummy
 {
@@ -31,10 +31,10 @@ namespace QWMSServer.Tests.Dummy
                     result = null;
                     break;
                 case 0: // OK
-                    result = this.SimpleGetPatcher(DataRecords.EMPLOYEE_ROLE_NORMAL);
+                    result = this.SimpleGetPatcher(DataRecords.EMPLOYEE_ROLE_DELETED);
                     break;
                 default:
-                    result = this.SimpleGetPatcher(DataRecords.EMPLOYEE_ROLE_DELETED);
+                    result = this.SimpleGetPatcher(DataRecords.EMPLOYEE_ROLE_NORMAL);
                     break;
             }
             return result;

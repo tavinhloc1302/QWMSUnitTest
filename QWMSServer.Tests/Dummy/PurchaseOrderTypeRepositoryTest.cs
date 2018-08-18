@@ -1,8 +1,8 @@
 ﻿using QWMSServer.Data.Repository;
 using QWMSServer.Model.DatabaseModels;
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -30,10 +30,10 @@ namespace QWMSServer.Tests.Dummy
                     result = null;
                     break;
                 case 0: // OK
-                    result = this.SimpleGetPatcher(DataRecords.PURCHASEORDERTYPE_NORMAL);
+                    result = this.SimpleGetPatcher(DataRecords.PURCHASEORDERTYPE_DELETED);
                     break;
                 default:
-                    result = this.SimpleGetPatcher(DataRecords.PURCHASEORDERTYPE_DELETED);
+                    result = this.SimpleGetPatcher(DataRecords.PURCHASEORDERTYPE_NORMAL);
                     break;
             }
             return result;

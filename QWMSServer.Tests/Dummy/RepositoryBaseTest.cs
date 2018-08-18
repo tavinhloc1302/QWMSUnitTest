@@ -154,7 +154,7 @@ namespace QWMSServer.Tests.Dummy
             return this.Objects.FindFirst((item) => ObjectUtils.GetProperty<int>(item, "ID") == id);
         }
 
-        public async Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> where)
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> where)
         {
             //return this.Query(where).ToList();
             var sampleEntity = await this.GetAsync(where);
@@ -167,13 +167,13 @@ namespace QWMSServer.Tests.Dummy
             return resultList;
         }
 
-        public async Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> where, IEnumerable<string> includes = null)
+        public virtual async Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> where, IEnumerable<string> includes = null)
         {
             //return this.Query(where, includes).ToList();
             return await this.GetManyAsync(where);
         }
 
-        public IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> where, IEnumerable<string> includes = null)
+        public virtual IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> where, IEnumerable<string> includes = null)
         {
             var query = this.Objects.Where(where);
             if (includes != null)

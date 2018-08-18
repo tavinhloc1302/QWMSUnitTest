@@ -1,5 +1,6 @@
 ﻿using QWMSServer.Data.Repository;
 using QWMSServer.Model.DatabaseModels;
+
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -30,10 +31,10 @@ namespace QWMSServer.Tests.Dummy
                     result = null;
                     break;
                 case 0: // OK
-                    result = this.SimpleGetPatcher(DataRecords.WAREHOUSE_NORMAL);
+                    result = this.SimpleGetPatcher(DataRecords.WAREHOUSE_DELETED);
                     break;
                 default: // NO DELETE
-                    result = this.SimpleGetPatcher(DataRecords.WAREHOUSE_DELETED);
+                    result = this.SimpleGetPatcher(DataRecords.WAREHOUSE_NORMAL);
                     break;
             }
 

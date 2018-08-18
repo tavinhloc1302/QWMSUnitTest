@@ -1,5 +1,6 @@
 ﻿using QWMSServer.Data.Repository;
 using QWMSServer.Model.DatabaseModels;
+
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -35,7 +36,7 @@ namespace QWMSServer.Tests.Dummy
                     result = this.SimpleGetPatcher(DataRecords.TRUCK_TYPE_TRUCK);
                     break;
                 default: // NO DELETE
-                    result = this.SimpleGetPatcher(DataRecords.TRUCK_TYPE_TRUCK);
+                    result = this.SimpleGetPatcher(DataRecords.TRUCK_TYPE_CONTAINER);
                     break;
             }
 

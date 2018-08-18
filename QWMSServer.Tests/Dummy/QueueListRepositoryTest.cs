@@ -31,10 +31,10 @@ namespace QWMSServer.Tests.Dummy
                     result = null;
                     break;
                 case 0: // OK
-                    result = this.SimpleGetPatcher(DataRecords.QUEUE_LIST_NORMAL);
+                    result = this.SimpleGetPatcher(DataRecords.QUEUE_LIST_DELETED);
                     break;
                 default:
-                    result = this.SimpleGetPatcher(DataRecords.QUEUE_LIST_DELETED);
+                    result = this.SimpleGetPatcher(DataRecords.QUEUE_LIST_NORMAL);
                     break;
             }
             return result;

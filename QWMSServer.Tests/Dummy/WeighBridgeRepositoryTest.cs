@@ -1,10 +1,9 @@
 ﻿using QWMSServer.Data.Repository;
 using QWMSServer.Model.DatabaseModels;
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace QWMSServer.Tests.Dummy
@@ -22,7 +21,7 @@ namespace QWMSServer.Tests.Dummy
             };
         }
 
-        public override async Task<Camera> GetAsync(Expression<Func<WeighBridge, bool>> where)
+        public override async Task<WeighBridge> GetAsync(Expression<Func<WeighBridge, bool>> where)
         {
             var result = DataRecords.WEIGHBRIDGE_NORMAL;
             switch (FLAG_DELETE)

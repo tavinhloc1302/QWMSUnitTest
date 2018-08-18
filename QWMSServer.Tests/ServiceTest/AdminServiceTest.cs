@@ -1902,6 +1902,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_DeleteEmployeeGroup_NoModel()
         {
+            EmployeeGroupRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.DeleteEmployeeGroup(null);
             Assert.IsNull(actualResult.responseDatas);
         }
@@ -1909,6 +1910,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_GetAllUser()
         {
+            UserRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.GetAllUser();
             Assert.IsNotNull(actualResult.responseDatas);
         }
@@ -1916,6 +1918,7 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task GetUserByEmployeeID()
         {
+            UserRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.GetUserByEmployeeID(1);
             Assert.IsNotNull(actualResult.responseDatas);
         }
@@ -1923,8 +1926,9 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task GetUserByEmployeeID_WrongID()
         {
+            UserRepositoryTest.FLAG_GET_ASYNC = 0;
             var actualResult = await _adminService.GetUserByEmployeeID(0);
-            Assert.IsNull(actualResult.responseDatas);
+            Assert.AreEqual(ResponseText.ERR_SEARCH_FAIL, actualResult.errorText);
         }
 
         [TestMethod]
@@ -4120,8 +4124,8 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_AddWeightCode()
         {
-            var actualResult = await _adminService.AddWeightCode("0123");
             WeighRecordRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.AddWeightCode("0123");
             Assert.AreEqual(true, actualResult.booleanResponse);
         }
 
