@@ -1,11 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using QWMSServer.Data.Common;
 using QWMSServer.Data.Infrastructures;
 using QWMSServer.Data.Repository;
 using QWMSServer.Data.Services;
 using QWMSServer.Model.DatabaseModels;
 using QWMSServer.Model.ViewModels;
 using QWMSServer.Tests.Dummy;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace QWMSServer.Tests.ServiceTest
 {
@@ -3142,6 +3145,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.AreEqual(String.Empty, actualResult);
         }
 
+        [TestMethod]
         public async Task TestMethod_UpdateUserPassword()
         {
             UserRepositoryTest.FLAG_DELETE = 3; // No Delete
@@ -3155,6 +3159,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNotNull(actualResult.responseData);
         }
 
+        [TestMethod]
         public async Task TestMethod_UpdateUserPassword_NoID_ShouldFail()
         {
             UserRepositoryTest.FLAG_DELETE = 3; // No Delete
@@ -3167,6 +3172,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNull(actualResult.responseData);
         }
 
+        [TestMethod]
         public async Task TestMethod_UpdateUserPassword_NoPassword_ShouldFail()
         {
             UserRepositoryTest.FLAG_DELETE = 3; // No Delete
@@ -3179,6 +3185,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNull(actualResult.responseData);
         }
 
+        [TestMethod]
         public async Task TestMethod_UpdateUserPassword_NoModel()
         {
             UserRepositoryTest.FLAG_DELETE = 3; // No Delete
@@ -3412,6 +3419,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.AreEqual(Data.Common.ResponseText.DELETE_CUSTOMERWAREHOUSE_FAIL, actualResult.errorText);
         }
 
+        [TestMethod]
         public async Task TestMethod_GetAllDO()
         {
             DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
@@ -3419,6 +3427,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNotNull(actualResult.responseDatas);
         }
 
+        [TestMethod]
         public async Task TestMethod_SearchDO()
         {
             string code = "0123";
@@ -3427,6 +3436,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNotNull(actualResult.responseDatas);
         }
 
+        [TestMethod]
         public async Task TestMethod_SearchDO_NoCode()
         {
             DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
@@ -3434,6 +3444,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNotNull(actualResult.responseDatas);
         }
 
+        [TestMethod]
         public async Task TestMethod_GetDOByCode()
         {
             DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
@@ -3443,6 +3454,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNotNull(actualResult.responseDatas);
         }
 
+        [TestMethod]
         public async Task TestMethod_GetDOByCode_WrongCode()
         {
             DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
@@ -3451,6 +3463,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNotNull(actualResult.responseDatas);
         }
 
+        [TestMethod]
         public async Task TestMethod_GetDOByCode_NoCode()
         {
             DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
@@ -3458,6 +3471,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.AreEqual(ResponseText.ERR_SEARCH_KEYWORD_NULL, actualResult.errorText);
         }
 
+        [TestMethod]
         public async Task TestMethod_CreateNewDO()
         {
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
@@ -3479,6 +3493,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNotNull(actualResult.responseDatas);
         }
 
+        [TestMethod]
         public async Task TestMethod_CreateNewDO_NoModel()
         {
             DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
@@ -3486,6 +3501,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNull(actualResult.responseData);
         }
 
+        [TestMethod]
         public async Task TestMethod_CreateNewDO_NoCustomerModel()
         {
             DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
@@ -3500,6 +3516,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNull(actualResult.responseData);
         }
 
+        [TestMethod]
         public async Task TestMethod_CreateNewDO_NoCarrierModel()
         {
             DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
@@ -3514,6 +3531,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNull(actualResult.responseData);
         }
 
+        [TestMethod]
         public async Task TestMethod_UpdateDO()
         {
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
@@ -3542,6 +3560,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNotNull(actualResult.responseDatas);
         }
 
+        [TestMethod]
         public async Task TestMethod_UpdateDO_NoWarehouse()
         {
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
@@ -3561,6 +3580,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNull(actualResult.responseDatas);
         }
 
+        [TestMethod]
         public async Task TestMethod_UpdateDO_NoCustomer()
         {
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
@@ -3580,6 +3600,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNull(actualResult.responseDatas);
         }
 
+        [TestMethod]
         public async Task TestMethod_UpdateDO_NoCarrier()
         {
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
@@ -3599,6 +3620,7 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.IsNull(actualResult.responseDatas);
         }
 
+        [TestMethod]
         public async Task TestMethod_UpdateDO_NoModel()
         {
             DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
@@ -3606,11 +3628,362 @@ namespace QWMSServer.Tests.ServiceTest
             Assert.AreEqual(ResponseText.ERR_LACK_INPUT, actualResult.errorText);
         }
 
+        [TestMethod]
         public async Task TestMethod_DeleteDO()
         {
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
             {
+                ID = 1
             };
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.DeleteDO(viewModel);
+            Assert.AreEqual(ResponseText.DELETE_DO_SUCCESS, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_DeleteDO_NoId()
+        {
+            DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel();
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            var actualResult = await _adminService.DeleteDO(viewModel);
+            Assert.AreEqual(ResponseText.DELETE_DO_FAIL, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_DeleteDO_NoModel()
+        {
+            var actualResult = await _adminService.DeleteDO(null);
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            Assert.AreEqual(ResponseText.ERR_LACK_INPUT, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetAllConstrains()
+        {
+            ConstrainRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetAllConstrain();
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetAllConstrains_NotFound()
+        {
+            ConstrainRepositoryTest.FLAG_GET_ASYNC = 0;
+            var actualResult = await _adminService.GetAllConstrain();
+            Assert.IsNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateConstrain()
+        {
+            Constrain viewModel = new Constrain
+            {
+                name = "Constrain1"
+            };
+            ConstrainRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateConstrain(viewModel);
+            Assert.AreEqual(ResponseText.EDIT_CONSTRAIN_SUCCESS, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateConstrain_NoModel()
+        {
+            ConstrainRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateConstrain(null);
+            Assert.AreEqual(ResponseText.ERR_LACK_INPUT, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateConstrain_NoName()
+        {
+            ConstrainRepositoryTest.FLAG_GET_ASYNC = 1;
+            Constrain viewModel = new Constrain();
+            var actualResult = await _adminService.UpdateConstrain(viewModel);
+            Assert.AreEqual(ResponseText.EDIT_CONSTRAIN_FAIL, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetConstrainByCategory()
+        {
+            ConstrainRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetConstrainByCategory("category1");
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetConstrainByCategory_NoCategoryName()
+        {
+            ConstrainRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetConstrainByCategory(null);
+            Assert.AreEqual(ResponseText.ERR_SEARCH_FAIL, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdatePrintHeader()
+        {
+            PrintHeader viewModel = new PrintHeader
+            {
+                companyName = "Company 1",
+                companyName2 = "Company 1",
+                faxNo = "0123456789",
+                address = "Address 1",
+                phoneNo = "0123456789"
+            };
+
+            PrintHeaderRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdatePrintHeader(viewModel);
+            Assert.AreEqual(ResponseText.EDIT_PRINTHEADER_SUCCESS, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdatePrintHeader_NoFields()
+        {
+            PrintHeader viewModel = new PrintHeader();
+
+            PrintHeaderRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdatePrintHeader(viewModel);
+            Assert.AreEqual(ResponseText.EDIT_PRINTHEADER_FAIL, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdatePrintHeader_NoModel()
+        {
+            PrintHeaderRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdatePrintHeader(null);
+            Assert.AreEqual(ResponseText.ERR_LACK_INPUT, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetAllSystemFunction()
+        {
+            SystemFunctionRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetAllSystemFunction();
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateEmployeeGroupFunction()
+        {
+            EmployeeGroupViewModel viewModel = new EmployeeGroupViewModel
+            {
+                ID = 1,
+                functionMaps = new List<GroupFunctionMapViewModel>
+                {
+                    new GroupFunctionMapViewModel
+                    {
+                        systemFunctionID = 1
+                    }
+                }
+            };
+
+            EmployeeGroup_SystemFunctionRepositoryTest.FLAG_GET_ASYNC = 1;
+            EmployeeGroup_SystemFunctionRepositoryTest.FLAG_DELETE = 0;
+            var actualResult = await _adminService.UpdateEmployeeGroupFunction(null);
+            Assert.AreEqual(ResponseText.EDIT_GROUPPERMISSION_SUCCESS, actualResult.errorText);
+        }
+
+        public async Task TestMethod_UpdateEmployeeGroupFunction_NoID()
+        {
+            EmployeeGroupViewModel viewModel = new EmployeeGroupViewModel
+            {
+                functionMaps = new List<GroupFunctionMapViewModel>
+                {
+                    new GroupFunctionMapViewModel
+                    {
+                        systemFunctionID = 1
+                    }
+                }
+            };
+
+            EmployeeGroup_SystemFunctionRepositoryTest.FLAG_GET_ASYNC = 1;
+            EmployeeGroup_SystemFunctionRepositoryTest.FLAG_DELETE = 0;
+            var actualResult = await _adminService.UpdateEmployeeGroupFunction(viewModel); // Exception threw because of no ID
+            Assert.AreEqual(ResponseText.EDIT_GROUPPERMISSION_FAIL, actualResult.errorText);
+        }
+
+        public async Task TestMethod_UpdateEmployeeGroupFunction_NoFunction()
+        {
+            EmployeeGroupViewModel viewModel = new EmployeeGroupViewModel
+            {
+                ID = 1
+            };
+
+            EmployeeGroup_SystemFunctionRepositoryTest.FLAG_GET_ASYNC = 1;
+            EmployeeGroup_SystemFunctionRepositoryTest.FLAG_DELETE = 0;
+            var actualResult = await _adminService.UpdateEmployeeGroupFunction(viewModel);  // Exception threw because of no systemFunction
+            Assert.AreEqual(ResponseText.EDIT_GROUPPERMISSION_FAIL, actualResult.errorText);
+        }
+
+        public async Task TestMethod_UpdateEmployeeGroupFunction_NoFunctionID()
+        {
+            EmployeeGroupViewModel viewModel = new EmployeeGroupViewModel
+            {
+                ID = 1,
+                functionMaps = new List<GroupFunctionMapViewModel>
+                {
+                    new GroupFunctionMapViewModel
+                    {
+                    }
+                }
+            };
+
+            EmployeeGroup_SystemFunctionRepositoryTest.FLAG_GET_ASYNC = 1;
+            EmployeeGroup_SystemFunctionRepositoryTest.FLAG_DELETE = 0;
+            var actualResult = await _adminService.UpdateEmployeeGroupFunction(viewModel);  // Exception threw because of no systemFunctionId
+            Assert.AreEqual(ResponseText.EDIT_GROUPPERMISSION_FAIL, actualResult.errorText);
+        }
+
+        public async Task TestMethod_UpdateEmployeeGroupFunction_NoModel()
+        {
+            EmployeeGroup_SystemFunctionRepositoryTest.FLAG_GET_ASYNC = 1;
+            EmployeeGroup_SystemFunctionRepositoryTest.FLAG_DELETE = 0;
+            var actualResult = await _adminService.UpdateEmployeeGroupFunction(null);
+            Assert.AreEqual(ResponseText.EDIT_GROUPPERMISSION_FAIL, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateRFIDCardStatus()
+        {
+            RFIDCardViewModel viewModel = new RFIDCardViewModel
+            {
+                code = "0123",
+                status = 1
+            };
+            RFIDCardRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateRFIDCardStatus(viewModel);
+            Assert.AreEqual(ResponseText.EDIT_RFIDCARD_SUCCESS, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateRFIDCardStatus_NoCode()
+        {
+            RFIDCardViewModel viewModel = new RFIDCardViewModel
+            {
+                status = 1
+            };
+            RFIDCardRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateRFIDCardStatus(viewModel);
+            Assert.AreEqual(ResponseText.EDIT_RFIDCARD_FAIL, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateRFIDCardStatus_NoStatus()
+        {
+            RFIDCardViewModel viewModel = new RFIDCardViewModel
+            {
+                code = "0123"
+            };
+            RFIDCardRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateRFIDCardStatus(viewModel);
+            Assert.AreEqual(ResponseText.ERR_LACK_INPUT, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateRFIDCardStatus_NoModel()
+        {
+            RFIDCardRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateRFIDCardStatus(null);
+            Assert.AreEqual(ResponseText.EDIT_RFIDCARD_FAIL, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateNewRFID()
+        {
+            RFIDCardViewModel viewModel = new RFIDCardViewModel
+            {
+                code = "0123",
+                status = 1
+            };
+            RFIDCardRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.CreateNewRFID(viewModel);
+            Assert.AreEqual(ResponseText.ADD_RFIDCARD_SUCCESS, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateNewRFID_NoModel()
+        {
+            RFIDCardRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.CreateNewRFID(null);
+            Assert.AreEqual(ResponseText.ADD_RFIDCARD_FAIL, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetAllRFID()
+        {
+            RFIDCardRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetAllRFID();
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_SearchRFID()
+        {
+            RFIDCardRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.SearchRFID("0123");
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_SearchRFID_NoCode()
+        {
+            RFIDCardRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.SearchRFID(null);
+            Assert.AreEqual(ResponseText.ERR_SEARCH_KEYWORD_NULL, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetAllWB()
+        {
+            WeighBridgeRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetAllWB();
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateWeighBridge()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public async Task TestMethod_GetAllCamera()
+        {
+            CameraRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetAllCamera();
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_CreateNewCamera()
+        {
+            Camera viewModel = new Camera
+            {
+                Code = "0123"
+            };
+            var actualResult = await _adminService.CreateNewCamera(viewModel);
+            Assert.AreEqual(ResponseText.ADD_CAMERA_SUCCESS, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_UpdateCamera()
+        {
+            Camera viewModel = new Camera
+            {
+                Code = "0123"
+            };
+            var actualResult = await _adminService.UpdateCamera(viewModel);
+            Assert.AreEqual(ResponseText.ADD_CAMERA_SUCCESS, actualResult.errorText);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_DeleteCamera()
+        {
+            Camera viewModel = new Camera
+            {
+                Code = "0123"
+            };
+            var actualResult = await _adminService.DeleteCamera(viewModel);
+            Assert.AreEqual(ResponseText.ADD_CAMERA_SUCCESS, actualResult.errorText);
         }
     }
 }
