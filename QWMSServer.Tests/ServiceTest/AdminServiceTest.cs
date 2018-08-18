@@ -1,8 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using QWMSServer.Data.Common;
 using QWMSServer.Data.Infrastructures;
 using QWMSServer.Data.Repository;
 using QWMSServer.Data.Services;
+using QWMSServer.Model.DatabaseModels;
 using QWMSServer.Model.ViewModels;
 using QWMSServer.Tests.Dummy;
 
@@ -3410,11 +3411,13 @@ namespace QWMSServer.Tests.ServiceTest
             };
             CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.DeleteCustomerWarehouse(viewModel);
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.AreEqual(Data.Common.ResponseText.DELETE_CUSTOMERWAREHOUSE_FAIL, actualResult.errorText);
         }
 
         public async Task TestMethod_GetAllDO()
         {
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.GetAllDO();
             Assert.IsNotNull(actualResult.responseDatas);
         }
@@ -3422,18 +3425,30 @@ namespace QWMSServer.Tests.ServiceTest
         public async Task TestMethod_SearchDO()
         {
             string code = "0123";
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.SearchDO(code);
             Assert.IsNotNull(actualResult.responseDatas);
         }
 
         public async Task TestMethod_SearchDO_NoCode()
         {
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
             var actualResult = await _adminService.SearchDO(null);
             Assert.IsNotNull(actualResult.responseDatas);
         }
 
         public async Task TestMethod_GetDOByCode()
         {
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            string code = "0123";
+            var actualResult = await _adminService.GetDOByCode(code);
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        public async Task TestMethod_GetDOByCode_WrongCode()
+        {
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
             string code = "0123";
             var actualResult = await _adminService.GetDOByCode(code);
             Assert.IsNotNull(actualResult.responseDatas);
@@ -3441,8 +3456,9 @@ namespace QWMSServer.Tests.ServiceTest
 
         public async Task TestMethod_GetDOByCode_NoCode()
         {
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
             var actualResult = await _adminService.GetDOByCode(null);
-            Assert.IsNotNull(actualResult.responseDatas);
+            Assert.AreEqual(ResponseText.ERR_SEARCH_KEYWORD_NULL, actualResult.errorText);
         }
 
         public async Task TestMethod_CreateNewDO()
@@ -3458,18 +3474,24 @@ namespace QWMSServer.Tests.ServiceTest
                     code = "0123"
                 }
             };
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.CreateNewDO(viewModel);
             Assert.IsNotNull(actualResult.responseDatas);
         }
 
         public async Task TestMethod_CreateNewDO_NoModel()
         {
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.CreateNewDO(null);
             Assert.IsNull(actualResult.responseData);
         }
 
         public async Task TestMethod_CreateNewDO_NoCustomerModel()
         {
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
             {
                 carrierVendor = new CarrierVendorViewModel
@@ -3483,6 +3505,7 @@ namespace QWMSServer.Tests.ServiceTest
 
         public async Task TestMethod_CreateNewDO_NoCarrierModel()
         {
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
             {
                 customer = new CustomerViewModel
@@ -3511,7 +3534,11 @@ namespace QWMSServer.Tests.ServiceTest
                     code = "0123"
                 }
             };
-            var actualResult = await _adminService.CreateNewDO(viewModel);
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateDO(viewModel);
             Assert.IsNotNull(actualResult.responseDatas);
         }
 
@@ -3528,6 +3555,10 @@ namespace QWMSServer.Tests.ServiceTest
                     code = "0123"
                 }
             };
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 0;
+            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.CreateNewDO(viewModel);
             Assert.IsNull(actualResult.responseDatas);
         }
@@ -3545,7 +3576,11 @@ namespace QWMSServer.Tests.ServiceTest
                     code = "0123"
                 }
             };
-            var actualResult = await _adminService.CreateNewDO(viewModel);
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 0;
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.UpdateDO(viewModel);
             Assert.IsNull(actualResult.responseDatas);
         }
 
@@ -3562,12 +3597,17 @@ namespace QWMSServer.Tests.ServiceTest
                     code = "0123"
                 }
             };
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 0;
             var actualResult = await _adminService.CreateNewDO(viewModel);
             Assert.IsNull(actualResult.responseDatas);
         }
 
         public async Task TestMethod_UpdateDO_NoModel()
         {
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
             var actualResult = await _adminService.CreateNewDO(null);
             Assert.IsNull(actualResult.responseDatas);
         }
@@ -3576,7 +3616,62 @@ namespace QWMSServer.Tests.ServiceTest
         {
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
             {
+                ID = 1
             };
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.DeleteDO(viewModel);
+            Assert.AreEqual(ResponseText.DELETE_DO_SUCCESS, actualResult.errorText);
+        }
+
+        public async Task TestMethod_DeleteDO_NoId()
+        {
+            DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel();
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            var actualResult = await _adminService.DeleteDO(viewModel);
+            Assert.AreEqual(ResponseText.DELETE_DO_FAIL, actualResult.errorText);
+        }
+
+        public async Task TestMethod_DeleteDO_NoModel()
+        {
+            var actualResult = await _adminService.DeleteDO(null);
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 0;
+            Assert.AreEqual(ResponseText.ERR_LACK_INPUT, actualResult.errorText);
+        }
+
+        public async Task TestMethod_GetAllConstrains()
+        {
+            ConstrainRepositoryTest.FLAG_GET_ASYNC = 1;
+            var actualResult = await _adminService.GetAllConstrain();
+            Assert.IsNotNull(actualResult.responseDatas);
+        }
+
+        public async Task TestMethod_GetAllConstrains_NotFound()
+        {
+            ConstrainRepositoryTest.FLAG_GET_ASYNC = 0;
+            var actualResult = await _adminService.GetAllConstrain();
+            Assert.IsNull(actualResult.responseDatas);
+        }
+
+        public async Task TestMethod_UpdateConstrain()
+        {
+            Constrain viewModel = new Constrain
+            {
+                name = "Constrain1"
+            };
+
+            var actualResult = await _adminService.UpdateConstrain(viewModel);
+            Assert.AreEqual(ResponseText.EDIT_CONSTRAIN_SUCCESS, actualResult.errorText);
+        }
+
+        public async Task TestMethod_UpdateConstrain_NoModel()
+        {
+            var actualResult = await _adminService.UpdateConstrain(null);
+            Assert.AreEqual(ResponseText.EDIT_CONSTRAIN_SUCCESS, actualResult.errorText);
+        }
+
+        public async Task TestMethod_UpdateConstrain_NoName()
+        {
+
         }
     }
 }
