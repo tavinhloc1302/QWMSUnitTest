@@ -9,7 +9,7 @@ namespace QWMSServer.Tests.Dummy
 {
     class TruckRepositoryTest : RepositoryBaseTest<Truck>, ITruckRepository
     {
-        public static int FLAG_DELETE = 0;
+        public static int FLAG_DELETE = -1;
 
         public override IList<Truck> GetObjectList()
         {

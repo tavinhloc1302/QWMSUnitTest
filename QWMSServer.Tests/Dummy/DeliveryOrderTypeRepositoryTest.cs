@@ -10,7 +10,7 @@ namespace QWMSServer.Tests.Dummy
 {
     public class DeliveryOrderTypeRepositoryTest : RepositoryBaseTest<DeliveryOrderType>, IDeliveryOrderTypeRepository
     {
-        public static int FLAG_DELETE = 0;
+        public static int FLAG_DELETE = -1;
 
         public override IList<DeliveryOrderType> GetObjectList()
         {
@@ -30,10 +30,10 @@ namespace QWMSServer.Tests.Dummy
                     result = null;
                     break;
                 case 0: // OK
-                    result = this.SimpleGetPatcher(DataRecords.DELIVERY_ORDER_TYPE_NORMAL);
+                    result = this.SimpleGetPatcher(DataRecords.DELIVERY_ORDER_TYPE_DELETED);
                     break;
                 default:
-                    result = this.SimpleGetPatcher(DataRecords.DELIVERY_ORDER_TYPE_DELETED);
+                    result = this.SimpleGetPatcher(DataRecords.DELIVERY_ORDER_TYPE_NORMAL);
                     break;
             }
             return result;

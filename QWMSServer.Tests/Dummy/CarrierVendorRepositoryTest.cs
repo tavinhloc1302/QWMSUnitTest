@@ -10,7 +10,7 @@ namespace QWMSServer.Tests.Dummy
 {
     public class CarrierVendorRepositoryTest : RepositoryBaseTest<CarrierVendor>, ICarrierVendorRepository
     {
-        public static int FLAG_DELETE = 0;
+        public static int FLAG_DELETE = -1;
         public override IList<CarrierVendor> GetObjectList()
         {
             return new List<CarrierVendor>() {

@@ -14,7 +14,7 @@ namespace QWMSServer.Tests.Dummy
             ID = 1,
             name = "Badge reader 1",
             isDelete = false,
-            
+
         };
 
         public static BadgeReader BADGEREADER_DELETED = new BadgeReader
@@ -396,10 +396,49 @@ namespace QWMSServer.Tests.Dummy
             isDelete = true,
             nameEn = "Sky Rider 1",
             nameVi = "Sky Rider 1",
-            loadingBays = new List < LoadingBay > {
+            loadingBays = new List<LoadingBay> {
                 LOADING_BAY_DELETED
             },
             plantID = 1
+        };
+
+        public static WeighBridge WEIGHBRIDGE_NORMAL = new WeighBridge
+        {
+            Code = "0123",
+            Description = "Weigh Bridge 1",
+            isDelete = false,
+            ID = 1,
+            PCIpAddress = "127.0.0.1",
+            Name = "Weigh bridge 1"
+        };
+
+        public static WeighBridge WEIGHBRIDGE_DELETED = new WeighBridge
+        {
+            Code = "0123",
+            Description = "Weigh Bridge 1",
+            isDelete = true,
+            ID = 2,
+            PCIpAddress = "127.0.0.1",
+            Name = "Weigh bridge 2"
+        };
+
+        public static StateRecord STATERECORD_NORMAL = new StateRecord()
+        {
+            code = "0123",
+            ID = 1,
+            isDelete = false,
+            gatePassID = 1,
+            stateID = 1,
+            stateStatus = 1
+        };
+        public static StateRecord STATERECORD_DELETED = new StateRecord()
+        {
+            code = "0123",
+            ID = 1,
+            isDelete = false,
+            gatePassID = 1,
+            stateID = 1,
+            stateStatus = 1
         };
 
         public static LoadingBay LOADING_BAY_NORMAL = new LoadingBay()
@@ -493,7 +532,7 @@ namespace QWMSServer.Tests.Dummy
         { ID = 2, code = "2345", orderTypeID = ORDER_TYPE_PURCHASE.ID, orderType = ORDER_TYPE_PURCHASE, registGrossWeight = 20, gatePassID = GATE_PASS_NORMAL.ID, gatePass = GATE_PASS_NORMAL, plantID = null, plant = null, doID = null, deliveryOrder = null, poID = null, purchaseOrder = null, isDelete = false, };
         public static Order ORDER_NORMAL_TYPE_OTHER = new Order()
         { ID = 3, code = "3456", orderTypeID = ORDER_TYPE_OTHER.ID, orderType = ORDER_TYPE_OTHER, registGrossWeight = 30, gatePassID = GATE_PASS_NORMAL.ID, gatePass = GATE_PASS_NORMAL, plantID = null, plant = null, doID = null, deliveryOrder = null, poID = null, purchaseOrder = null, isDelete = false, };
-        public static Order ORDER_NORMAL_INTERNAL= new Order()
+        public static Order ORDER_NORMAL_INTERNAL = new Order()
         { ID = 4, code = "4567", orderTypeID = ORDER_TYPE_INTERNAL.ID, orderType = ORDER_TYPE_INTERNAL, registGrossWeight = 40, gatePassID = GATE_PASS_NORMAL.ID, gatePass = GATE_PASS_NORMAL, plantID = null, plant = null, doID = null, deliveryOrder = null, poID = null, purchaseOrder = null, isDelete = false, };
 
         public static Customer CUSTOMER_NORMAL = new Customer()

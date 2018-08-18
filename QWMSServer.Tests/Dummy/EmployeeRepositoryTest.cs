@@ -10,7 +10,7 @@ namespace QWMSServer.Tests.Dummy
 {
     public class EmployeeRepositoryTest : RepositoryBaseTest<Employee>, IEmployeeRepository
     {
-        public static int FLAG_DELETE = 0;
+        public static int FLAG_DELETE = -1;
 
         public override IList<Employee> GetObjectList()
         {

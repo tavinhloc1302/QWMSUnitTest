@@ -7,6 +7,8 @@ namespace QWMSServer.Tests.Dummy
 {
     public class StateRepositoryTest : RepositoryBaseTest<State>, IStateRepository
     {
+        public static int FLAG_DELETE = -1;
+
         public override IList<State> GetObjectList()
         {
             return new List<State>() {

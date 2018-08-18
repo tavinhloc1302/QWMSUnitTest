@@ -10,7 +10,7 @@ namespace QWMSServer.Tests.Dummy
 {
     public class QueueListRepositoryTest : RepositoryBaseTest<QueueList>, IQueueListRepository
     {
-        public static int FLAG_DELETE = 0;
+        public static int FLAG_DELETE = -1;
 
         public override IList<QueueList> GetObjectList()
         {

@@ -9,7 +9,7 @@ namespace QWMSServer.Tests.Dummy
 {
     public class BadgeReaderRepositoryTest : RepositoryBaseTest<BadgeReader>, IBadgeReaderRepository
     {
-        public static int FLAG_DELETE = 0;
+        public static int FLAG_DELETE = -1;
 
         public override IList<BadgeReader> GetObjectList()
         {

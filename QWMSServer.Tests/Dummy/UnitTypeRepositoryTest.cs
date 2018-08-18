@@ -10,7 +10,7 @@ namespace QWMSServer.Tests.Dummy
 {
     public class UnitTypeRepositoryTest : RepositoryBaseTest<UnitType>, IUnitTypeRepository
     {
-        public static int FLAG_DELETE = 0;
+        public static int FLAG_DELETE = -1;
 
         public override IList<UnitType> GetObjectList()
         {

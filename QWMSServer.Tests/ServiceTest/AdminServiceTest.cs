@@ -4116,5 +4116,21 @@ namespace QWMSServer.Tests.ServiceTest
             BadgeReaderRepositoryTest.FLAG_GET_ASYNC = 1;        
             Assert.AreEqual(ResponseText.EDIT_BADGEREADER_FAIL, actualResult.errorText);
         }
+
+        [TestMethod]
+        public async Task TestMethod_AddWeightCode()
+        {
+            var actualResult = await _adminService.AddWeightCode("0123");
+            WeighRecordRepositoryTest.FLAG_GET_ASYNC = 1;
+            Assert.AreEqual(true, actualResult.booleanResponse);
+        }
+
+        [TestMethod]
+        public async Task TestMethod_AddWeightCode_NoCode()
+        {
+            var actualResult = await _adminService.AddWeightCode(null);
+            WeighRecordRepositoryTest.FLAG_GET_ASYNC = 1;
+            Assert.AreEqual(false, actualResult.booleanResponse);
+        }
     }
 }

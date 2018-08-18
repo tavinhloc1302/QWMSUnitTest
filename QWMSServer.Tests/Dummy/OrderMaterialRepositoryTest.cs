@@ -10,7 +10,7 @@ namespace QWMSServer.Tests.Dummy
 {
     public class OrderMaterialRepositoryTest : RepositoryBaseTest<OrderMaterial>, IOrderMaterialRepository
     {
-        public static int FLAG_DELETE = 0;
+        public static int FLAG_DELETE = -1;
 
         public override IList<OrderMaterial> GetObjectList()
         {

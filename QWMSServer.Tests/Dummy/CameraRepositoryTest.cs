@@ -10,7 +10,7 @@ namespace QWMSServer.Tests.Dummy
 {
     public class CameraRepositoryTest : RepositoryBaseTest<Camera>, ICameraRepository
     {
-        public static int FLAG_DELETE = 0;
+        public static int FLAG_DELETE = -1;
 
         public override IList<Camera> GetObjectList()
         {
@@ -31,10 +31,10 @@ namespace QWMSServer.Tests.Dummy
                     result = null;
                     break;
                 case 0: // OK
-                    result = this.SimpleGetPatcher(DataRecords.CAMERA_NORMAL);
+                    result = this.SimpleGetPatcher(DataRecords.CAMERA_DELETED);
                     break;
                 default:
-                    result = this.SimpleGetPatcher(DataRecords.CAMERA_DELETED);
+                    result = this.SimpleGetPatcher(DataRecords.CAMERA_NORMAL);
                     break;
             }
             return result;
