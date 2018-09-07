@@ -560,9 +560,9 @@ namespace QWMSServer.Tests.Dummy
         { code = "3456", ID = 3, isDelete = true, status = 1 };
 
         public static Employee EMPLOYEE_NORMAL = new Employee()
-        { ID = 1, code = "0123", isDelete = false, firstName = "Van Hoang", lastName = "Dinh", rfidCard = RFID_CARD_NORMAL, RFIDCardID = RFID_CARD_NORMAL.ID, users = null };
+        { ID = 1, code = "0123", isDelete = false, firstName = "Van Hoang", lastName = "Dinh", rfidCard = RFID_CARD_NORMAL, RFIDCardID = RFID_CARD_NORMAL.ID, users = new List<User> { USER_NORMAL_1, USER_NORMAL_2 } };
         public static Employee EMPLOYEE_DELETED = new Employee()
-        { ID = 1, code = "1234", isDelete = true, firstName = "Van Dang", lastName = "Huynh", rfidCard = RFID_CARD_NORMAL, RFIDCardID = RFID_CARD_NORMAL.ID, users = null, };
+        { ID = 1, code = "1234", isDelete = true, firstName = "Van Dang", lastName = "Huynh", rfidCard = RFID_CARD_NORMAL, RFIDCardID = RFID_CARD_NORMAL.ID, users = new List<User> { USER_NORMAL_1, USER_NORMAL_2 } };
 
         public static LoadingType LOADING_TYPE_NORMAL = new LoadingType()
         { ID = 1, code = "1111", description = "1111 Desc", isDelete = false };

@@ -1095,6 +1095,7 @@ namespace QWMSServer.Tests.ServiceTest
             LoadingTypeRepositoryTest.FLAG_GET_ASYNC = 1;
             CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
             TruckTypeRepositoryTest.FLAG_GET_ASYNC = 1;
+            DriverRepositoryTest.FLAG_GET_ASYNC = 1;
             TruckViewModel viewModel = new TruckViewModel
             {
                 truckType = new TruckTypeViewModel
@@ -1123,7 +1124,27 @@ namespace QWMSServer.Tests.ServiceTest
             TruckTypeRepositoryTest.FLAG_GET_ASYNC = 1;
             LoadingTypeRepositoryTest.FLAG_GET_ASYNC = 1;
             CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
-            TruckViewModel viewModel = new TruckViewModel();
+            TruckRepositoryTest.FLAG_GET_ASYNC = 1;
+            LoadingTypeRepositoryTest.FLAG_GET_ASYNC = 1;
+            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
+            TruckTypeRepositoryTest.FLAG_GET_ASYNC = 1;
+            DriverRepositoryTest.FLAG_GET_ASYNC = 1;
+            TruckViewModel viewModel = new TruckViewModel
+            {
+                truckType = new TruckTypeViewModel
+                {
+                    ID = 1
+                },
+                loadingType = new LoadingTypeViewModel
+                {
+                    ID = 1
+                },
+                carrierVendor = new CarrierVendorViewModel
+                {
+                    code = "0123"
+                },
+                suggestDriverID = 1
+            };
             var actualResult = await _adminService.CreateNewTruck(viewModel);
             TruckRepositoryTest.FLAG_GET_ASYNC = 0;
             LoadingTypeRepositoryTest.FLAG_GET_ASYNC = 0;
@@ -1713,12 +1734,21 @@ namespace QWMSServer.Tests.ServiceTest
         {
             EmployeeRepositoryTest.FLAG_GET_ASYNC = 1;
             EmployeeRepositoryTest.FLAG_DELETE = 0;
+            RFIDCardRepositoryTest.FLAG_UPDATE = 1;
+            UserRepositoryTest.FLAG_UPDATE = 1;
             EmployeeViewModel viewModel = new EmployeeViewModel
             {
-                ID = 1
+                ID = 1,
+                rfidCard = DataRecords.RFID_CARD_NORMAL,
+                users = new List<UserViewModel> {
+                    new UserViewModel
+                    {
+                        Code = "0123",
+                        ID = 1
+                    }
+                }
             };
             var actualResult = await _adminService.DeleteEmployee(viewModel);
-            EmployeeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseDatas);
         }
 
@@ -1987,12 +2017,19 @@ namespace QWMSServer.Tests.ServiceTest
         public async Task TestMethod_CreateNewUser()
         {
             UserRepositoryTest.FLAG_GET_ASYNC = 1;
+            EmployeeRepositoryTest.FLAG_GET_ASYNC = 1;
             UserViewModel viewModel = new UserViewModel
             {
-                Code = "0123"
+                Code = "0123",
+                employee = new EmployeeViewModel
+                {
+                    code = "0123",
+                    ID = 1
+                },
+                password = "0123132132",
+                username = "test"
             };
             var actualResult = await _adminService.CreateNewUser(viewModel);
-            UserRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -2000,9 +2037,18 @@ namespace QWMSServer.Tests.ServiceTest
         public async Task TestMethod_CreateNewUser_NoCode()
         {
             UserRepositoryTest.FLAG_GET_ASYNC = 1;
-            UserViewModel viewModel = new UserViewModel();
+            EmployeeRepositoryTest.FLAG_GET_ASYNC = 1;
+            UserViewModel viewModel = new UserViewModel
+            {
+                employee = new EmployeeViewModel
+                {
+                    code = "0123",
+                    ID = 1
+                },
+                password = "0123132132",
+                username = "test"
+            };
             var actualResult = await _adminService.CreateNewUser(viewModel);
-            UserRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -3410,7 +3456,7 @@ namespace QWMSServer.Tests.ServiceTest
         }
 
         [TestMethod]
-        public async Task TestMethod_DeleteCustomerWarehouse_ModelNoCode()
+        public async Task TestMethod_DeleteCustomerWarehouse_ModelNoCode_ShouldFail()
         {
             CustomerWarehouseViewModel viewModel = new CustomerWarehouseViewModel
             {
@@ -3421,6 +3467,7 @@ namespace QWMSServer.Tests.ServiceTest
                 },
                 warehouseName = "Warehouse"
             };
+            // Failed due to no code
             CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.DeleteCustomerWarehouse(viewModel);
             Assert.AreEqual(Data.Common.ResponseText.DELETE_CUSTOMERWAREHOUSE_FAIL, actualResult.errorText);
@@ -3695,14 +3742,6 @@ namespace QWMSServer.Tests.ServiceTest
             ConstrainRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.GetAllConstrain();
             Assert.IsNotNull(actualResult.responseDatas);
-        }
-
-        [TestMethod]
-        public async Task TestMethod_GetAllConstrains_NotFound()
-        {
-            ConstrainRepositoryTest.FLAG_GET_ASYNC = 0;
-            var actualResult = await _adminService.GetAllConstrain();
-            Assert.IsNull(actualResult.responseDatas);
         }
 
         [TestMethod]
@@ -4044,7 +4083,7 @@ namespace QWMSServer.Tests.ServiceTest
             CameraRepositoryTest.FLAG_GET_ASYNC = 1;
             CameraRepositoryTest.FLAG_DELETE = 1;
             var actualResult = await _adminService.DeleteCamera(null);
-            Assert.AreEqual(ResponseText.DELETE_CAMERA_FAIL, actualResult.errorText);
+            Assert.AreEqual(ResponseText.ERR_LACK_INPUT, actualResult.errorText);
         }
 
         [TestMethod]
@@ -4108,15 +4147,15 @@ namespace QWMSServer.Tests.ServiceTest
         {
             BadgeReaderRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.GetBadgeReaderByCode("0123");
-            Assert.AreEqual(ResponseText.EDIT_PC_FAIL, actualResult.errorText);
+            Assert.IsNotNull(actualResult.responseDatas);
         }
 
         [TestMethod]
-        public async Task TestMethod_GetBadgeReaderByCode_NoCode()
+        public async Task TestMethod_GetBadgeReaderByCode_NoCode_ShouldFail()
         {
             BadgeReaderRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.GetBadgeReaderByCode(null);
-            Assert.AreEqual(ResponseText.EDIT_PC_FAIL, actualResult.errorText);
+            Assert.IsNull(actualResult.responseDatas);
         }
 
         [TestMethod]
