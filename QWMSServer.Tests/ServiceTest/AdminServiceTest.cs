@@ -1097,13 +1097,22 @@ namespace QWMSServer.Tests.ServiceTest
             TruckTypeRepositoryTest.FLAG_GET_ASYNC = 1;
             TruckViewModel viewModel = new TruckViewModel
             {
+                truckType = new TruckTypeViewModel
+                {
+                    ID = 1
+                },
+                loadingType = new LoadingTypeViewModel
+                {
+                    ID = 1
+                },
+                carrierVendor = new CarrierVendorViewModel
+                {
+                    code = "0123"
+                },
+                suggestDriverID = 1,
                 code = "0123"
             };
             var actualResult = await _adminService.CreateNewTruck(viewModel);
-            TruckRepositoryTest.FLAG_GET_ASYNC = 0;
-            LoadingTypeRepositoryTest.FLAG_GET_ASYNC = 0;
-            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 0;
-            TruckTypeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -1617,24 +1626,29 @@ namespace QWMSServer.Tests.ServiceTest
         }
 
         [TestMethod]
-        public async Task TestMethod_CreateNewEmployee()
+        public async Task TestMethod_CreateNewEmployee_ShouldFail()
         {
             EmployeeRepositoryTest.FLAG_GET_ASYNC = 1;
             EmployeeViewModel viewModel = new EmployeeViewModel
             {
+                rfidCard = new RFIDCard
+                {
+                    code = "4321"
+                },
                 code = "0123"
             };
+            // Failed due to getAsync will always return object
             var actualResult = await _adminService.CreateNewEmployee(viewModel);
-            EmployeeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
-        public async Task TestMethod_CreateNewEmployee_NoCode()
+        public async Task TestMethod_CreateNewEmployee_NoCode_ShouldFail()
         {
             EmployeeRepositoryTest.FLAG_GET_ASYNC = 1;
             EmployeeViewModel viewModel = new EmployeeViewModel();
             var actualResult = await _adminService.CreateNewEmployee(viewModel);
+            // Failed due to getAsync will always return object
             EmployeeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
@@ -3511,9 +3525,14 @@ namespace QWMSServer.Tests.ServiceTest
         }
 
         [TestMethod]
-        public async Task TestMethod_CreateNewDO_NoCustomerModel()
+        public async Task TestMethod_CreateNewDO_NoCustomerModel_ShouldFail()
         {
             DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            DeliveryOrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            CustomerRepositoryTest.FLAG_GET_ASYNC = 0; // Failed due to no customer found
+            CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
+            OrderRepositoryTest.FLAG_GET_ASYNC = 1;
+            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 1;
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
             {
                 carrierVendor = new CarrierVendorViewModel
@@ -3526,7 +3545,7 @@ namespace QWMSServer.Tests.ServiceTest
         }
 
         [TestMethod]
-        public async Task TestMethod_CreateNewDO_NoCarrierModel()
+        public async Task TestMethod_CreateNewDO_NoCarrierModel_ShouldFail()
         {
             DeliveryOrderViewModel viewModel = new DeliveryOrderViewModel
             {
@@ -3539,7 +3558,7 @@ namespace QWMSServer.Tests.ServiceTest
             CustomerRepositoryTest.FLAG_GET_ASYNC = 1;
             CustomerWarehouseRepositoryTest.FLAG_GET_ASYNC = 1;
             OrderRepositoryTest.FLAG_GET_ASYNC = 1;
-            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 0;
+            CarrierVendorRepositoryTest.FLAG_GET_ASYNC = 0; // Failed due to no carrier found
             var actualResult = await _adminService.CreateNewDO(viewModel);
             Assert.IsNull(actualResult.responseData);
         }
@@ -3917,7 +3936,7 @@ namespace QWMSServer.Tests.ServiceTest
         {
             RFIDCardRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.CreateNewRFID(null);
-            Assert.AreEqual(ResponseText.ADD_RFIDCARD_FAIL, actualResult.errorText);
+            Assert.AreEqual(ResponseText.ERR_LACK_INPUT, actualResult.errorText);
         }
 
         [TestMethod]
