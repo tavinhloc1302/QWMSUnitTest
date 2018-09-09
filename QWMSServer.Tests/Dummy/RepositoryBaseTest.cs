@@ -151,7 +151,7 @@ namespace QWMSServer.Tests.Dummy
 
         public async Task<TEntity> GetByIdAsync(int id)
         {
-            return this.Objects.FindFirst((item) => ObjectUtils.GetProperty<int>(item, "ID") == id);
+            return await this.GetAsync(obj => ObjectUtils.GetProperty<int>(obj, "ID") == id);
         }
 
         public virtual async Task<IEnumerable<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> where)
