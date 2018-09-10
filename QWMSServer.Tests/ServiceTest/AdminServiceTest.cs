@@ -3210,16 +3210,19 @@ namespace QWMSServer.Tests.ServiceTest
         }
 
         [TestMethod]
-        public async Task TestMethod_UpdateUserPassword()
+        public async Task TestMethod_UpdateUserPassword_ShouldFail()
         {
             UserRepositoryTest.FLAG_DELETE = 3; // No Delete
             UserRepositoryTest.FLAG_GET_ASYNC = 1;
+            UserRepositoryTest.FLAG_UPDATE = 1;
+            UserPasswordRepositoryTest.FLAG_GET_ASYNC = 1;
+            ConstrainRepositoryTest.FLAG_GET_ASYNC = 1;
             UserViewModel viewModel = new UserViewModel
             {
                 ID = 1,
                 password = "0123"
             };
-            var actualResult = await _adminService.UpdateUserPassword(viewModel);
+            var actualResult = await _adminService.UpdateUserPassword(viewModel); // Failed due to no return statement
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -3228,6 +3231,9 @@ namespace QWMSServer.Tests.ServiceTest
         {
             UserRepositoryTest.FLAG_DELETE = 3; // No Delete
             UserRepositoryTest.FLAG_GET_ASYNC = 1;
+            UserRepositoryTest.FLAG_UPDATE = 1;
+            UserPasswordRepositoryTest.FLAG_GET_ASYNC = 1;
+            ConstrainRepositoryTest.FLAG_GET_ASYNC = 1;
             UserViewModel viewModel = new UserViewModel
             {
                 password = "0123"
@@ -4118,6 +4124,7 @@ namespace QWMSServer.Tests.ServiceTest
                 IPAddress = "127.0.0.1"
             };
             UserPCRepositoryTest.FLAG_GET_ASYNC = 1;
+            UserPCRepositoryTest.FLAG_UPDATE = 1;
             var actualResult = await _adminService.UpdateUserPC(viewModel);
             Assert.AreEqual(ResponseText.EDIT_PC_SUCCESS, actualResult.errorText);
         }
@@ -4125,19 +4132,18 @@ namespace QWMSServer.Tests.ServiceTest
         [TestMethod]
         public async Task TestMethod_UpdateUserPC_NoIP(UserPC userPC)
         {
-            UserPC viewModel = new UserPC
-            {
-                IPAddress = "127.0.0.1"
-            };
+            UserPC viewModel = new UserPC();
             UserPCRepositoryTest.FLAG_GET_ASYNC = 1;
-            var actualResult = await _adminService.UpdateUserPC(null);
+            UserPCRepositoryTest.FLAG_UPDATE = 1;
+            var actualResult = await _adminService.UpdateUserPC(userPC);
             Assert.AreEqual(ResponseText.EDIT_PC_FAIL, actualResult.errorText);
         }
 
         [TestMethod]
-        public async Task TestMethod_UpdateUserPC_NoModel(UserPC userPC)
+        public async Task TestMethod_UpdateUserPC_NoModel()
         {
-            CameraRepositoryTest.FLAG_GET_ASYNC = 1;
+            UserPCRepositoryTest.FLAG_GET_ASYNC = 1;
+            UserPCRepositoryTest.FLAG_UPDATE = 1;
             var actualResult = await _adminService.UpdateUserPC(null);
             Assert.AreEqual(ResponseText.EDIT_PC_FAIL, actualResult.errorText);
         }
