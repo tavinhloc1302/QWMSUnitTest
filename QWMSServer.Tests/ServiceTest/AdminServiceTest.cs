@@ -649,7 +649,7 @@ namespace QWMSServer.Tests.ServiceTest
             };
             // Exception throw if Id not exist
             var actualResult = await _adminService.UpdateDriver(driverView);
-            Assert.IsNull(actualResult.responseData);
+            Assert.IsNotNull(actualResult.responseData);
         }
 
         [TestMethod]
@@ -1485,7 +1485,6 @@ namespace QWMSServer.Tests.ServiceTest
                 code = "0123"
             };
             var actualResult = await _adminService.CreateNewLoadingType(viewModel);
-            LoadingTypeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -1515,7 +1514,6 @@ namespace QWMSServer.Tests.ServiceTest
                 code = "0123"
             };
             var actualResult = await _adminService.UpdateLoadingType(viewModel);
-            LoadingTypeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -1528,7 +1526,6 @@ namespace QWMSServer.Tests.ServiceTest
                 code = "0123"
             };
             var actualResult = await _adminService.UpdateLoadingType(viewModel);
-            LoadingTypeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNull(actualResult.responseData);
         }
 
@@ -1541,7 +1538,6 @@ namespace QWMSServer.Tests.ServiceTest
                 ID = 1
             };
             var actualResult = await _adminService.UpdateLoadingType(viewModel);
-            LoadingTypeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNull(actualResult.responseData);
         }
 
@@ -1562,7 +1558,6 @@ namespace QWMSServer.Tests.ServiceTest
                 ID = 1
             };
             var actualResult = await _adminService.DeleteLoadingType(viewModel);
-            LoadingTypeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseDatas);
         }
 
@@ -1573,7 +1568,6 @@ namespace QWMSServer.Tests.ServiceTest
             LoadingTypeRepositoryTest.FLAG_DELETE = 1;
             LoadingTypeViewModel viewModel = new LoadingTypeViewModel();
             var actualResult = await _adminService.DeleteLoadingType(viewModel);
-            LoadingTypeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNull(actualResult.responseDatas);
         }
 
@@ -1611,8 +1605,6 @@ namespace QWMSServer.Tests.ServiceTest
             EmployeeRepositoryTest.FLAG_GET_ASYNC = 1;
             EmployeeRepositoryTest.FLAG_DELETE = 3;
             var actualResult = await _adminService.SearchEmployee("0123");
-            EmployeeRepositoryTest.FLAG_GET_ASYNC = 0;
-            EmployeeRepositoryTest.FLAG_DELETE = 0;
             Assert.IsNotNull(actualResult.responseDatas);
         }
 
@@ -1622,8 +1614,6 @@ namespace QWMSServer.Tests.ServiceTest
             EmployeeRepositoryTest.FLAG_GET_ASYNC = 1;
             EmployeeRepositoryTest.FLAG_DELETE = 3;
             var actualResult = await _adminService.SearchEmployee(null);
-            EmployeeRepositoryTest.FLAG_GET_ASYNC = 0;
-            EmployeeRepositoryTest.FLAG_DELETE = 0;
             Assert.IsNull(actualResult.responseDatas);
         }
 
@@ -1632,7 +1622,6 @@ namespace QWMSServer.Tests.ServiceTest
         {
             EmployeeRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.GetEmployeeByCode("0123");
-            EmployeeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -1667,7 +1656,6 @@ namespace QWMSServer.Tests.ServiceTest
             EmployeeViewModel viewModel = new EmployeeViewModel();
             var actualResult = await _adminService.CreateNewEmployee(viewModel);
             // Failed due to getAsync will always return object
-            EmployeeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
@@ -1676,7 +1664,6 @@ namespace QWMSServer.Tests.ServiceTest
         {
             EmployeeRepositoryTest.FLAG_GET_ASYNC = 1;
             var actualResult = await _adminService.CreateNewEmployee(null);
-            EmployeeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNull(actualResult.responseData);
         }
 
@@ -1684,13 +1671,20 @@ namespace QWMSServer.Tests.ServiceTest
         public async Task TestMethod_UpdateEmployee()
         {
             EmployeeRepositoryTest.FLAG_GET_ASYNC = 1;
+            EmployeeGroupRepositoryTest.FLAG_GET_ASYNC = 1;
+            RFIDCardRepositoryTest.FLAG_GET_ASYNC = 1;
+            EmployeeRepositoryTest.FLAG_UPDATE = 1;
+            RFIDCardRepositoryTest.FLAG_UPDATE = 1;
             EmployeeViewModel viewModel = new EmployeeViewModel
             {
                 ID = 1,
-                code = "0123"
+                employeeGroup = DataRecords.EMPLOYEE_GROUP_NORMAL,
+                code = "0123",
+                firstName = "Galvin",
+                lastName = "Nguyen",
+                rfidCard = DataRecords.RFID_CARD_NORMAL
             };
             var actualResult = await _adminService.UpdateEmployee(viewModel);
-            EmployeeRepositoryTest.FLAG_GET_ASYNC = 0;
             Assert.IsNotNull(actualResult.responseData);
         }
 
