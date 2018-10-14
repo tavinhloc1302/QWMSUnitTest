@@ -57,7 +57,7 @@ namespace QWMSServer.Tests.Dummy
             customerWarehouse = CUSTOMERWAREHOUSE_NORMAL,
             customer = CUSTOMER_NORMAL,
             deliveryOrderType = DELIVERY_ORDER_TYPE_NORMAL,
-            isDelete = false
+            isDelete = false,
         };
 
         public static DeliveryOrder DELIVERYORDER_DELETED = new DeliveryOrder
@@ -187,7 +187,7 @@ namespace QWMSServer.Tests.Dummy
 
         public static SaleOrder SALEORDER_NORMAL = new SaleOrder
         {
-            Code = "0132",
+            Code = "SO Number 1",
             isDelete = true,
             deliveryOrder = new List<DeliveryOrder> { DELIVERYORDER_NORMAL, DELIVERYORDER_DELETED },
             ID = 1
@@ -208,6 +208,8 @@ namespace QWMSServer.Tests.Dummy
             isDelete = false,
             order = ORDER_NORMAL_PURCHASE,
             material = MATERIAL_NORMAL,
+            registNetWeight = 8,
+            registGrossWeight = 10,
         };
 
         public static OrderMaterial ORDERMATERIAL_DELETED = new OrderMaterial
@@ -217,6 +219,8 @@ namespace QWMSServer.Tests.Dummy
             isDelete = true,
             order = ORDER_NORMAL_PURCHASE,
             material = MATERIAL_NORMAL,
+            registNetWeight = 9,
+            registGrossWeight = 12,
         };
 
         public static CarrierVendor CARRIER_VENDOR_NORMAL = new CarrierVendor()
@@ -641,6 +645,8 @@ namespace QWMSServer.Tests.Dummy
             GATE_PASS_1ST_ORDER_PURCHASE.orders = new List<Order>() { ORDER_NORMAL_PURCHASE, ORDER_NORMAL_DELI };
             GATE_PASS_1ST_ORDER_TYPE_OTHER.orders = new List<Order>() { ORDER_NORMAL_TYPE_OTHER, ORDER_NORMAL_DELI, ORDER_NORMAL_PURCHASE };
             GATE_PASS_FOR_UPDATE.orders = new List<Order>() { ORDER_NORMAL_TYPE_OTHER, ORDER_NORMAL_DELI, ORDER_NORMAL_PURCHASE };
+
+            DELIVERYORDER_NORMAL.saleOrder = SALEORDER_NORMAL;
         }
     }
 }

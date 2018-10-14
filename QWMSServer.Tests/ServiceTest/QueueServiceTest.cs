@@ -76,7 +76,7 @@ namespace QWMSServer.Tests.ServiceTest
             //_unitTypeRepository = new UnitTypeRepositoryTest();
             _loadingBayRepository = new LoadingBayRepositoryTest();
             //_commonService = new CommonServiceTest();
-            //_purchaseOrderRepository = new PurchaseOrderRepositoryTest();
+            _purchaseOrderRepository = new PurchaseOrderRepositoryTest();
             //_purchaseOrderTypeRepository = new PurchaseOrderTypeRepositoryTest();
             _plantRepository = new PlantRepositoryTest();
 
@@ -426,6 +426,7 @@ namespace QWMSServer.Tests.ServiceTest
             GatePassRepositoryTest.FLAG_ORDER_TYPE = 1;
             RFIDCardRepositoryTest.FLAG_GET_ASYNC = 1;
             LaneRepositoryTest.FLAG_GET_ASYNC = 1;
+            LaneRepositoryTest.FLAG_GET_ASYNC_2 = 1;
             TruckRepositoryTest.FLAG_GET_ASYNC = 1;
             UnitOfWorkTest.FLAG_SAVE = 1;
 
@@ -523,6 +524,8 @@ namespace QWMSServer.Tests.ServiceTest
         public void TestMethod_FindTruckGroup_DeliPump()
         {
             var sampleGate = DataRecords.GATE_PASS_1ST_ORDER_DELI_TYPE_PUMP;
+
+            // Using wrong Enum, should be `OrderTypeConst`
             var truckGroup = _queueService.findTruckGroup(sampleGate);
             Assert.AreEqual(Constant.TRUCKGROUP2X, truckGroup);
         }
@@ -531,6 +534,8 @@ namespace QWMSServer.Tests.ServiceTest
         public void TestMethod_FindTruckGroup_DeliNotPump()
         {
             var sampleGate = DataRecords.GATE_PASS_1ST_ORDER_DELI_TYPE_NOT_PUMP;
+
+            // Using wrong Enum, should be `OrderTypeConst`
             var truckGroup = _queueService.findTruckGroup(sampleGate);
             Assert.AreEqual(Constant.TRUCKGROUP1X, truckGroup);
         }
@@ -539,6 +544,8 @@ namespace QWMSServer.Tests.ServiceTest
         public void TestMethod_FindTruckGroup_Purchase()
         {
             var sampleGate = DataRecords.GATE_PASS_1ST_ORDER_PURCHASE;
+
+            // Using wrong Enum, should be `OrderTypeConst`
             var truckGroup = _queueService.findTruckGroup(sampleGate);
             Assert.AreEqual(Constant.TRUCKGROUP3X, truckGroup);
         }
@@ -547,6 +554,8 @@ namespace QWMSServer.Tests.ServiceTest
         public void TestMethod_FindTruckGroup_NotDeliOrPurchase()
         {
             var sampleGate = DataRecords.GATE_PASS_1ST_ORDER_TYPE_OTHER;
+
+            // Using wrong Enum, should be `OrderTypeConst`
             var truckGroup = _queueService.findTruckGroup(sampleGate);
             Assert.AreEqual(Constant.TRUCKGROUP3X, truckGroup);
         }
@@ -555,6 +564,7 @@ namespace QWMSServer.Tests.ServiceTest
         public async Task TestMethod_AssignLane_Ok()
         {
             LaneRepositoryTest.FLAG_GET_ASYNC = 1;
+            LaneRepositoryTest.FLAG_GET_ASYNC_2 = 1;
             TruckRepositoryTest.FLAG_GET_ASYNC = 1;
             QueueListRepositoryTest.FLAG_GET_ASYNC = 1;
 
@@ -573,6 +583,7 @@ namespace QWMSServer.Tests.ServiceTest
             TruckRepositoryTest.FLAG_GET_ASYNC = 1;
             QueueListRepositoryTest.FLAG_GET_ASYNC = 1;
 
+            // Should check the object returned at line ` var rlane = await _laneRepository.GetByIdAsync(laneID);`
             var lowestKpiLaneId = await _queueService.assignLane(1, 1);
             LaneRepositoryTest.ResetDummyFlags();
             TruckRepositoryTest.ResetDummyFlags();
@@ -588,6 +599,7 @@ namespace QWMSServer.Tests.ServiceTest
             TruckRepositoryTest.FLAG_GET_ASYNC = 0;
             QueueListRepositoryTest.FLAG_GET_ASYNC = 1;
 
+            // Should check the object returned at line ` var rlane = await _laneRepository.GetByIdAsync(laneID);`
             var lowestKpiLaneId = await _queueService.assignLane(1, 1);
             LaneRepositoryTest.ResetDummyFlags();
             TruckRepositoryTest.ResetDummyFlags();
@@ -600,6 +612,7 @@ namespace QWMSServer.Tests.ServiceTest
         public async Task TestMethod_AssignLane_NoQueue()
         {
             LaneRepositoryTest.FLAG_GET_ASYNC = 1;
+            LaneRepositoryTest.FLAG_GET_ASYNC_2 = 1;
             TruckRepositoryTest.FLAG_GET_ASYNC = 1;
             QueueListRepositoryTest.FLAG_GET_ASYNC = 0;
 
@@ -723,6 +736,7 @@ namespace QWMSServer.Tests.ServiceTest
             MaterialRepositoryTest.FLAG_ADD = 0;
 
             var DoList = GetSampleDoList();
+            // Wrong logic `for (int j = 0; i < checkOderCode_OrderMaterial.Count(); j++)`
             var response = await _queueService.ImportDO(DoList);
 
             UnitOfWorkTest.ResetDummyFlags();
